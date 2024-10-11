@@ -25,6 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="90dp"
                 android:layout_marginBottom="20dp"
+                android:fontFamily="@font/raleway"
                 android:text="Booking Details"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -34,6 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
 
             <TextView
@@ -41,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
 
             <TextView
@@ -48,6 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
 
             <TextView
@@ -55,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
 
             <TextView
@@ -62,6 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
 
             <LinearLayout
@@ -79,7 +85,9 @@
                     android:layout_marginBottom="20dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/black"
-                    android:text="Button" />
+                    android:fontFamily="@font/raleway"
+                    android:text="Button"
+                    android:textStyle="bold" />
 
                 <Button
                     android:id="@+id/confirmBtn"
@@ -91,7 +99,9 @@
                     android:layout_marginBottom="20dp"
                     android:layout_weight="1"
                     android:backgroundTint="@color/primary"
-                    android:text="Confirm" />
+                    android:fontFamily="@font/raleway"
+                    android:text="Confirm"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -101,6 +111,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
+                android:fontFamily="@font/raleway"
                 android:text="TextView" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
