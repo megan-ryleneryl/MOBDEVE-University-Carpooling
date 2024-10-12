@@ -20,7 +20,9 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="352dp"
-            android:layout_height="417dp" >
+            android:layout_height="417dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -32,8 +34,8 @@
                     android:id="@+id/textView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/raleway"
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="@font/raleway_extrabold"
                     android:text="Booking Confirmed!"
                     android:textSize="20sp"
                     android:textStyle="bold" />
