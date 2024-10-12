@@ -1,6 +1,8 @@
 package com.example.uniride;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,4 +23,15 @@ public class AccountRegisterActivity extends AppCompatActivity {
             return insets;
         });
     }
+
+    public void registerUser(View v) {
+        // Implement registration logic here
+
+        //testing
+        Intent i = new Intent(this, AccountMyRidesActivity.class);
+
+        startActivity(i);
+
+    }
+
 }
