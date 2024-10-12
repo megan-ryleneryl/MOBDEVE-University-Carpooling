@@ -8,6 +8,7 @@
     <color name="navbar_color">#EDEDED</color>
     <color name="selected_color">#E64401</color>
     <color name="unselected_color">#808080</color>
-    <color name="cancel_color">#DA3544</color>"
+    <color name="cancel_color">#DA3544</color>
+    <color name="tertiary_color">#F8E7E1</color>"
 </resources>
 
