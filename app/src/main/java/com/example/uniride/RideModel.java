@@ -1,6 +1,6 @@
 package com.example.uniride;
 
-public class RideData {
+public class RideModel {
     private String rideId;
     private String from;
     private String to;
@@ -10,7 +10,7 @@ public class RideData {
     private String price;
     private String status;
 
-    public RideData(String rideId, String from, String to, String type, String departure, int availableSeats, String price, String status) {
+    public RideModel(String rideId, String from, String to, String type, String departure, int availableSeats, String price, String status) {
         this.rideId = rideId;
         this.from = from;
         this.to = to;

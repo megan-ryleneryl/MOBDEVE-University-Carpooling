@@ -9,10 +9,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class RideAdapter extends RecyclerView.Adapter<RideAdapter.RideViewHolder> {
-    private List<RideData> rideList;
+public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideViewHolder> {
+    private List<RideModel> rideList;
 
-    public RideAdapter(List<RideData> rideList) {
+    public MyRidesAdapter(List<RideModel> rideList) {
         this.rideList = rideList;
     }
 
@@ -45,7 +45,7 @@ public class RideAdapter extends RecyclerView.Adapter<RideAdapter.RideViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RideViewHolder holder, int position) {
-        RideData currentItem = rideList.get(position);
+        RideModel currentItem = rideList.get(position);
         holder.rideId.setText("Ride ID: " + currentItem.getRideId());
         holder.from.setText("From: " + currentItem.getFrom());
         holder.to.setText("to " + currentItem.getTo());
