@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/tertiary_color"
     tools:context=".BookingConfirmActivity">
 
     <LinearLayout
@@ -20,7 +21,7 @@
 
         <androidx.cardview.widget.CardView
             android:layout_width="352dp"
-            android:layout_height="417dp"
+            android:layout_height="600dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="5dp">
 
@@ -31,48 +32,293 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView8"
+                    android:id="@+id/bookingConfirmed2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/raleway_extrabold"
                     android:text="Booking Confirmed!"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/textView9"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/raleway"
-                    android:text="TextView" />
+                <View
+                    android:id="@+id/horizontalLine2"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_margin="20dp"
+                    android:background="@color/black" />
 
-                <TextView
-                    android:id="@+id/textView10"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/raleway"
-                    android:text="TextView" />
+                    android:orientation="horizontal"
+                    android:padding="10dp">
 
-                <TextView
-                    android:id="@+id/textView11"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:fontFamily="@font/raleway"
-                    android:text="TextView" />
+                    <LinearLayout
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/button"
+                        <TextView
+                            android:id="@+id/passengerName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Passenger Name" />
+
+                        <TextView
+                            android:id="@+id/passengerNameTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="LUKE ANIAGO"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/pickup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Pick-up" />
+
+                        <TextView
+                            android:id="@+id/pickupTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="46 D.M.Cruz Sta. Ana, Taguig, Metro Manila"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/dropoff"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Drop-off" />
+
+                        <TextView
+                            android:id="@+id/dropoffTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="De La Salle University"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/riderName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="Rider Name" />
+
+                        <TextView
+                            android:id="@+id/riderNameTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="STEVEN YU"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/vehicle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="Vehicle" />
+
+                        <TextView
+                            android:id="@+id/vehicleTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="HONDA Civic Blue - NDA 1532"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/contact"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="Contact No." />
+
+                        <TextView
+                            android:id="@+id/contactTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="905 264 1213"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/horizontalLine3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@color/black" />
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:backgroundTint="@color/primary"
-                    android:fontFamily="@font/raleway"
-                    android:text="Return to Home"
-                    android:textStyle="bold" />
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="70dp"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Date"
+                            android:textAlignment="textEnd" />
+
+                        <TextView
+                            android:id="@+id/time"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Time"
+                            android:textAlignment="textEnd" />
+
+                        <TextView
+                            android:id="@+id/arrival"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="Arrival"
+                            android:textAlignment="textEnd" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="130dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/dateTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="October 11, 2024"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/timeTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="06:00"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/arrivalTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="5dp"
+                            android:fontFamily="@font/raleway"
+                            android:text="06:50"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:id="@+id/horizontalLine4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:layout_margin="20dp"
+                    android:background="@color/black" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="5dp">
+
+                    <Button
+                        android:id="@+id/homeBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/unselected_color"
+                        android:fontFamily="@font/raleway"
+                        android:text="Return Home"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/contactBtn"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1"
+                        android:backgroundTint="@color/primary"
+                        android:fontFamily="@font/raleway"
+                        android:text="Contact Rider"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -82,13 +328,12 @@
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:menu="@menu/bottom_nav_menu"
+        app:itemBackground="@color/navbar_color"
         app:itemIconTint="@color/nav_item_color"
         app:itemTextColor="@color/nav_item_color"
-        app:itemBackground="@color/navbar_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" >
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_nav_menu"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,6 +10,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class BookingHomeDetailsActivity extends AppCompatActivity {
 
+    // declare ui elements
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,5 +22,20 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+//        movieImage = findViewById(R.id.imageview);
+//        textViewName = findViewById(R.id.textName);
+//        textViewDate = findViewById(R.id.textdate);
+//        textViewSummary = findViewById(R.id.textsummary);
+//
+//        int imageID = getIntent().getIntExtra("image", 0);
+//        String movieName = getIntent().getStringExtra("name");
+//        String movieDate = getIntent().getStringExtra("date");
+//        String movieSummary = getIntent().getStringExtra("summary");
+//
+//        movieImage.setImageResource(imageID);
+//        textViewName.setText(movieName);
+//        textViewDate.setText(movieDate);
+//        textViewSummary.setText(movieSummary);
     }
 }

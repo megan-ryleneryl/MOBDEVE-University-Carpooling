@@ -41,6 +41,7 @@
                     android:textStyle="bold" />
 
                 <View
+                    android:id="@+id/horizontalLine"
                     android:layout_width="300dp"
                     android:layout_height="1dp"
                     android:layout_margin="20dp"
