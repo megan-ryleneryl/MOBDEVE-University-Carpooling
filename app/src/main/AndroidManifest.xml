@@ -34,6 +34,18 @@
             android:name=".BookingConfirmActivity"
             android:exported="false" />
         <activity
+            android:name=".HomeChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeChatMessageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeReviewsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".AccountMyRidesActivity"
             android:exported="false" />
         <activity
