@@ -10,7 +10,6 @@ public class UserModel {
     private CarModel car; // Only for drivers
     private double balance = 0; // Only for drivers
 
-
     public UserModel(String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
         this.name = name;
         this.email = email;

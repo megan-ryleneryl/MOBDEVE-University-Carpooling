@@ -50,7 +50,7 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
         holder.from.setText("From: " + currentItem.getFrom());
         holder.to.setText("to " + currentItem.getTo());
         holder.type.setText("Type: " + currentItem.getType());
-        holder.departure.setText("Departure: " + currentItem.getDeparture());
+        holder.departure.setText("Departure: " + currentItem.getDepartureTime());
         holder.availableSeats.setText("Available Seats: " + currentItem.getAvailableSeats());
         holder.price.setText("Price: " + currentItem.getPrice());
         holder.status.setText("Status: " + currentItem.getStatus());
