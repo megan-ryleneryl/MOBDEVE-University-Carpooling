@@ -1,6 +1,7 @@
 package com.example.uniride;
 
 public class UserModel {
+    private int userID;
     private String name;
     private String email;
     private String phoneNumber;
@@ -10,7 +11,8 @@ public class UserModel {
     private CarModel car; // Only for drivers
     private double balance = 0; // Only for drivers
 
-    public UserModel(String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
+    public UserModel(int userID, String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
+        this.userID = userID;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -20,6 +22,7 @@ public class UserModel {
     }
 
     // Getters
+    public int getUserID() { return userID; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPhoneNumber() { return phoneNumber; }

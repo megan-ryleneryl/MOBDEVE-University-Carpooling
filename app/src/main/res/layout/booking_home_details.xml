@@ -75,16 +75,6 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/durationTv"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:fontFamily="@font/raleway"
-                        android:text="50 mins"
-                        android:textAlignment="center" />
-
-                    <TextView
                         android:id="@+id/arrivalTimeTv"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -152,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
                             android:fontFamily="@font/raleway"
-                            android:text="4 Seater" />
+                            android:text="3 seats available" />
 
                         <TextView
                             android:id="@+id/carModelTv"
@@ -203,14 +193,6 @@
                             android:text="★ 5.0" />
                     </LinearLayout>
                 </LinearLayout>
-
-                <TextView
-                    android:id="@+id/scheduleTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:fontFamily="@font/raleway"
-                    android:text="Tuesday, Thursday" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

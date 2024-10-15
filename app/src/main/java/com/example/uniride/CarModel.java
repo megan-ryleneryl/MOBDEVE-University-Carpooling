@@ -1,6 +1,7 @@
 package com.example.uniride;
 
 public class CarModel {
+    private int carID;
     private String make;
     private String model;
     private String plateNumber;
@@ -14,6 +15,9 @@ public class CarModel {
     }
 
     // Getters and setters
+    public int getCarID() { return carID; }
+    public void setCarID(int carID) { this.carID = carID; }
+
     public String getMake() { return make; }
     public void setMake(String make) { this.make = make; }
 

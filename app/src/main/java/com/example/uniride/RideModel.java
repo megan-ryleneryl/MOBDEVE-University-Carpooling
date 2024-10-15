@@ -1,7 +1,7 @@
 package com.example.uniride;
 
 public class RideModel {
-    private int rideId;
+    private int rideID;
     private LocationModel from;
     private LocationModel to;
     private String type; // toUniversity, fromUniversity
@@ -12,8 +12,8 @@ public class RideModel {
     private int price;
     private String status; // active, inactive
 
-    public RideModel(int rideId, LocationModel from, LocationModel to, String type, String departureTime, String arrivalTime, int availableSeats, int totalSeats, int price, String status) {
-        this.rideId = rideId;
+    public RideModel(int rideID, LocationModel from, LocationModel to, String type, String departureTime, String arrivalTime, int availableSeats, int totalSeats, int price, String status) {
+        this.rideID = rideID;
         this.from = from;
         this.to = to;
         this.type = type;
@@ -26,7 +26,7 @@ public class RideModel {
     }
 
     // Getters
-    public int getRideId() { return rideId; }
+    public int getRideID() { return rideID; }
     public LocationModel getFrom() { return from; }
     public LocationModel getTo() { return to; }
     public String getType() { return type; }

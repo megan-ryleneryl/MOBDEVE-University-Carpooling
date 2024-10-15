@@ -48,7 +48,7 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
     @Override
     public void onBindViewHolder(@NonNull RideViewHolder holder, int position) {
         RideModel currentItem = rideList.get(position);
-        holder.rideId.setText("Ride ID: " + currentItem.getRideId());
+        holder.rideId.setText("Ride ID: " + currentItem.getRideID());
         holder.from.setText("From: " + currentItem.getFrom().getName());
         holder.to.setText("to " + currentItem.getTo().getName());
         holder.type.setText("Type: " + currentItem.getType());
