@@ -17,7 +17,7 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
     }
 
     public static class RideViewHolder extends RecyclerView.ViewHolder {
-        TextView rideId, from, to, type, departure, availableSeats, price, status;
+        TextView rideId, from, to, type, departure, arrival, availableSeats, totalSeats, price, status;
         Button editButton, deactivateButton;
 
         public RideViewHolder(@NonNull View itemView) {
@@ -27,7 +27,9 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
             to = itemView.findViewById(R.id.textTo);
             type = itemView.findViewById(R.id.textType);
             departure = itemView.findViewById(R.id.textDeparture);
+            arrival = itemView.findViewById(R.id.textArrival);
             availableSeats = itemView.findViewById(R.id.textAvailableSeats);
+            totalSeats = itemView.findViewById(R.id.textTotalSeats);
             price = itemView.findViewById(R.id.textPrice);
             status = itemView.findViewById(R.id.textStatus);
             editButton = itemView.findViewById(R.id.buttonEdit);
@@ -47,12 +49,14 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
     public void onBindViewHolder(@NonNull RideViewHolder holder, int position) {
         RideModel currentItem = rideList.get(position);
         holder.rideId.setText("Ride ID: " + currentItem.getRideId());
-        holder.from.setText("From: " + currentItem.getFrom());
-        holder.to.setText("to " + currentItem.getTo());
+        holder.from.setText("From: " + currentItem.getFrom().getName());
+        holder.to.setText("to " + currentItem.getTo().getName());
         holder.type.setText("Type: " + currentItem.getType());
         holder.departure.setText("Departure: " + currentItem.getDepartureTime());
+        holder.arrival.setText("Arrival: " + currentItem.getArrivalTime());
         holder.availableSeats.setText("Available Seats: " + currentItem.getAvailableSeats());
-        holder.price.setText("Price: " + currentItem.getPrice());
+        holder.totalSeats.setText("Total Seats: " + currentItem.getTotalSeats());
+        holder.price.setText("Price: ₱" + currentItem.getPrice());
         holder.status.setText("Status: " + currentItem.getStatus());
 
         // Hide deactivate button if status is inactive

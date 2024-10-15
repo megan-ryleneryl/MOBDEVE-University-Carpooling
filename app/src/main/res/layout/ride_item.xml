@@ -61,13 +61,31 @@
             app:layout_constraintTop_toBottomOf="@id/textType" />
 
         <TextView
-            android:id="@+id/textAvailableSeats"
+            android:id="@+id/textArrival"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textColor="@color/black"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/textDeparture" />
+
+        <TextView
+            android:id="@+id/textAvailableSeats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textArrival" />
+
+        <TextView
+            android:id="@+id/textTotalSeats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textAvailableSeats" />
 
         <TextView
             android:id="@+id/textPrice"
@@ -77,7 +95,7 @@
             android:textStyle="bold"
             android:textColor="@color/primary"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textAvailableSeats" />
+            app:layout_constraintTop_toBottomOf="@id/textTotalSeats" />
 
         <TextView
             android:id="@+id/textStatus"
