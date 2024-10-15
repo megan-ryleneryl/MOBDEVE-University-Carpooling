@@ -4,15 +4,13 @@ public class BookingModel {
     private int bookingID;
     private RideModel ride;
     private UserModel user;
-    private String paymentStatus; // paid, unpaid
-    private String bookingStatus; // pending, completed
+    private boolean isPaymentComplete = false;
+    private boolean isBookingDone = false;
 
-    public BookingModel (int bookingID, RideModel ride, UserModel user, String paymentStatus, String bookingStatus) {
+    public BookingModel (int bookingID, RideModel ride, UserModel user) {
         this.bookingID = bookingID;
         this.ride = ride;
         this.user = user;
-        this.paymentStatus = paymentStatus;
-        this.bookingStatus = bookingStatus;
     }
 
     // Getters
@@ -28,11 +26,11 @@ public class BookingModel {
         return user;
     }
 
-    public String getPaymentStatus() {
-        return paymentStatus;
+    public boolean getPaymentStatus() {
+        return isPaymentComplete;
     }
 
-    public String getBookingStatus() {
-        return bookingStatus;
+    public boolean getBookingStatus() {
+        return isBookingDone;
     }
 }

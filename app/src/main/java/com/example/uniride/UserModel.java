@@ -6,9 +6,9 @@ public class UserModel {
     private String email;
     private String phoneNumber;
     private String university;
-    private String accountStatus;
-    private String userType; // "Driver" or "Passenger"
-    private CarModel car; // Only for drivers
+    private String accountStatus; //
+    private String userType; // driver, passenger
+    private CarModel car; // only for drivers
     private double balance = 0; // Only for drivers
 
     public UserModel(int userID, String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
