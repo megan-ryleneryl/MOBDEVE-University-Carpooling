@@ -85,7 +85,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <Button
-        android:id="@+id/searchBtn3"
+        android:id="@+id/detailsBtn"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginTop="75dp"

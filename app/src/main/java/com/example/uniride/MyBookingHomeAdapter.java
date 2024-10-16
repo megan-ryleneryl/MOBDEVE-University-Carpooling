@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -12,14 +13,36 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
 public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdapter.ViewHolder> {
 
-    BookingModel[] myBookingData;
+    ArrayList<BookingModel> myBookingData;
     Context context;
 
-    public MyBookingHomeAdapter(BookingModel[] myMovieData,BookingHomeActivity activity) {
+    public MyBookingHomeAdapter(ArrayList<BookingModel> myBookingData, BookingHomeActivity activity) {
         this.myBookingData = myBookingData;
         this.context = activity;
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder{
+        ImageView carImage;
+        TextView locationTv;
+        TextView timeTv;
+        TextView dateTv;
+        TextView priceTv;
+        Button detailsBtn;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            carImage = itemView.findViewById(R.id.carImage);
+            locationTv = itemView.findViewById(R.id.locationTv);
+            timeTv = itemView.findViewById(R.id.timeTv);
+            dateTv = itemView.findViewById(R.id.dateTv);
+            priceTv = itemView.findViewById(R.id.priceTv);
+            detailsBtn = itemView.findViewById(R.id.detailsBtn);
+        }
     }
 
     @NonNull
@@ -33,21 +56,23 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final BookingModel myBookingDataList = myBookingData[position];
-//        holder.textViewName.setText(myMovieDataList.getMovieName());
-//        holder.textViewDate.setText(myMovieDataList.getMovieDate());
-//        holder.movieImage.setImageResource(myMovieDataList.getMovieImage());
+        String pattern = "MMMM dd yyyy";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
+        final BookingModel myBookingDataList = myBookingData.get(position);
+        holder.carImage.setImageResource(myBookingDataList.getRide().getDriver().getCar().getCarImage());
+        holder.locationTv.setText(myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
+        holder.timeTv.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
+        holder.dateTv.setText(simpleDateFormat.format(myBookingDataList.getDate()));
+        holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
+
+        holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(context, BookingHomeDetailsActivity.class);
-//                i.putExtra("image",myMovieDataList.getMovieImage());
-//                i.putExtra("name",myMovieDataList.getMovieName());
-//                i.putExtra("date",myMovieDataList.getMovieDate());
-//                i.putExtra("summary",myMovieDataList.getMovieSummary());
-
+                i.putExtra("myBookingData", myBookingData);
+                i.putExtra("selectedBooking", myBookingDataList);
                 context.startActivity(i);
             }
         });
@@ -55,21 +80,6 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
 
     @Override
     public int getItemCount() {
-        return myBookingData.length;
-    }
-
-
-    public class ViewHolder extends RecyclerView.ViewHolder{
-//        ImageView movieImage;
-//        TextView textViewName;
-//        TextView textViewDate;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-//            movieImage = itemView.findViewById(R.id.imageview);
-//            movieImage = itemView.findViewById(R.id.imageview);
-//            textViewName = itemView.findViewById(R.id.textName);
-//            textViewDate = itemView.findViewById(R.id.textdate);
-        }
+        return myBookingData.size();
     }
 }

@@ -1,7 +1,10 @@
 package com.example.uniride;
 
-public class UserModel {
+import java.io.Serializable;
+
+public class UserModel implements Serializable {
     private int userID;
+    private int pfp;
     private String name;
     private String email;
     private String phoneNumber;
@@ -11,8 +14,9 @@ public class UserModel {
     private CarModel car; // only for drivers
     private double balance = 0; // Only for drivers
 
-    public UserModel(int userID, String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
+    public UserModel(int userID, int pfp, String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
         this.userID = userID;
+        this.pfp = pfp;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
@@ -23,6 +27,7 @@ public class UserModel {
 
     // Getters
     public int getUserID() { return userID; }
+    public int getPfp() { return pfp; }
     public String getName() { return name; }
     public String getEmail() { return email; }
     public String getPhoneNumber() { return phoneNumber; }
@@ -33,6 +38,7 @@ public class UserModel {
     public double getBalance() { return balance; }
 
     // Setters
+    public void setPfp(int pfp) { this.pfp = pfp; }
     public void setName(String name) { this.name = name; }
     public void setEmail(String email) { this.email = email; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
@@ -40,9 +46,18 @@ public class UserModel {
     public void setAccountStatus(String accountStatus) { this.accountStatus = accountStatus; }
     public void setUserType(String userType) { this.userType = userType; }
     public void setCar(CarModel car) { this.car = car; }
-    public void setBalance(double balance) { this.balance = balance; }
+    public void setBalance(double balance) { this.balance = balance; } //imo we can use amountIncrease and then this.balance += amountIncrease
 
     public boolean isDriver() {
         return "Driver".equals(userType);
+    }
+
+    public int getRating() {
+        int rating = 0;
+
+        // for every review, if uid matches this users id, add to arraylist
+        // average the arraylist
+
+        return rating;
     }
 }

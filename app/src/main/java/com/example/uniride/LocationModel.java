@@ -1,6 +1,8 @@
 package com.example.uniride;
 
-public class LocationModel {
+import java.io.Serializable;
+
+public class LocationModel implements Serializable {
     private int locationID;
     private String name;
 
@@ -9,7 +11,7 @@ public class LocationModel {
         this.name = name;
     }
 
-    // Getter
+    // Getters
     public int getLocationID() {
         return locationID;
     }

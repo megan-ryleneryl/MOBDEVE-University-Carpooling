@@ -1,36 +1,48 @@
 package com.example.uniride;
 
-public class BookingModel {
+import java.io.Serializable;
+import java.time.LocalDate;
+
+public class BookingModel implements Serializable {
     private int bookingID;
     private RideModel ride;
-    private UserModel user;
+    private UserModel passenger;
+    private LocalDate date;
     private boolean isPaymentComplete = false;
     private boolean isBookingDone = false;
 
-    public BookingModel (int bookingID, RideModel ride, UserModel user) {
+    public BookingModel (int bookingID, RideModel ride, UserModel passenger, LocalDate date) {
         this.bookingID = bookingID;
         this.ride = ride;
-        this.user = user;
+        this.passenger = passenger;
+        this.date = date;
     }
 
     // Getters
     public int getBookingID() {
         return bookingID;
     }
-
     public RideModel getRide() {
         return ride;
     }
-
-    public UserModel getUser() {
-        return user;
+    public UserModel getPassenger() {
+        return passenger;
     }
-
-    public boolean getPaymentStatus() {
+    public LocalDate getDate() {
+        return date;
+    }
+    public boolean getPaymentComplete() {
         return isPaymentComplete;
     }
-
-    public boolean getBookingStatus() {
+    public boolean getBookingDone() {
         return isBookingDone;
+    }
+    
+    // Setters
+    public void getPaymentComplete(boolean paymentComplete) {
+        isPaymentComplete = paymentComplete;
+    }
+    public void setBookingDone(boolean bookingDone) {
+        isBookingDone = bookingDone;
     }
 }

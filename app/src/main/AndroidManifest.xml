@@ -27,9 +27,9 @@
         <activity
             android:name=".BookingHomeDetailsActivity"
             android:exported="false" />
-        <activity
-            android:name=".BookingHomeActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".BookingHomeActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".BookingConfirmActivity"
             android:exported="false" />
@@ -53,15 +53,15 @@
             android:exported="false" />
         <activity
             android:name=".AccountRegisterActivity"
-            android:exported="true" /> <!-- <activity -->
-        <!-- android:name=".AccountLoginActivity" -->
-        <!-- android:exported="true" /> -->
+            android:exported="true" />
+         <activity
+             android:name=".AccountLoginActivity"
+             android:exported="true" />
         <activity
-            android:name=".AccountLoginActivity"
+            android:name=".BookingHomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
