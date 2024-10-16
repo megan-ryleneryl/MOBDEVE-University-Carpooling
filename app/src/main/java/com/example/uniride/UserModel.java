@@ -23,6 +23,17 @@ public class UserModel implements Serializable {
         this.isDriver = isDriver;
     }
 
+    public UserModel(int userID, int pfp, String name, String email, String phoneNumber, String university, boolean isDriver, CarModel car) {
+        this.userID = userID;
+        this.pfp = pfp;
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.university = university;
+        this.isDriver = isDriver;
+        this.car = car;
+    }
+
     // Getters
     public int getUserID() { return userID; }
     public int getPfp() { return pfp; }

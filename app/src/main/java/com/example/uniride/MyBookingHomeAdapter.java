@@ -2,6 +2,7 @@ package com.example.uniride;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,6 +66,8 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         holder.timeTv.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
         holder.dateTv.setText(simpleDateFormat.format(myBookingDataList.getDate()));
         holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
+
+        Log.d("BookingData", "Booking: " + myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
 
         holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override

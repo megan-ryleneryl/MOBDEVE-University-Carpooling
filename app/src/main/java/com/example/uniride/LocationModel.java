@@ -18,4 +18,10 @@ public class LocationModel implements Serializable {
     public String getName() {
         return name;
     }
+
+    // ToString helper
+    @Override
+    public String toString() {
+        return name;
+    }
 }

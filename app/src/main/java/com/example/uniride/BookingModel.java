@@ -1,17 +1,17 @@
 package com.example.uniride;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.util.Date;
 
 public class BookingModel implements Serializable {
     private int bookingID;
     private RideModel ride;
     private UserModel passenger;
-    private LocalDate date;
+    private Date date;
     private boolean isPaymentComplete = false;
     private boolean isBookingDone = false;
 
-    public BookingModel (int bookingID, RideModel ride, UserModel passenger, LocalDate date) {
+    public BookingModel (int bookingID, RideModel ride, UserModel passenger, Date date) {
         this.bookingID = bookingID;
         this.ride = ride;
         this.passenger = passenger;
@@ -28,7 +28,7 @@ public class BookingModel implements Serializable {
     public UserModel getPassenger() {
         return passenger;
     }
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
     public boolean getPaymentComplete() {

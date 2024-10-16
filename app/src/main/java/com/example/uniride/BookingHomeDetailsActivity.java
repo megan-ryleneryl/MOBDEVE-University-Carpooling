@@ -47,19 +47,19 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
         BookingModel selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
 
         if (myBookingData != null && selectedBooking != null) {
-            TextView priceTv = findViewById(R.id.priceTv);
-            TextView departureTimeTv = findViewById(R.id.departureTimeTv);
-            TextView arrivalTimeTv = findViewById(R.id.arrivalTimeTv);
-            TextView departureLocTv = findViewById(R.id.departureLocTv);
-            TextView arrivalLocTv = findViewById(R.id.arrivalLocTv);
-            ImageView carImage = findViewById(R.id.carImage);
-            TextView capacityTv = findViewById(R.id.capacityTv);
-            TextView carModelTv = findViewById(R.id.carModelTv);
-            ImageView userImage = findViewById(R.id.userImage);
-            TextView userNameTv = findViewById(R.id.userNameTv);
-            TextView ratingTv = findViewById(R.id.ratingTv);
-            Button previousBtn = findViewById(R.id.previousBtn);
-            Button nextBtn = findViewById(R.id.nextBtn);
+            priceTv = findViewById(R.id.priceTv);
+            departureTimeTv = findViewById(R.id.departureTimeTv);
+            arrivalTimeTv = findViewById(R.id.arrivalTimeTv);
+            departureLocTv = findViewById(R.id.departureLocTv);
+            arrivalLocTv = findViewById(R.id.arrivalLocTv);
+            carImage = findViewById(R.id.carImage);
+            capacityTv = findViewById(R.id.capacityTv);
+            carModelTv = findViewById(R.id.carModelTv);
+            userImage = findViewById(R.id.userImage);
+            userNameTv = findViewById(R.id.userNameTv);
+            ratingTv = findViewById(R.id.ratingTv);
+            previousBtn = findViewById(R.id.previousBtn);
+            nextBtn = findViewById(R.id.nextBtn);
 
             // get the needed data from within selectedBooking
             priceTv.setText("P" + selectedBooking.getRide().getPrice());
@@ -72,7 +72,7 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
             carModelTv.setText(selectedBooking.getRide().getDriver().getCar().getModel() + " " + selectedBooking.getRide().getDriver().getCar().getMake());
             userImage.setImageResource(selectedBooking.getPassenger().getPfp());
             userNameTv.setText(selectedBooking.getRide().getDriver().getName());
-            ratingTv.setText("" + selectedBooking.getRide().getDriver().getRating());
+            ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
 
             previousBtn.setOnClickListener(v -> {
                 // Previous button click

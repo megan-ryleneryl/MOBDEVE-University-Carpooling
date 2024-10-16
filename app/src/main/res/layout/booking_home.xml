@@ -67,6 +67,7 @@
                         android:ems="10"
                         android:fontFamily="@font/raleway"
                         android:hint="MM-DD-YYYY"
+                        android:focusable="false"
                         android:inputType="datetime|date"
                         android:singleLine="false" />
                 </LinearLayout>
@@ -90,6 +91,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:ems="10"
+                        android:maxLength="1"
                         android:fontFamily="@font/raleway"
                         android:hint="Passenger/s"
                         android:inputType="number" />
@@ -125,8 +127,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/myBookingsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp" />
         </LinearLayout>
     </ScrollView>
