@@ -9,20 +9,18 @@ public class UserModel implements Serializable {
     private String email;
     private String phoneNumber;
     private String university;
-    private String accountStatus; //
-    private String userType; // driver, passenger
+    private boolean isDriver; // true if they are verified as a driver, false if passenger
     private CarModel car; // only for drivers
     private double balance = 0; // Only for drivers
 
-    public UserModel(int userID, int pfp, String name, String email, String phoneNumber, String university, String accountStatus, String userType) {
+    public UserModel(int userID, int pfp, String name, String email, String phoneNumber, String university, boolean isDriver) {
         this.userID = userID;
         this.pfp = pfp;
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.university = university;
-        this.accountStatus = accountStatus;
-        this.userType = userType;
+        this.isDriver = isDriver;
     }
 
     // Getters
@@ -32,8 +30,7 @@ public class UserModel implements Serializable {
     public String getEmail() { return email; }
     public String getPhoneNumber() { return phoneNumber; }
     public String getUniversity() { return university; }
-    public String getAccountStatus() { return accountStatus; }
-    public String getUserType() { return userType; }
+    public boolean isDriver() { return isDriver; }
     public CarModel getCar() { return car; }
     public double getBalance() { return balance; }
 
@@ -43,14 +40,10 @@ public class UserModel implements Serializable {
     public void setEmail(String email) { this.email = email; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setUniversity(String university) { this.university = university; }
-    public void setAccountStatus(String accountStatus) { this.accountStatus = accountStatus; }
-    public void setUserType(String userType) { this.userType = userType; }
+    public void setDriver(boolean driver) { isDriver = driver; }
     public void setCar(CarModel car) { this.car = car; }
     public void setBalance(double balance) { this.balance = balance; } //imo we can use amountIncrease and then this.balance += amountIncrease
 
-    public boolean isDriver() {
-        return "Driver".equals(userType);
-    }
 
     public int getRating() {
         int rating = 0;

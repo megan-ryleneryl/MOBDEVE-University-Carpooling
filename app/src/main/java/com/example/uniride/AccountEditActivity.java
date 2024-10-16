@@ -16,7 +16,7 @@ public class AccountEditActivity extends AppCompatActivity {
 
     private CircleImageView profileImage;
     private TextInputEditText nameInput, emailInput, phoneInput, universityInput;
-    private TextInputEditText carMakeInput, carModelInput, plateNumberInput, carYearInput;
+    private TextInputEditText carMakeInput, carModelInput, plateNumberInput;
     private LinearLayout carDetailsContainer;
     private Button saveChangesButton, cancelButton;
     private UserModel currentUser;
@@ -44,26 +44,13 @@ public class AccountEditActivity extends AppCompatActivity {
         carMakeInput = findViewById(R.id.car_make_input);
         carModelInput = findViewById(R.id.car_model_input);
         plateNumberInput = findViewById(R.id.plate_number_input);
-        carYearInput = findViewById(R.id.car_year_input);
         saveChangesButton = findViewById(R.id.save_changes_button);
         cancelButton = findViewById(R.id.cancel_button);
     }
 
     private void loadUserData() {
-        // TODO: Load actual user data from your data source
-        currentUser = new UserModel(
-                "Luke Aniago",
-                "luke_marion_aniago@dlsu.edu.ph",
-                "09565482850",
-                "De La Salle University",
-                "Verified Driver",
-                "Driver"
-        );
-
-        if (currentUser.isDriver()) {
-            CarModel car = new CarModel("Mitsubishi", "EVO", "NDE1923", 2022);
-            currentUser.setCar(car);
-        }
+        // For this example, we'll use the first user from DataGenerator
+        currentUser = DataGenerator.loadUserData().get(0);
 
         nameInput.setText(currentUser.getName());
         emailInput.setText(currentUser.getEmail());
@@ -76,13 +63,11 @@ public class AccountEditActivity extends AppCompatActivity {
             carMakeInput.setText(car.getMake());
             carModelInput.setText(car.getModel());
             plateNumberInput.setText(car.getPlateNumber());
-            carYearInput.setText(String.valueOf(car.getYear()));
         } else {
             carDetailsContainer.setVisibility(View.GONE);
         }
 
-        // TODO: Load profile image
-        // profileImage.setImageResource(R.drawable.default_profile_image);
+        profileImage.setImageResource(currentUser.getPfp());
     }
 
     private void setListeners() {
@@ -105,13 +90,12 @@ public class AccountEditActivity extends AppCompatActivity {
         if (currentUser.isDriver()) {
             CarModel car = currentUser.getCar();
             if (car == null) {
-//                car = new CarModel();
-//                currentUser.setCar(car);
+                car = new CarModel(0, 0, "", "", "");
+                currentUser.setCar(car);
             }
             car.setMake(carMakeInput.getText().toString());
             car.setModel(carModelInput.getText().toString());
             car.setPlateNumber(plateNumberInput.getText().toString());
-            car.setYear(Integer.parseInt(carYearInput.getText().toString()));
         }
 
         // TODO: Save changes to your data source (e.g., local database, API)
@@ -125,7 +109,6 @@ public class AccountEditActivity extends AppCompatActivity {
         // Check if required fields are not empty
         // Validate email format
         // Validate phone number format
-        // Validate car year (if applicable)
         return true;
     }
 }

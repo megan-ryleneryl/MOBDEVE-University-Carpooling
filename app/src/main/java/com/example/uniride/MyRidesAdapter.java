@@ -57,10 +57,10 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
         holder.availableSeats.setText("Available Seats: " + currentItem.getAvailableSeats());
         holder.totalSeats.setText("Total Seats: " + currentItem.getTotalSeats());
         holder.price.setText("Price: ₱" + currentItem.getPrice());
-        holder.status.setText("Status: " + currentItem.getStatus());
+        holder.status.setText("Status: " + (currentItem.isActive() ? "Active" : "Inactive"));
 
         // Hide deactivate button if status is inactive
-        if (currentItem.getStatus().toLowerCase().equals("inactive")) {
+        if (!currentItem.isActive()) {
             holder.deactivateButton.setVisibility(View.GONE);
         } else {
             holder.deactivateButton.setVisibility(View.VISIBLE);

@@ -35,7 +35,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initViews();
-        createDummyUser();
         loadUserData();
         setListeners();
     }
@@ -60,38 +59,25 @@ public class AccountDetailsActivity extends AppCompatActivity {
         depositButton = findViewById(R.id.deposit_button);
     }
 
-    private void createDummyUser() {
-        currentUser = new UserModel(
-                "Luke Aniago",
-                "luke_marion_aniago@dlsu.edu.ph",
-                "09565482850",
-                "De La Salle University",
-                "Verified Driver",
-                "Driver"
-        );
-
-        if (currentUser.isDriver()) {
-            CarModel car = new CarModel("Mitsubishi", "EVO", "NDE1923", 2022);
-            currentUser.setCar(car);
-        }
-
-        isOwnProfile = true;
-    }
-
     private void loadUserData() {
+        // For this example, we'll use the first user from DataGenerator
+        currentUser = DataGenerator.loadUserData().get(0);
+        isOwnProfile = false;
+
         if (currentUser != null) {
             nameText.setText(currentUser.getName());
             emailText.setText(currentUser.getEmail());
             phoneText.setText(currentUser.getPhoneNumber());
             universityText.setText(currentUser.getUniversity());
-            accountStatusText.setText(currentUser.getAccountStatus());
+            accountStatusText.setText(currentUser.isDriver() ? "Driver" : "Passenger");
 
             if (currentUser.isDriver() && currentUser.getCar() != null) {
                 CarModel car = currentUser.getCar();
-                String carDetails = String.format("%s %s\nPlate Number: %s\nYear: %d",
-                        car.getMake(), car.getModel(), car.getPlateNumber(), car.getYear());
+                String carDetails = String.format("%s %s\nPlate Number: %s",
+                        car.getMake(), car.getModel(), car.getPlateNumber());
                 carDetailsText.setText(carDetails);
                 carDetailsText.setVisibility(View.VISIBLE);
+                carDetailsLabel.setVisibility(View.VISIBLE);
             } else {
                 carDetailsText.setVisibility(View.GONE);
                 carDetailsLabel.setVisibility(View.GONE);
@@ -109,11 +95,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 accountActionsContainer.setVisibility(View.GONE);
             }
 
-            // TODO: Load profile image
-            // profileImage.setImageResource(R.drawable.default_profile_image);
+            profileImage.setImageResource(currentUser.getPfp());
         }
-
-
     }
 
     private void setListeners() {

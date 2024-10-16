@@ -8,15 +8,14 @@ public class CarModel implements Serializable {
     private String make;
     private String model;
     private String plateNumber;
-    private int year;
 
-    public CarModel(int carID, int carImage, String make, String model, String plateNumber, int year) {
+
+    public CarModel(int carID, int carImage, String make, String model, String plateNumber) {
         this.carID = carID;
         this.carImage = carImage;
         this.make = make;
         this.model = model;
         this.plateNumber = plateNumber;
-        this.year = year;
     }
 
     // Getters and setters
@@ -35,6 +34,5 @@ public class CarModel implements Serializable {
     public String getPlateNumber() { return plateNumber; }
     public void setPlateNumber(String plateNumber) { this.plateNumber = plateNumber; }
 
-    public int getYear() { return year; }
-    public void setYear(int year) { this.year = year; }
+
 }

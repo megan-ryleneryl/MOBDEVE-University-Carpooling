@@ -12,10 +12,10 @@ public class RideModel implements Serializable {
     private String arrivalTime;
     private int availableSeats;
     private int totalSeats;
-    private int price;
-    private String status; // active, inactive
+    private double price;
+    private boolean isActive = true; // true if ride is active, false if ride is inactive
 
-    public RideModel(int rideID, UserModel driver, LocationModel from, LocationModel to, String type, String departureTime, String arrivalTime, int availableSeats, int totalSeats, int price, String status) {
+    public RideModel(int rideID, UserModel driver, LocationModel from, LocationModel to, String type, String departureTime, String arrivalTime, int availableSeats, int totalSeats, double price, boolean isActive) {
         this.rideID = rideID;
         this.driver = driver;
         this.from = from;
@@ -26,7 +26,7 @@ public class RideModel implements Serializable {
         this.availableSeats = availableSeats;
         this.totalSeats = totalSeats;
         this.price = price;
-        this.status = status;
+        this.isActive = isActive;
     }
 
     // Getters
@@ -39,14 +39,12 @@ public class RideModel implements Serializable {
     public String getArrivalTime() { return arrivalTime; }
     public int getAvailableSeats() { return availableSeats; }
     public int getTotalSeats() { return totalSeats; }
-    public int getPrice() { return price; }
-    public String getStatus() { return status; }
+    public double getPrice() { return price; }
+    public boolean isActive() { return isActive; }
 
     // Setters
     public void setAvailableSeats(int amountReduced) {
         this.availableSeats -= amountReduced;
     }
-    public void setStatus(String status) {
-        this.status = status;
-    }
+    public void setIsActive(boolean isActive) { this.isActive = isActive; }
 }
