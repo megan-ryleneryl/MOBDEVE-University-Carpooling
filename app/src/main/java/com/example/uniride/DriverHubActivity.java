@@ -39,7 +39,7 @@ public class DriverHubActivity extends BottomNavigationActivity {
 
     @Override
     protected int getSelectedItemId() {
-        return R.id.rides;
+        return R.id.driver;
     }
 
     private void setupClickListeners() {

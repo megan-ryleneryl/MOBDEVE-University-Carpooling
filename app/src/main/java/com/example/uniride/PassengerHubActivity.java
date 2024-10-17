@@ -8,7 +8,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class PassengerHubActivity extends AppCompatActivity {
+public class PassengerHubActivity extends BottomNavigationActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +20,10 @@ public class PassengerHubActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.passenger;
     }
 }

@@ -31,14 +31,17 @@ public abstract class BottomNavigationActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
-
             // Start the appropriate activity based on selection
             if (itemId == R.id.home) {
                 startActivity(new Intent(this, BookingHomeActivity.class));
                 finish();
                 return true;
-            } else if (itemId == R.id.rides) {
+            } else if (itemId == R.id.driver) {
                 startActivity(new Intent(this, DriverHubActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.passenger) {
+                startActivity(new Intent(this, PassengerHubActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.account) {

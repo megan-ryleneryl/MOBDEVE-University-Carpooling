@@ -28,7 +28,7 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
 
     @Override
     protected int getSelectedItemId() {
-        return R.id.rides;
+        return R.id.driver;
     }
 
     public void postRide(View v) {
