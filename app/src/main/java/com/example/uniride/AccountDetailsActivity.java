@@ -15,7 +15,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AccountDetailsActivity extends AppCompatActivity {
+public class AccountDetailsActivity extends BottomNavigationActivity {
 
     private CircleImageView profileImage;
     private TextView nameText, emailText, phoneText, universityText, accountStatusText;
@@ -37,6 +37,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
         initViews();
         loadUserData();
         setListeners();
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.account;
     }
 
     private void initViews() {
@@ -62,7 +67,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private void loadUserData() {
         // For this example, we'll use the first user from DataGenerator
         currentUser = DataGenerator.loadUserData().get(0);
-        isOwnProfile = false;
+        isOwnProfile = true;
 
         if (currentUser != null) {
             nameText.setText(currentUser.getName());
