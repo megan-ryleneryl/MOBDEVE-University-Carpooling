@@ -127,6 +127,7 @@
         android:layout_marginTop="16dp"
         android:shadowColor="@color/primary"
         android:text="Already Have an Account?"
+        android:onClick="redirectToLogin"
         android:textColor="@color/primary"
         app:layout_constraintEnd_toEndOf="@+id/btnRegister"
         app:layout_constraintStart_toStartOf="@+id/btnRegister"

@@ -29,9 +29,13 @@ public class AccountRegisterActivity extends AppCompatActivity {
 
         //testing
         Intent i = new Intent(this, BookingHomeActivity.class);
-
         startActivity(i);
-
+        finish();
     }
 
+    public void redirectToLogin(View v) {
+        Intent i = new Intent(this, AccountLoginActivity.class);
+        startActivity(i);
+        finish();
+    }
 }

@@ -32,11 +32,13 @@ public class AccountLoginActivity extends AppCompatActivity {
     public void signup(View view) {
         Intent intent = new Intent(this, AccountRegisterActivity.class);
         startActivity(intent);
+        finish();
     }
 
     public void login(View view) {
         Intent intent = new Intent(this, BookingHomeActivity.class);
         startActivity(intent);
+        finish();
     }
 
 
