@@ -14,7 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class BookingConfirmActivity extends AppCompatActivity {
+public class BookingConfirmActivity extends BottomNavigationActivity {
     TextView passengerNameTv;
     TextView pickupTv;
     TextView dropoffTv;
@@ -86,5 +86,10 @@ public class BookingConfirmActivity extends AppCompatActivity {
 //                startActivity(i);
             });
         }
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }

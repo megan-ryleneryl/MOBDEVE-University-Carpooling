@@ -16,7 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 
-public class BookingHomeDetailsActivity extends AppCompatActivity {
+public class BookingHomeDetailsActivity extends BottomNavigationActivity {
     TextView priceTv;
     TextView departureTimeTv;
     TextView arrivalTimeTv;
@@ -102,5 +102,10 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
         userImage.setImageResource(booking.getPassenger().getPfp());
         userNameTv.setText(booking.getRide().getDriver().getName());
         ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }

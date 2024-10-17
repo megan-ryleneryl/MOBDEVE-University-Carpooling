@@ -25,7 +25,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class BookingHomeActivity extends AppCompatActivity {
+
+
+public class BookingHomeActivity extends BottomNavigationActivity {
 
     private ArrayList<BookingModel> myBookingData;
     AutoCompleteTextView originInput;
@@ -53,7 +55,7 @@ public class BookingHomeActivity extends AppCompatActivity {
         // Load data
         ArrayList<BookingModel> myBookingData = DataGenerator.loadBookingData();
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
-        Integer[] numPassengers = { 1, 2, 3, 4, 5, 6 };
+        Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
 
         // Set Adapter
         MyBookingHomeAdapter myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
@@ -125,7 +127,7 @@ public class BookingHomeActivity extends AppCompatActivity {
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(isAnyFieldEmpty()) {
+                if (isAnyFieldEmpty()) {
                     Toast.makeText(BookingHomeActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else {
                     Intent i = new Intent(BookingHomeActivity.this, BookingSearchActivity.class);
@@ -139,6 +141,7 @@ public class BookingHomeActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     // Helper to check if any EditText is empty
@@ -147,5 +150,10 @@ public class BookingHomeActivity extends AppCompatActivity {
                 destinationInput.getText().toString().trim().isEmpty() ||
                 dateInput.getText().toString().trim().isEmpty() ||
                 passengerInput.getText().toString().trim().isEmpty();
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }

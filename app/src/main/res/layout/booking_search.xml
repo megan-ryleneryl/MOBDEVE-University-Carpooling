@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/quickSearchLayout"
         android:layout_width="wrap_content"
-        android:layout_height="180dp"
+        android:layout_height="190dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/quickSearchBg2"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="190dp"
             android:layout_weight="1"
             android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -50,9 +50,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:focusable="false"
                     android:fontFamily="@font/raleway"
                     android:hint="From..."
-                    android:focusable="false"
                     android:textSize="16sp" />
 
                 <EditText
@@ -61,11 +61,11 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:ems="10"
+                    android:focusable="false"
                     android:fontFamily="@font/raleway"
                     android:hint="MM-DD-YYYY"
                     android:inputType="datetime|date"
                     android:singleLine="false"
-                    android:focusable="false"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -105,6 +105,7 @@
                 android:backgroundTint="@color/primary"
                 android:fontFamily="@font/raleway"
                 android:text="Search for Rides"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -114,7 +115,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/quickSearchLayout">
@@ -137,17 +138,5 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="20dp" />
     </LinearLayout>
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:itemBackground="@color/navbar_color"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextColor="@color/nav_item_color"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu"></com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
