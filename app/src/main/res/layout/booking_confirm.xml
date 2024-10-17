@@ -76,7 +76,7 @@
                             android:layout_marginRight="5dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/raleway"
-                            android:text="LUKE ANIAGO"
+                            android:text="Luke Aniago"
                             android:textStyle="bold" />
 
                         <TextView
@@ -97,7 +97,7 @@
                             android:layout_marginRight="5dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/raleway"
-                            android:text="46 D.M.Cruz Sta. Ana, Taguig, Metro Manila"
+                            android:text="Taguig"
                             android:textStyle="bold" />
 
                         <TextView
@@ -118,7 +118,7 @@
                             android:layout_marginRight="5dp"
                             android:layout_marginBottom="8dp"
                             android:fontFamily="@font/raleway"
-                            android:text="De La Salle University"
+                            android:text="DLSU"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -128,7 +128,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/riderName"
+                            android:id="@+id/driverName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
@@ -136,10 +136,10 @@
                             android:layout_marginRight="5dp"
                             android:layout_weight="1"
                             android:fontFamily="@font/raleway"
-                            android:text="Rider Name" />
+                            android:text="Driver Name" />
 
                         <TextView
-                            android:id="@+id/riderNameTv"
+                            android:id="@+id/driverNameTv"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
@@ -147,7 +147,30 @@
                             android:layout_marginBottom="8dp"
                             android:layout_weight="1"
                             android:fontFamily="@font/raleway"
-                            android:text="STEVEN YU"
+                            android:text="Steven Yu"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="Price" />
+
+                        <TextView
+                            android:id="@+id/priceTv"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="8dp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/raleway"
+                            android:text="P200"
                             android:textStyle="bold" />
 
                         <TextView
@@ -171,29 +194,6 @@
                             android:layout_weight="1"
                             android:fontFamily="@font/raleway"
                             android:text="HONDA Civic Blue - NDA 1532"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/contact"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginTop="8dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/raleway"
-                            android:text="Contact No." />
-
-                        <TextView
-                            android:id="@+id/contactTv"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="5dp"
-                            android:layout_marginRight="5dp"
-                            android:layout_marginBottom="8dp"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/raleway"
-                            android:text="905 264 1213"
                             android:textStyle="bold" />
 
                     </LinearLayout>

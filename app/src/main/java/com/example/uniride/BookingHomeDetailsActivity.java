@@ -75,12 +75,10 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
             ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
 
             previousBtn.setOnClickListener(v -> {
-                // Previous button click
                 Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
             });
 
             nextBtn.setOnClickListener(v -> {
-                // Next button click
                 Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
             });
         }

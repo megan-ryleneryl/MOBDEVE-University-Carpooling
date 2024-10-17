@@ -31,7 +31,7 @@ public class BookingHomeActivity extends AppCompatActivity {
     AutoCompleteTextView originInput;
     AutoCompleteTextView destinationInput;
     EditText dateInput;
-    EditText passengerInput;
+    AutoCompleteTextView passengerInput;
     Button searchBtn;
 
     @Override
@@ -53,6 +53,7 @@ public class BookingHomeActivity extends AppCompatActivity {
         // Load data
         ArrayList<BookingModel> myBookingData = DataGenerator.loadBookingData();
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
+        Integer[] numPassengers = { 1, 2, 3, 4, 5, 6 };
 
         // Set Adapter
         MyBookingHomeAdapter myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
@@ -67,10 +68,13 @@ public class BookingHomeActivity extends AppCompatActivity {
 
         // Declare autocomplete fields
         ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, locations);
-        originInput.setThreshold(1);
+        originInput.setThreshold(0);
         originInput.setAdapter(adapter);
-        destinationInput.setThreshold(1);
+        destinationInput.setThreshold(0);
         destinationInput.setAdapter(adapter);
+        ArrayAdapter<Integer> passengerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, numPassengers);
+        passengerInput.setThreshold(0);
+        passengerInput.setAdapter(passengerAdapter);
 
         // Open date selector when clicked
         dateInput.setOnClickListener(new View.OnClickListener() {
@@ -97,13 +101,41 @@ public class BookingHomeActivity extends AppCompatActivity {
             }
         });
 
+        originInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                originInput.showDropDown();
+            }
+        });
+
+        destinationInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                destinationInput.showDropDown();
+            }
+        });
+
+        passengerInput.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                passengerInput.showDropDown();
+            }
+        });
+
         searchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(isAnyFieldEmpty()) {
                     Toast.makeText(BookingHomeActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(BookingHomeActivity.this, "Lets get it", Toast.LENGTH_SHORT).show();
+                    Intent i = new Intent(BookingHomeActivity.this, BookingSearchActivity.class);
+                    i.putExtra("originInput", originInput.getText().toString());
+                    i.putExtra("destinationInput", destinationInput.getText().toString());
+                    i.putExtra("dateInput", dateInput.getText().toString());
+                    i.putExtra("passengerInput", Integer.parseInt(passengerInput.getText().toString()));
+                    i.putExtra("myBookingData", myBookingData);
+                    i.putExtra("locations", locations);
+                    startActivity(i);
                 }
             }
         });

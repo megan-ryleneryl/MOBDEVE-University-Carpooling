@@ -51,6 +51,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/raleway"
                     android:hint="From..."
+                    android:focusable="false"
                     android:textSize="16sp" />
 
                 <EditText
@@ -63,6 +64,7 @@
                     android:hint="MM-DD-YYYY"
                     android:inputType="datetime|date"
                     android:singleLine="false"
+                    android:focusable="false"
                     android:textSize="16sp" />
             </LinearLayout>
 
@@ -76,20 +78,20 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:focusable="false"
                     android:fontFamily="@font/raleway"
                     android:hint="To..."
                     android:textSize="16sp" />
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/passengerInput2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:ems="10"
+                    android:focusable="false"
                     android:fontFamily="@font/raleway"
-                    android:hint="Passenger/s"
-                    android:inputType="number"
-                    android:textSize="16sp" />
+                    android:hint="Passenger/s" />
+
             </LinearLayout>
 
             <Button
@@ -116,8 +118,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/searchResultsRecyclerView"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_margin="20dp" />
     </LinearLayout>
 

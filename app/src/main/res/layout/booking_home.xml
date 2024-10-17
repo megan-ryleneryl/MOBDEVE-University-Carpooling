@@ -56,6 +56,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:focusable="false"
                         android:fontFamily="@font/raleway"
                         android:hint="From..." />
 
@@ -82,19 +83,19 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:focusable="false"
                         android:fontFamily="@font/raleway"
                         android:hint="To..." />
 
-                    <EditText
+                    <AutoCompleteTextView
                         android:id="@+id/passengerInput"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:ems="10"
-                        android:maxLength="1"
+                        android:focusable="false"
                         android:fontFamily="@font/raleway"
-                        android:hint="Passenger/s"
-                        android:inputType="number" />
+                        android:hint="Passenger/s" />
+
                 </LinearLayout>
 
                 <Button
