@@ -40,10 +40,16 @@
             android:name=".HomeChatMessageActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeReviewsActivity"
+            android:name=".HomeBookingAcceptedActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeDashboardActivity"
+            android:name=".HomeBookingRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeBookingScheduledActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeReviewsActivity"
             android:exported="false" />
         <activity
             android:name=".AccountMyRidesActivity"
