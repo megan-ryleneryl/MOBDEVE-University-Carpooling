@@ -87,7 +87,7 @@
 
     <Button
         android:id="@+id/bookBtn"
-        android:layout_width="130dp"
+        android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginTop="75dp"
         android:layout_marginEnd="20dp"
@@ -96,6 +96,7 @@
         android:onClick="btnClicked"
         android:text="Book Now!"
         android:textColor="#FFFFFF"
+        android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
