@@ -71,7 +71,7 @@ public class BookingConfirmActivity extends AppCompatActivity {
             arrivalTv.setText(selectedBooking.getRide().getArrivalTime());
 
             homeBtn.setOnClickListener(v -> {
-                Toast.makeText(BookingConfirmActivity.this, "Retur to home", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BookingConfirmActivity.this, "Return to home", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getApplicationContext(), BookingHomeActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);

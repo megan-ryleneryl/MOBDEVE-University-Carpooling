@@ -46,6 +46,7 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/originInput2"
+                    style="@style/CustomAutoCompleteTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -75,6 +76,7 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/destinationInput2"
+                    style="@style/CustomAutoCompleteTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -85,6 +87,7 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/passengerInput2"
+                    style="@style/CustomAutoCompleteTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
