@@ -26,10 +26,9 @@
             android:exported="false" />
         <activity
             android:name=".BookingHomeDetailsActivity"
-            android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".BookingHomeActivity"-->
-<!--            android:exported="false" />-->
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".BookingHomeActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".BookingConfirmActivity"
             android:exported="false" />
@@ -40,16 +39,10 @@
             android:name=".HomeChatMessageActivity"
             android:exported="false" />
         <activity
-            android:name=".HomeBookingAcceptedActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeBookingRequestsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeBookingScheduledActivity"
-            android:exported="false" />
-        <activity
             android:name=".HomeReviewsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeBookingActivity"
             android:exported="false" />
         <activity
             android:name=".AccountMyRidesActivity"
@@ -63,14 +56,15 @@
         <activity
             android:name=".AccountLoginActivity"
             android:exported="true" />
-         <activity
-             android:name=".BookingHomeActivity"
-             android:exported="true">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN" />
-                 <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-         </activity>
+        <activity
+            android:name=".BookingHomeActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"
