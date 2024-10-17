@@ -13,6 +13,9 @@
         android:theme="@style/Theme.UniRide"
         tools:targetApi="31">
         <activity
+            android:name=".DriverHubActivity"
+            android:exported="false" />
+        <activity
             android:name=".RideConfirm"
             android:exported="false" />
         <activity
@@ -65,19 +68,14 @@
         <activity
             android:name=".AccountRegisterActivity"
             android:exported="true" />
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".AccountLoginActivity" -->
-        <!-- android:exported="true" /> -->
         <activity
             android:name=".AccountLoginActivity"
-            android:exported="false">
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN" /> -->
-
-
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-            <!-- </intent-filter> -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".BookingHomeActivity"
