@@ -149,8 +149,7 @@
 
                         <ImageView
                             style="@style/DriverHubMenuIcon"
-                            android:src="@drawable/baseline_person_24"
-                            app:tint="@color/primary" />
+                            android:src="@drawable/ic_bookingrequest" />
 
                         <TextView
                             style="@style/DriverHubMenuText"
@@ -166,8 +165,7 @@
 
                         <ImageView
                             style="@style/DriverHubMenuIcon"
-                            android:src="@drawable/baseline_home_24"
-                            app:tint="@color/primary" />
+                            android:src="@drawable/ic_acceptedbookings" />
 
                         <TextView
                             style="@style/DriverHubMenuText"
@@ -183,8 +181,7 @@
 
                         <ImageView
                             style="@style/DriverHubMenuIcon"
-                            android:src="@drawable/baseline_home_24"
-                            app:tint="@color/primary" />
+                            android:src="@drawable/ic_bookingtoday" />
 
                         <TextView
                             style="@style/DriverHubMenuText"
