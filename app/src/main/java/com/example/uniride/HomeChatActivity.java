@@ -1,6 +1,9 @@
 package com.example.uniride;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +12,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class HomeChatActivity extends AppCompatActivity {
+
+    TextView nameText;
+    TextView userTypeText;
+    TextView bookingDateText;
+    TextView lastMessageText;
+    TextView timestampText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
