@@ -11,7 +11,7 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AccountMyRidesActivity extends AppCompatActivity {
+public class AccountMyRidesActivity extends BottomNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +24,11 @@ public class AccountMyRidesActivity extends AppCompatActivity {
 
         MyRidesAdapter adapter = new MyRidesAdapter(rideList);
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.rides;
     }
 
     public void postRide(View v) {

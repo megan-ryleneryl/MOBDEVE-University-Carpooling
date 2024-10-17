@@ -44,7 +44,8 @@ public class DriverHubActivity extends BottomNavigationActivity {
 
     private void setupClickListeners() {
         manageRidesButton.setOnClickListener(v -> {
-            // TODO: Navigate to Manage Rides Activity
+            Intent i = new Intent(this, AccountMyRidesActivity.class);
+            startActivity(i);
         });
 
         bookingRequestsButton.setOnClickListener(v -> {
