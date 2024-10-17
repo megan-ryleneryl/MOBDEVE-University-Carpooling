@@ -2,6 +2,7 @@ package com.example.uniride;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,7 +30,7 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
     TextView ratingTv;
     Button previousBtn;
     Button nextBtn;
-    Context context;
+    int currentIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,40 +48,59 @@ public class BookingHomeDetailsActivity extends AppCompatActivity {
         BookingModel selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
 
         if (myBookingData != null && selectedBooking != null) {
-            priceTv = findViewById(R.id.priceTv);
-            departureTimeTv = findViewById(R.id.departureTimeTv);
-            arrivalTimeTv = findViewById(R.id.arrivalTimeTv);
-            departureLocTv = findViewById(R.id.departureLocTv);
-            arrivalLocTv = findViewById(R.id.arrivalLocTv);
-            carImage = findViewById(R.id.carImage);
-            capacityTv = findViewById(R.id.capacityTv);
-            carModelTv = findViewById(R.id.carModelTv);
-            userImage = findViewById(R.id.userImage);
-            userNameTv = findViewById(R.id.userNameTv);
-            ratingTv = findViewById(R.id.ratingTv);
-            previousBtn = findViewById(R.id.previousBtn);
-            nextBtn = findViewById(R.id.nextBtn);
-
-            // get the needed data from within selectedBooking
-            priceTv.setText("P" + selectedBooking.getRide().getPrice());
-            departureTimeTv.setText(selectedBooking.getRide().getDepartureTime());
-            arrivalTimeTv.setText(selectedBooking.getRide().getArrivalTime());
-            departureLocTv.setText(selectedBooking.getRide().getFrom().getName());
-            arrivalLocTv.setText(selectedBooking.getRide().getTo().getName());
-            carImage.setImageResource(selectedBooking.getRide().getDriver().getCar().getCarImage());
-            capacityTv.setText(selectedBooking.getRide().getAvailableSeats() + " seats available");
-            carModelTv.setText(selectedBooking.getRide().getDriver().getCar().getModel() + " " + selectedBooking.getRide().getDriver().getCar().getMake());
-            userImage.setImageResource(selectedBooking.getPassenger().getPfp());
-            userNameTv.setText(selectedBooking.getRide().getDriver().getName());
-            ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
+            currentIndex = myBookingData.indexOf(selectedBooking);
+            initializeViews();
+            displayBookingData(myBookingData.get(currentIndex));
 
             previousBtn.setOnClickListener(v -> {
-                Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    displayBookingData(myBookingData.get(currentIndex));
+                } else {
+                    Toast.makeText(BookingHomeDetailsActivity.this, "No previous booking", Toast.LENGTH_SHORT).show();
+                }
             });
 
             nextBtn.setOnClickListener(v -> {
-                Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
+                if (currentIndex < myBookingData.size() - 1) {
+                    currentIndex++;
+                    displayBookingData(myBookingData.get(currentIndex));
+                } else {
+                    Toast.makeText(BookingHomeDetailsActivity.this, "No more bookings", Toast.LENGTH_SHORT).show();
+                }
             });
         }
+    }
+
+    // Helper method to initialize views
+    private void initializeViews() {
+        priceTv = findViewById(R.id.priceTv);
+        departureTimeTv = findViewById(R.id.departureTimeTv);
+        arrivalTimeTv = findViewById(R.id.arrivalTimeTv);
+        departureLocTv = findViewById(R.id.departureLocTv);
+        arrivalLocTv = findViewById(R.id.arrivalLocTv);
+        carImage = findViewById(R.id.carImage);
+        capacityTv = findViewById(R.id.capacityTv);
+        carModelTv = findViewById(R.id.carModelTv);
+        userImage = findViewById(R.id.userImage);
+        userNameTv = findViewById(R.id.userNameTv);
+        ratingTv = findViewById(R.id.ratingTv);
+        previousBtn = findViewById(R.id.previousBtn);
+        nextBtn = findViewById(R.id.nextBtn);
+    }
+
+    // Helper method to display booking data for the current booking
+    private void displayBookingData(BookingModel booking) {
+        priceTv.setText("P" + booking.getRide().getPrice());
+        departureTimeTv.setText(booking.getRide().getDepartureTime());
+        arrivalTimeTv.setText(booking.getRide().getArrivalTime());
+        departureLocTv.setText(booking.getRide().getFrom().getName());
+        arrivalLocTv.setText(booking.getRide().getTo().getName());
+        carImage.setImageResource(booking.getRide().getDriver().getCar().getCarImage());
+        capacityTv.setText(booking.getRide().getAvailableSeats() + " seats available");
+        carModelTv.setText(booking.getRide().getDriver().getCar().getModel() + " " + booking.getRide().getDriver().getCar().getMake());
+        userImage.setImageResource(booking.getPassenger().getPfp());
+        userNameTv.setText(booking.getRide().getDriver().getName());
+        ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
     }
 }

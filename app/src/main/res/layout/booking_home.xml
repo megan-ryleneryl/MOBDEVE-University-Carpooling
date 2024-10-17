@@ -53,6 +53,7 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/originInput"
+                        style="@style/CustomAutoCompleteTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -80,6 +81,7 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/destinationInput"
+                        style="@style/CustomAutoCompleteTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -89,6 +91,7 @@
 
                     <AutoCompleteTextView
                         android:id="@+id/passengerInput"
+                        style="@style/CustomAutoCompleteTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -125,6 +128,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/myBookings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/raleway"
+                android:text="My Bookings"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/myBookingsRecyclerView"

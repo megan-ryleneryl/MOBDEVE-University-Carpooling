@@ -2,6 +2,7 @@ package com.example.uniride;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class BookingModel implements Serializable {
     private int bookingID;
@@ -44,5 +45,20 @@ public class BookingModel implements Serializable {
     }
     public void setBookingDone(boolean bookingDone) {
         isBookingDone = bookingDone;
+    }
+
+    // Helper method for comparing BookingModels to one another
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+
+        BookingModel that = (BookingModel) obj;
+        return bookingID == that.bookingID;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookingID); // Ensure you use a unique field like `id`
     }
 }

@@ -26,4 +26,8 @@
     <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">#E44301</item>
     </style>
+
+    <style name="CustomAutoCompleteTextView" parent="Widget.AppCompat.AutoCompleteTextView">
+        <item name="android:popupBackground">#F8E7E1</item>
+    </style>
 </resources>

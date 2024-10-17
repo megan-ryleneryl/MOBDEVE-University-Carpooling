@@ -67,12 +67,9 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         holder.dateTv.setText(simpleDateFormat.format(myBookingDataList.getDate()));
         holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
 
-        Log.d("BookingData", "Booking: " + myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
-
         holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "It worked", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(context, BookingHomeDetailsActivity.class);
                 i.putExtra("myBookingData", myBookingData);
                 i.putExtra("selectedBooking", myBookingDataList);

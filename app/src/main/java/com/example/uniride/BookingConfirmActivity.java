@@ -2,6 +2,7 @@ package com.example.uniride;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ public class BookingConfirmActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.booking_search_details);
+        setContentView(R.layout.booking_confirm);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -70,12 +71,14 @@ public class BookingConfirmActivity extends AppCompatActivity {
             arrivalTv.setText(selectedBooking.getRide().getArrivalTime());
 
             homeBtn.setOnClickListener(v -> {
-                Toast.makeText(context, "Returning home", Toast.LENGTH_SHORT).show();
-                finish();
+                Toast.makeText(BookingConfirmActivity.this, "Retur to home", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), BookingHomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             });
 
             contactBtn.setOnClickListener(v -> {
-                Toast.makeText(context, "Move to chat", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BookingConfirmActivity.this, "Move to chat", Toast.LENGTH_SHORT).show();
 
                 // TODO: Coordinate on how to implement this
 //                Intent i = new Intent(BookingConfirmActivity.this, HomeChatActivity.class);
