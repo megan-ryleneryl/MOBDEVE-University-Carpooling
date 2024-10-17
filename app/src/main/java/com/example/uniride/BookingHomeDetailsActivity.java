@@ -72,12 +72,6 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
         }
     }
 
-    @Override
-    protected int getSelectedItemId() {
-        return R.id.home;
-    }
-
-
     // Helper method to initialize views
     private void initializeViews() {
         priceTv = findViewById(R.id.priceTv);
@@ -108,5 +102,10 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
         userImage.setImageResource(booking.getPassenger().getPfp());
         userNameTv.setText(booking.getRide().getDriver().getName());
         ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }

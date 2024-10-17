@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class BookingSearchActivity extends AppCompatActivity {
+public class BookingSearchActivity extends BottomNavigationActivity {
     private ArrayList<BookingModel> myBookingData;
     AutoCompleteTextView originInput2;
     AutoCompleteTextView destinationInput2;
@@ -160,5 +160,10 @@ public class BookingSearchActivity extends AppCompatActivity {
                 destinationInput2.getText().toString().trim().isEmpty() ||
                 dateInput2.getText().toString().trim().isEmpty() ||
                 passengerInput2.getText().toString().trim().isEmpty();
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }

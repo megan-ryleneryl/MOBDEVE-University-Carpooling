@@ -144,18 +144,16 @@ public class BookingHomeActivity extends BottomNavigationActivity {
 
     }
 
-    @Override
-    protected int getSelectedItemId() {
-        return R.id.home;
-    }
-
-
-
     // Helper to check if any EditText is empty
     private boolean isAnyFieldEmpty() {
         return originInput.getText().toString().trim().isEmpty() ||
                 destinationInput.getText().toString().trim().isEmpty() ||
                 dateInput.getText().toString().trim().isEmpty() ||
                 passengerInput.getText().toString().trim().isEmpty();
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.home;
     }
 }
