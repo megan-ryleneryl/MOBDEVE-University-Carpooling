@@ -70,63 +70,25 @@
             android:padding="12dp" />
     </LinearLayout>
 
-    <EditText
-        android:id="@+id/routes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Routes (Optional)"
-        android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/linearLayout2" />
-
-    <EditText
-        android:id="@+id/additionalPickup"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/edittext_bg"
-        android:hint="Additional Pickup/Dropoff Areas (Optional)"
-        android:padding="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/routes" />
+    <!-- Publish Ride Button -->
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
         android:orientation="horizontal"
         android:weightSum="3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/additionalPickup">
-
-        <EditText
-            android:id="@+id/timePickup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/edittext_bg"
-            android:hint="Time of Pick-Up"
-            android:padding="12dp" />
+        app:layout_constraintTop_toBottomOf="@+id/timePickup">
 
         <EditText
             android:id="@+id/passengerCount"
-            android:layout_width="0dp"
+            android:layout_width="186dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
@@ -137,7 +99,7 @@
 
         <EditText
             android:id="@+id/pricePerSeat"
-            android:layout_width="0dp"
+            android:layout_width="174dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/edittext_bg"
@@ -145,8 +107,6 @@
             android:inputType="numberDecimal"
             android:padding="12dp" />
     </LinearLayout>
-
-    <!-- Publish Ride Button -->
 
     <TextView
         android:id="@+id/tvAvailableDays"
@@ -188,6 +148,7 @@
             android:layout_height="48dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/toggle_button_circle"
+            android:forceHasOverlappingRendering="false"
             android:textOff="M"
             android:textOn="M" />
 
@@ -246,8 +207,22 @@
         android:backgroundTint="#E64401"
         android:text="Publish Ride"
         android:textColor="#FFFFFF"
+        android:onClick="publishRide"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/linearLayout4" />
+
+    <EditText
+        android:id="@+id/timePickup"
+        android:layout_width="362dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:background="@drawable/edittext_bg"
+        android:hint="Time of Pick-Up"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 </androidx.constraintlayout.widget.ConstraintLayout>
