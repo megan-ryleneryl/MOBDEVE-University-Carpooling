@@ -144,6 +144,11 @@ public class BookingHomeActivity extends BottomNavigationActivity {
 
     }
 
+    public void createRide(View view) {
+        Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
+        startActivity(i);
+    }
+
     // Helper to check if any EditText is empty
     private boolean isAnyFieldEmpty() {
         return originInput.getText().toString().trim().isEmpty() ||

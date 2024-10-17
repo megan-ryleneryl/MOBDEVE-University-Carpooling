@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_color"
+    tools:context=".DriverHubActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Welcome Section -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/raleway_extrabold"
+                    android:text="Passenger Hub"
+                    android:layout_marginTop="40dp"
+                    android:textColor="@color/primary"
+                    android:textSize="28sp" />
+
+                <!-- Stats Cards Container -->
+
+                <!-- Menu Options -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/raleway_extrabold"
+                    android:text="Quick Actions"
+                    android:textColor="@color/black"
+                    android:textSize="20sp" />
+
+                <!-- Menu Cards -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/manageRidesButton"
+                    style="@style/DriverHubMenuCard">
+
+                    <LinearLayout style="@style/DriverHubMenuItemLayout">
+
+                        <ImageView
+                            style="@style/DriverHubMenuIcon"
+                            android:src="@drawable/baseline_directions_car_24"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            style="@style/DriverHubMenuText"
+                            android:text="Ongoing Ride" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/bookingRequestsButton"
+                    style="@style/DriverHubMenuCard">
+
+                    <LinearLayout style="@style/DriverHubMenuItemLayout">
+
+                        <ImageView
+                            style="@style/DriverHubMenuIcon"
+                            android:src="@drawable/baseline_person_24"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            style="@style/DriverHubMenuText"
+                            android:text="Chats" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/acceptedBookingsButton"
+                    style="@style/DriverHubMenuCard">
+
+                    <LinearLayout style="@style/DriverHubMenuItemLayout">
+
+                        <ImageView
+                            style="@style/DriverHubMenuIcon"
+                            android:src="@drawable/baseline_home_24"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            style="@style/DriverHubMenuText"
+                            android:text="My Bookings" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/todayScheduleButton"
+                    style="@style/DriverHubMenuCard">
+
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Bottom Navigation -->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
