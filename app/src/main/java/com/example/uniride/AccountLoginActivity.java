@@ -34,4 +34,10 @@ public class AccountLoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void login(View view) {
+        Intent intent = new Intent(this, BookingHomeActivity.class);
+        startActivity(intent);
+    }
+
+
 }

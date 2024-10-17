@@ -28,7 +28,7 @@ public class AccountRegisterActivity extends AppCompatActivity {
         // Implement registration logic here
 
         //testing
-        Intent i = new Intent(this, AccountMyRidesActivity.class);
+        Intent i = new Intent(this, BookingHomeActivity.class);
 
         startActivity(i);
 
