@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "64845868965",
+    "project_id": "uniride-b49ed",
+    "storage_bucket": "uniride-b49ed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:64845868965:android:633ec00aa0122c55dec24c",
+        "android_client_info": {
+          "package_name": "com.example.uniride"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGCkf_7cN0abpRFa7b6w8EHrDPC-8kgoA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

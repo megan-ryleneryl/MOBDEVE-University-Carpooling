@@ -10,8 +10,12 @@ public class UserModel implements Serializable {
     private String phoneNumber;
     private String university;
     private boolean isDriver; // true if they are verified as a driver, false if passenger
-    private CarModel car; // only for drivers
+    private CarModel car; // only for drivers; TODO: convert to carID for mco3
     private double balance = 0; // Only for drivers
+
+    public UserModel() {
+
+    }
 
     public UserModel(int userID, int pfp, String name, String email, String phoneNumber, String university, boolean isDriver) {
         this.userID = userID;

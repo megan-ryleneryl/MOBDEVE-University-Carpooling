@@ -6,11 +6,15 @@ import java.util.Objects;
 
 public class BookingModel implements Serializable {
     private int bookingID;
-    private RideModel ride;
+    private RideModel ride; // TODO: Change to rideID for mco3, same for passenger
     private UserModel passenger;
     private Date date;
     private boolean isPaymentComplete = false;
     private boolean isBookingDone = false;
+
+    public BookingModel() {
+
+    }
 
     public BookingModel (int bookingID, RideModel ride, UserModel passenger, Date date) {
         this.bookingID = bookingID;

@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class RideModel implements Serializable {
     private int rideID;
     private UserModel driver;
-    private LocationModel from;
+    private LocationModel from; // TODO: Convert references to fromID, toID, etc
     private LocationModel to;
     private String type; // toUniversity, fromUniversity
     private String departureTime;
@@ -14,6 +14,10 @@ public class RideModel implements Serializable {
     private int totalSeats;
     private double price;
     private boolean isActive = true; // true if ride is active, false if ride is inactive
+
+    public RideModel() {
+
+    }
 
     public RideModel(int rideID, UserModel driver, LocationModel from, LocationModel to, String type, String departureTime, String arrivalTime, int availableSeats, int totalSeats, double price, boolean isActive) {
         this.rideID = rideID;

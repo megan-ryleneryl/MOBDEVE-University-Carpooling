@@ -9,6 +9,9 @@ public class CarModel implements Serializable {
     private String model;
     private String plateNumber;
 
+    public CarModel() {
+
+    }
 
     public CarModel(int carID, int carImage, String make, String model, String plateNumber) {
         this.carID = carID;
@@ -33,6 +36,4 @@ public class CarModel implements Serializable {
 
     public String getPlateNumber() { return plateNumber; }
     public void setPlateNumber(String plateNumber) { this.plateNumber = plateNumber; }
-
-
 }

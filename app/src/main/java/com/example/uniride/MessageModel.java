@@ -5,10 +5,14 @@ import java.time.LocalDateTime;
 
 public class MessageModel implements Serializable {
     private int messageID;
-    private UserModel sender;
+    private UserModel sender; // TODO: Change to userID in mco3, same for recipient
     private UserModel recipient;
     private String message;
     private LocalDateTime date;
+
+    public MessageModel() {
+
+    }
 
     public MessageModel(int messageID, UserModel sender, UserModel recipient, String message, LocalDateTime date) {
         this.messageID = messageID;

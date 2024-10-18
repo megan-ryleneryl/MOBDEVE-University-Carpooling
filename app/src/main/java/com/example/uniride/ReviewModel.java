@@ -5,11 +5,15 @@ import java.time.LocalDateTime;
 
 public class ReviewModel implements Serializable {
     private int reviewID;
-    private UserModel reviewer;
+    private UserModel reviewer; // TODO: Replace with userID in mco3
     private UserModel recipient;
     private float rating;
     private String comment;
     private LocalDateTime date;
+
+    public ReviewModel() {
+
+    }
 
     public ReviewModel(int reviewID, UserModel reviewer, UserModel recipient, float rating, String comment, LocalDateTime date) {
         this.reviewID = reviewID;
