@@ -2,75 +2,97 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/pfpImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/default_profile_image"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <TextView
             android:id="@+id/nameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="16dp"
             android:ellipsize="end"
             android:text="name"
-            android:textColor="#9F9F9F"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            android:fontFamily="@font/raleway"
+            app:layout_constraintStart_toEndOf="@id/pfpImage"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <!--TextView
             android:id="@+id/userTypeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
             android:text="userType"
             android:textColor="#9F9F9F"
             android:textSize="16sp"
+            android:fontFamily="@font/raleway"
             app:layout_constraintStart_toEndOf="@+id/nameText"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/bookingDateText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="bookingDate"
-            android:textColor="#9F9F9F"
-            android:textSize="14sp"
-            android:textStyle="italic"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nameText" />
+            app:layout_constraintTop_toTopOf="parent" /-->
 
         <TextView
             android:id="@+id/lastMessageText"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="16dp"
             android:text="lastMessage"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/black"
+            android:textColor="#9F9F9F"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookingDateText" />
+            android:fontFamily="@font/raleway"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:maxWidth="200dp"
+            app:layout_constraintStart_toEndOf="@id/pfpImage"
+            app:layout_constraintTop_toBottomOf="@+id/nameText" />
 
         <TextView
             android:id="@+id/timestampText"
-            android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="16dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
             android:text="timestamp"
-            android:textColor="@color/black"
+            android:textColor="#9F9F9F"
             android:textSize="14sp"
+            android:fontFamily="@font/raleway"
+            app:layout_constraintStart_toEndOf="@id/spacer"
+            app:layout_constraintTop_toBottomOf="@+id/nameText" />
+
+        <TextView
+            android:id="@+id/spacer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:text="·"
+            android:textColor="#9F9F9F"
+            android:textSize="14sp"
+            android:fontFamily="@font/raleway"
             app:layout_constraintStart_toEndOf="@id/lastMessageText"
-            app:layout_constraintTop_toBottomOf="@id/bookingDateText" />
+            app:layout_constraintTop_toBottomOf="@+id/nameText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>
