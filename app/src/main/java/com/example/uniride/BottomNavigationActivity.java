@@ -33,31 +33,40 @@ public abstract class BottomNavigationActivity extends AppCompatActivity {
 
             // Start the appropriate activity based on selection
             if (itemId == R.id.home) {
-
                 //IF HOME IS CLICKED, CLEAR ALL STACKS
                 Intent i = new Intent(this, BookingHomeActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
-
+//                overridePendingTransition(0, 0);
                 return true;
             } else if (itemId == R.id.driver) {
                 Intent i = new Intent(this, DriverHubActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
+//                overridePendingTransition(0, 0);
                 return true;
             } else if (itemId == R.id.passenger) {
                 Intent i = new Intent(this, PassengerHubActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
+//                overridePendingTransition(0, 0);
                 return true;
             } else if (itemId == R.id.account) {
                 Intent i = new Intent(this, AccountDetailsActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
+//                overridePendingTransition(0, 0);
                 return true;
             }
             return false;
         });
+    }
+
+    // Disable the back button animation
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        overridePendingTransition(0, 0);
     }
 
     // This method should return the ID of the currently selected item

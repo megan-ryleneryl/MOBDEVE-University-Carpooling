@@ -41,9 +41,10 @@
             android:exported="false" />
         <activity
             android:name=".BookingHomeDetailsActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".BookingHomeActivity" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
+         <activity
+             android:name=".BookingHomeActivity"
+             android:exported="false" />
         <activity
             android:name=".BookingConfirmActivity"
             android:exported="false" />
@@ -73,13 +74,9 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".BookingHomeActivity"
-            android:exported="true"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

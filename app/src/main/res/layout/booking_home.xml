@@ -8,218 +8,228 @@
     tools:context=".BookingHomeActivity">
 
     <LinearLayout
-        android:id="@+id/header_title"
-        android:layout_width="0dp"
-        android:layout_height="31dp"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/uniride" />
+        <LinearLayout
+            android:id="@+id/header_title"
+            android:layout_width="match_parent"
+            android:layout_height="31dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/uniride" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/quickSearchLayout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/header_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        </LinearLayout>
 
-        <ImageView
-            android:id="@+id/quickSearchBg"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="fitXY"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/gradient_bg" />
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            app:cardCornerRadius="10dp"
-            app:cardElevation="5dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/originInput"
-                        style="@style/CustomAutoCompleteTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:fontFamily="@font/raleway"
-                        android:hint="From..." />
-
-                    <EditText
-                        android:id="@+id/dateInput"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ems="10"
-                        android:fontFamily="@font/raleway"
-                        android:hint="MM-DD-YYYY"
-                        android:focusable="false"
-                        android:inputType="datetime|date"
-                        android:singleLine="false" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
-
-                    <AutoCompleteTextView
-                        android:id="@+id/destinationInput"
-                        style="@style/CustomAutoCompleteTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:fontFamily="@font/raleway"
-                        android:hint="To..." />
-
-                    <AutoCompleteTextView
-                        android:id="@+id/passengerInput"
-                        style="@style/CustomAutoCompleteTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:focusable="false"
-                        android:fontFamily="@font/raleway"
-                        android:hint="Passenger/s" />
-
-                </LinearLayout>
-
-                <Button
-                    android:id="@+id/searchBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:backgroundTint="@color/primary"
-                    android:fontFamily="@font/raleway"
-                    android:text="Search for Rides"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/createRideSection"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
-        app:cardBackgroundColor="@color/primary"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/quickSearchLayout">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/quickSearchLayout"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/raleway"
-                    android:text="Want to offer a ride?"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:id="@+id/quickSearchBg"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:scaleType="fitXY"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/gradient_bg" />
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        app:cardCornerRadius="10dp"
+                        app:cardElevation="5dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/originInput"
+                                    style="@style/CustomAutoCompleteTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:focusable="false"
+                                    android:fontFamily="@font/raleway"
+                                    android:hint="From..." />
+
+                                <EditText
+                                    android:id="@+id/dateInput"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:ems="10"
+                                    android:focusable="false"
+                                    android:fontFamily="@font/raleway"
+                                    android:hint="MM-DD-YYYY"
+                                    android:inputType="datetime|date"
+                                    android:singleLine="false" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:orientation="horizontal">
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/destinationInput"
+                                    style="@style/CustomAutoCompleteTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:focusable="false"
+                                    android:fontFamily="@font/raleway"
+                                    android:hint="To..." />
+
+                                <AutoCompleteTextView
+                                    android:id="@+id/passengerInput"
+                                    style="@style/CustomAutoCompleteTextView"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:focusable="false"
+                                    android:fontFamily="@font/raleway"
+                                    android:hint="Passenger/s" />
+
+                            </LinearLayout>
+
+                            <Button
+                                android:id="@+id/searchBtn"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:backgroundTint="@color/primary"
+                                android:fontFamily="@font/raleway"
+                                android:text="Search for Rides"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/createRideSection"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/raleway"
-                    android:text="Share your journey, help others."
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp" />
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
+                    app:cardBackgroundColor="@color/primary"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/raleway"
+                                android:text="Want to offer a ride?"
+                                android:textColor="@android:color/white"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/raleway"
+                                android:text="Share your journey, help others."
+                                android:textColor="@android:color/white"
+                                android:textSize="14sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="horizontal"></LinearLayout>
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/createRideBtn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@android:color/white"
+                            android:fontFamily="@font/raleway"
+                            android:onClick="createRide"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="8dp"
+                            android:text="Create Ride"
+                            android:textColor="@color/primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="horizontal"></LinearLayout>
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/myBookingsTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/raleway"
+                        android:text="My Bookings"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/myBookingsRecyclerView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginTop="16dp" />
+                </LinearLayout>
             </LinearLayout>
-
-            <Button
-                android:id="@+id/createRideBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@android:color/white"
-                android:fontFamily="@font/raleway"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="8dp"
-                android:onClick="createRide"
-                android:text="Create Ride"
-                android:textColor="@color/primary"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <TextView
-        android:id="@+id/myBookingsTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/raleway"
-        android:text="My Bookings"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/createRideSection" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/myBookingsRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="16dp"
-        app:layout_constraintTop_toBottomOf="@id/myBookingsTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
