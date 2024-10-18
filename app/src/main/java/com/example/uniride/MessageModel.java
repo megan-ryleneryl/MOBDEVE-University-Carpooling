@@ -1,21 +1,22 @@
 package com.example.uniride;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MessageModel implements Serializable {
-    private int messageID;
+    private int chatID;
     private UserModel sender; // TODO: Change to userID in mco3, same for recipient
     private UserModel recipient;
     private String message;
-    private LocalDateTime date;
+    private Date date;
 
     public MessageModel() {
 
     }
 
-    public MessageModel(int messageID, UserModel sender, UserModel recipient, String message, LocalDateTime date) {
-        this.messageID = messageID;
+    public MessageModel(int chatID, UserModel sender, UserModel recipient, String message, Date date) {
+        this.chatID = chatID;
         this.sender = sender;
         this.recipient = recipient;
         this.message = message;
@@ -23,8 +24,8 @@ public class MessageModel implements Serializable {
     }
 
     // Getters
-    public int getMessageID() {
-        return messageID;
+    public int getChatID() {
+        return chatID;
     }
     public UserModel getSender() {
         return sender;
@@ -35,7 +36,7 @@ public class MessageModel implements Serializable {
     public String getMessage() {
         return message;
     }
-    public LocalDateTime getDate() {
+    public Date getDate() {
         return date;
     }
 

@@ -1,6 +1,7 @@
 package com.example.uniride;
 
 import java.lang.reflect.Array;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,13 +55,19 @@ public class DataGenerator {
     public static final RideModel ride3 = new RideModel(40003, user1, location1, location4, "fromUniversity", "04:30 PM", "05:45 PM", 1, 4, 180.0, true);
 
     // Booking data
-    public static final BookingModel booking1 = new BookingModel(50001, ride1, user1, getDate(2024, 10, 11));
-    public static final BookingModel booking2 = new BookingModel(50002, ride2, user2, getDate(2024, 10, 12));
-    public static final BookingModel booking3 = new BookingModel(50003, ride3, user3, getDate(2024, 10, 13));
+    public static final BookingModel booking1 = new BookingModel(50001, ride1, user1, getDate(2024, 10, 11, 0, 0, 0));
+    public static final BookingModel booking2 = new BookingModel(50002, ride2, user2, getDate(2024, 10, 12, 0, 0, 0));
+    public static final BookingModel booking3 = new BookingModel(50003, ride3, user3, getDate(2024, 10, 13, 0, 0, 0));
 
 //    public static final ReviewModel review1 = new ReviewModel(60001, user1, user2, ...);
 
-//    public static final MessageModel message1 = new MessageModel(70001, user1, user2, ...);
+    // Message data
+    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Jane, I'm the driver!", getDate(2024, 10, 9, 0, 0, 0));
+    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi John!", getDate(2024, 10, 10, 0, 0, 0));
+    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "Please let me know if you have any questions.", getDate(2024, 10, 11, 0, 0, 0));
+    public static final MessageModel message4 = new MessageModel(70002, user3, user1, "Hello there.", getDate(2024, 10, 12, 0, 0, 0));
+    public static final MessageModel message5 = new MessageModel(70002, user1, user3,  "Oh hi Alice! I'll be your driver later!", new Date());
+    public static final MessageModel message6 = new MessageModel(70003, user3, user2, "This is not meant to be seen.", getDate(2024, 10, 9, 0, 0, 0));
 
     // Data-loading functions
     public static ArrayList<LocationModel> loadLocationData() {
@@ -153,14 +160,17 @@ public class DataGenerator {
 
     public static ArrayList<MessageModel> loadMessageData() {
         ArrayList<MessageModel> data = new ArrayList<MessageModel>();
-
-//        data.add(message1);
-
+        data.add(message1);
+        data.add(message2);
+        data.add(message3);
+        data.add(message4);
+        data.add(message5);
+        data.add(message6);
         return data;
     }
 
     // Helper method to get a java.util.Date object
-    private static Date getDate(int year, int month, int day) {
+    private static Date getDate(int year, int month, int day, int hour, int minute, int second) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month - 1, day); // Month is 0-indexed
         return calendar.getTime();

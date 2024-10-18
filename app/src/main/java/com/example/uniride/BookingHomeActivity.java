@@ -21,12 +21,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.firestore.CollectionReference;
+/*import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.QuerySnapshot;
 import androidx.annotation.NonNull;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Task;*/
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -61,7 +61,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
         Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
 
-        // Connecting Firestore
+        /*/ Connecting Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference bookingsRef = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION);
 
@@ -78,7 +78,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                     Log.w("FirestoreTest", "Error connecting to Firestore: ", task.getException());
                 }
             }
-        });
+        });*/
 
         // Set Adapter
         MyBookingHomeAdapter myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
