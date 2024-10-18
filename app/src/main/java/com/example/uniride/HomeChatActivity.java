@@ -25,21 +25,11 @@ public class HomeChatActivity extends BottomNavigationActivity {
     private MyHomeChatAdapter adapter;
     private ArrayList<MessageModel> chatData;
 
-    CircleImageView pfpImage;
-    TextView nameText;
-    TextView lastMessageText;
-    TextView timestampText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_home_chat);
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });*/
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

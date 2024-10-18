@@ -119,9 +119,16 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
             public void onClick(View v) {
                 Intent intent = new Intent(context, HomeChatMessageActivity.class);
 
+                UserModel currentUser = DataGenerator.loadUserData().get(0);
+                String chatmate = "";
+                if (chat.getSender() == currentUser) {
+                    chatmate = chat.getRecipient().getName();
+                } else if(chat.getRecipient() == currentUser) {
+                    chatmate = chat.getSender().getName();
+                }
+
                 intent.putExtra("chatID", chat.getChatID());
-                intent.putExtra("senderName", chat.getSender().getName());
-                intent.putExtra("recipientName", chat.getRecipient().getName());
+                intent.putExtra("chatmate", chatmate);
 
                 context.startActivity(intent);
             }
