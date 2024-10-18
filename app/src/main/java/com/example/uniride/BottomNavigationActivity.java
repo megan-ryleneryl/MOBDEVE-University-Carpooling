@@ -33,20 +33,27 @@ public abstract class BottomNavigationActivity extends AppCompatActivity {
 
             // Start the appropriate activity based on selection
             if (itemId == R.id.home) {
-                startActivity(new Intent(this, BookingHomeActivity.class));
-                finish();
+
+                //IF HOME IS CLICKED, CLEAR ALL STACKS
+                Intent i = new Intent(this, BookingHomeActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+
                 return true;
             } else if (itemId == R.id.driver) {
-                startActivity(new Intent(this, DriverHubActivity.class));
-                finish();
+                Intent i = new Intent(this, DriverHubActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 return true;
             } else if (itemId == R.id.passenger) {
-                startActivity(new Intent(this, PassengerHubActivity.class));
-                finish();
+                Intent i = new Intent(this, PassengerHubActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 return true;
             } else if (itemId == R.id.account) {
-                startActivity(new Intent(this, AccountDetailsActivity.class));
-                finish();
+                Intent i = new Intent(this, AccountDetailsActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
                 return true;
             }
             return false;
