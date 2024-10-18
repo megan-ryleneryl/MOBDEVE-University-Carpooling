@@ -4,17 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="4dp">
 
     <TextView
         android:id="@+id/messageText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="4dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/message_incoming_bg"
         android:padding="10dp"
-        android:text="messageText"
+        android:text="message"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         android:fontFamily="@font/raleway"
@@ -30,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
         android:fontFamily="@font/raleway"
         android:text="timestamp"
         android:textColor="#AAAAAA"

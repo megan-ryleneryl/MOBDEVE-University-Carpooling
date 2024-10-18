@@ -48,6 +48,9 @@ public class DataGenerator {
     public static final UserModel user1 = new UserModel(30001, R.drawable.default_profile_image, "John Doe", "john@example.com", "+639123456789", "DLSU", true, car1);
     public static final UserModel user2 = new UserModel(30002, R.drawable.default_profile_image, "Jane Smith", "jane@example.com", "+639987654321", "ADMU", false);
     public static final UserModel user3 = new UserModel(30003, R.drawable.default_profile_image, "Alice Johnson", "alice@example.com", "+639111222333", "DLSU", true, car2);
+    public static final UserModel user4 = new UserModel(30004, R.drawable.default_profile_image, "Marsha Mellow", "marsha@example.com", "+639123123123", "ADMU", false);
+    public static final UserModel user5 = new UserModel(30005, R.drawable.default_profile_image, "Melody Sunshine", "melody@example.com", "+639321321321", "DLSU", false);
+    public static final UserModel user6 = new UserModel(30004, R.drawable.default_profile_image, "Barb Akew", "barb@example.com", "+639132132132", "ADMU", false);
 
     // Ride data
     public static final RideModel ride1 = new RideModel(40001, user1, location3, location1, "toUniversity", "08:00 AM", "09:00 AM", 3, 4, 150.0, true);
@@ -62,12 +65,16 @@ public class DataGenerator {
 //    public static final ReviewModel review1 = new ReviewModel(60001, user1, user2, ...);
 
     // Message data
-    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Jane, I'm the driver!", getDate(2024, 10, 9, 0, 0, 0));
-    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi John!", getDate(2024, 10, 10, 0, 0, 0));
-    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "Please let me know if you have any questions.", getDate(2024, 10, 11, 0, 0, 0));
-    public static final MessageModel message4 = new MessageModel(70002, user3, user1, "Hello there.", getDate(2024, 10, 12, 0, 0, 0));
+    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Jane, I'm the driver!", getDate(2024, 10, 9, 2, 24, 0));
+    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi John!", getDate(2024, 10, 10, 5, 51, 0));
+    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "Please let me know if you have any questions.", getDate(2024, 10, 11, 6, 53, 0));
+    public static final MessageModel message4 = new MessageModel(70002, user3, user1, "Hello there.", getDate(2024, 10, 12, 8, 2, 0));
     public static final MessageModel message5 = new MessageModel(70002, user1, user3,  "Oh hi Alice! I'll be your driver later!", new Date());
-    public static final MessageModel message6 = new MessageModel(70003, user3, user2, "This is not meant to be seen.", getDate(2024, 10, 9, 0, 0, 0));
+    public static final MessageModel message6 = new MessageModel(70003, user3, user2, "This is not meant to be seen.", getDate(2024, 10, 9, 3, 1, 0));
+    public static final MessageModel message7 = new MessageModel(70004, user1, user4, "Morning! Should I call you Marshmallow?", getDate(2024, 10, 9, 5, 33, 0));
+    public static final MessageModel message8 = new MessageModel(70005, user5, user1, "Hello, are you there?", getDate(2024, 10, 18, 9, 14, 0));
+    public static final MessageModel message9 = new MessageModel(70006, user1, user6, "Hi Barbecue!", getDate(2024, 10, 18, 14, 55, 0));
+
 
     // Data-loading functions
     public static ArrayList<LocationModel> loadLocationData() {
@@ -120,6 +127,9 @@ public class DataGenerator {
         data.add(user1);
         data.add(user2);
         data.add(user3);
+        data.add(user4);
+        data.add(user5);
+        data.add(user6);
 
         // Set cars for drivers
         user1.setCar(car1);
@@ -166,13 +176,16 @@ public class DataGenerator {
         data.add(message4);
         data.add(message5);
         data.add(message6);
+        data.add(message7);
+        data.add(message8);
+        data.add(message9);
         return data;
     }
 
     // Helper method to get a java.util.Date object
     private static Date getDate(int year, int month, int day, int hour, int minute, int second) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day); // Month is 0-indexed
+        calendar.set(year, month - 1, day, hour, minute, second); // Month is 0-indexed
         return calendar.getTime();
     }
 }
