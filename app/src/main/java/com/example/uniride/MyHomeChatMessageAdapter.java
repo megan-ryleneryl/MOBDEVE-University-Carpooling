@@ -44,23 +44,7 @@ public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMes
     }
 
     public void updateData(ArrayList<MessageModel> newData) {
-        myChatData = new ArrayList<>();
-
-        // Only retrieve from a specific chatID
-        for (MessageModel message : newData) {
-            if (message.getChatID() == chatID) {
-                myChatData.add(message);
-            }
-        }
-
-        // Sort chats by date
-        Collections.sort(myChatData, new Comparator<MessageModel>() {
-            @Override
-            public int compare(MessageModel msg2, MessageModel msg1) {
-                return msg2.getDate().compareTo(msg1.getDate());
-            }
-        });
-
+        myChatData = newData;
         notifyDataSetChanged();
     }
 

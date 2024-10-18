@@ -22,6 +22,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Date;
 
@@ -38,7 +40,7 @@ public class HomeChatMessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MyHomeChatMessageAdapter adapter;
     private ArrayList<UserModel> userData;
-    private ArrayList<MessageModel> chatData;
+    private ArrayList<MessageModel> myChatData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +68,26 @@ public class HomeChatMessageActivity extends AppCompatActivity {
         }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        chatData = DataGenerator.loadMessageData();
-        adapter = new MyHomeChatMessageAdapter(chatData, chatID, this);
+
+        ArrayList<MessageModel> chatData = DataGenerator.loadMessageData();
+        myChatData = new ArrayList<>();
+
+        // Filtered down to a specific chatID
+        for (MessageModel message : chatData) {
+            if (message.getChatID() == chatID) {
+                myChatData.add(message);
+            }
+        }
+
+        // Sorted by date
+        Collections.sort(myChatData, new Comparator<MessageModel>() {
+            @Override
+            public int compare(MessageModel msg2, MessageModel msg1) {
+                return msg2.getDate().compareTo(msg1.getDate());
+            }
+        });
+
+        adapter = new MyHomeChatMessageAdapter(myChatData, chatID, this);
         recyclerView.setAdapter(adapter);
     }
 
@@ -76,15 +96,14 @@ public class HomeChatMessageActivity extends AppCompatActivity {
     }
 
     public void sendBtnPressed(View view) {
-        // Create the new message
         String messageText = inputText.getText().toString();
 
         if (!messageText.isEmpty()) {
             MessageModel message = new MessageModel(chatID, currentUser, chatmate, messageText, new Date());
-            chatData.add(message);
-            adapter.updateData(chatData);
-            adapter.notifyItemInserted(chatData.size() - 1);
-            recyclerView.post(() -> recyclerView.scrollToPosition(chatData.size() - 1));
+            myChatData.add(message);
+            adapter.updateData(myChatData);
+            adapter.notifyItemInserted(myChatData.size() - 1);
+            recyclerView.post(() -> recyclerView.scrollToPosition(myChatData.size() - 1));
             inputText.setText("");
         }
     }
