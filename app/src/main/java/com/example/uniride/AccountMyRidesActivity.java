@@ -35,4 +35,10 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
         Intent intent = new Intent(this, RideCreate.class);
         startActivity(intent);
     }
+
+    public void editRide(View v) {
+        Intent intent = new Intent(this, RideEdit.class);
+        startActivity(intent);
+    }
+
 }

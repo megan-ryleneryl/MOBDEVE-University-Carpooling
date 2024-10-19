@@ -51,4 +51,5 @@ public class RideModel implements Serializable {
         this.availableSeats -= amountReduced;
     }
     public void setIsActive(boolean isActive) { this.isActive = isActive; }
+
 }

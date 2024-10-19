@@ -39,7 +39,8 @@ public class PassengerHubActivity extends BottomNavigationActivity {
 
     private void setupClickListeners() {
         ongoingRideButton.setOnClickListener(v -> {
-            // TODO: Navigate to an Activity
+            Intent i = new Intent(this, RideTracking.class);
+            startActivity(i);
         });
 
         chatsButton.setOnClickListener(v -> {
