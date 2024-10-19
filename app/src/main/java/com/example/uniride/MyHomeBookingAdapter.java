@@ -130,7 +130,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
         if (code.equals("accept")) {
             new AlertDialog.Builder(context)
                 .setTitle("Accept Booking Request")
-                .setMessage("Are you sure you want to accept the booking request?")
+                .setMessage("Are you sure you want to ACCEPT the booking request?")
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -142,7 +142,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
         } else if (code.equals("reject")) {
             new AlertDialog.Builder(context)
                 .setTitle("Reject Booking Request")
-                .setMessage("Are you sure you want to reject the booking request?")
+                .setMessage("Are you sure you want to REJECT the booking request?")
                 .setPositiveButton("Reject", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -154,7 +154,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
         } else if (code.equals("onTheWay")) {
             new AlertDialog.Builder(context)
                 .setTitle("On The Way!")
-                .setMessage("Are you sure you want to start the ride?")
+                .setMessage("Are you sure you want to START the ride?")
                 .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -166,7 +166,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
         } else if (code.equals("cancelBooking") || code.equals("cancel")) {
             new AlertDialog.Builder(context)
                     .setTitle("Cancel Booking")
-                    .setMessage("Are you sure you want to cancel the booking?")
+                    .setMessage("Are you sure you want to CANCEL the booking?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
