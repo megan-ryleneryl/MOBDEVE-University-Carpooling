@@ -3,6 +3,7 @@ package com.example.uniride;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.view.View;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -19,12 +20,12 @@ public class RideTracking extends BottomNavigationActivity {
 
     }
 
-    public void openChatActivity() {
+    public void openChatActivity(View view) {
         Intent i = new Intent(this, HomeChatActivity.class);
         startActivity(i);
     }
 
-    public void completeRide() {
+    public void completeRide(View view) {
         Intent i = new Intent(this, BookingHomeActivity.class);
         startActivity(i);
     }
