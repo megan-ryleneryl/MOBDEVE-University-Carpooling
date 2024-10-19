@@ -20,10 +20,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-public class HomeBookingActivity extends AppCompatActivity {
+public class HomeBookingActivity extends BottomNavigationActivity {
 
     TextView titleText;
     String bookingType;
+
+    private RecyclerView recyclerView;
+    private MyHomeBookingAdapter adapter;
+    private ArrayList<BookingModel> bookingData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,25 @@ public class HomeBookingActivity extends AppCompatActivity {
         Intent i = getIntent();
         bookingType = i.getStringExtra("bookingTypePassed");
 
-        //if (bookingType == "scheduled")
+        if (bookingType.equals("scheduled")) {
+            titleText.setText("Bookings Scheduled Today");
+        } else if (bookingType.equals("requests")) {
+            titleText.setText("Pending Booking Requests");
+        } else if (bookingType.equals("accepted")) {
+            titleText.setText("Other Accepted Bookings");
+        }
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        bookingData = DataGenerator.loadBookingData();
+
+        adapter = new MyHomeBookingAdapter(bookingData, bookingType, this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected int getSelectedItemId() {
+        return R.id.driver;
     }
 }
