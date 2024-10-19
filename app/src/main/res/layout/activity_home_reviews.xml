@@ -1,10 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeReviewsActivity">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp"
+    android:background="@color/background_color"
+    tools:context=".HomeReviewsActivity"
+    android:fitsSystemWindows="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rate Your Ride"
+        android:textSize="22sp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/raleway_extrabold"
+        android:layout_marginBottom="10dp"/>
+
+    <LinearLayout
+        android:id="@+id/starRatingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <ImageButton
+            android:id="@+id/star1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/star_big_off"
+            android:background="?attr/selectableItemBackground"
+            android:layout_margin="4dp"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:id="@+id/star2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@android:drawable/star_big_off"
+            android:layout_margin="4dp"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:id="@+id/star3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@android:drawable/star_big_off"
+            android:layout_margin="4dp"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:id="@+id/star4"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@android:drawable/star_big_off"
+            android:layout_margin="4dp"
+            android:scaleType="fitCenter"/>
+
+        <ImageButton
+            android:id="@+id/star5"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackground"
+            android:src="@android:drawable/star_big_off"
+            android:layout_margin="4dp"
+            android:scaleType="fitCenter"/>
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/commentInput"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Leave a comment about your ride."
+        android:minHeight="100dp"
+        android:gravity="top|start"
+        android:padding="10dp"
+        android:background="@drawable/message_incoming_bg"
+        android:layout_margin="20dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
+        android:fontFamily="@font/raleway"
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:backgroundTint="@color/primary"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:fontFamily="@font/raleway_extrabold"/>
+
+</LinearLayout>

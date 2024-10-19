@@ -86,7 +86,7 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                 //   THEN automatically create a chat and add it to the chat list
                 //   Move to message activity
 
-                // Hardcoded to Jane Smith's chat for now:
+                // Hardcoded to Barbie Smith's chat for now:
                 Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
                 i.putExtra("chatID", 70001);
                 i.putExtra("chatmate", DataGenerator.user2.getName());
