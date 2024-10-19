@@ -11,6 +11,8 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.drawable.Drawable;
+import androidx.core.content.ContextCompat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -93,9 +95,9 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
         }
         if (!bookingType.equals("requests")) {
             if (booking.getPaymentComplete()) {
-                holder.statusText.setText("finished");
+                holder.statusText.setText("Finished");
             } else {
-                holder.statusText.setText("pending");
+                holder.statusText.setText("Pending");
             }
         }
         setListeners(holder);
@@ -127,8 +129,11 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     }
 
     private void showConfirmationDialog(String code) {
+        Drawable icon = activity.getResources().getDrawable(android.R.drawable.ic_dialog_alert, null);
+        icon.setTint(ContextCompat.getColor(activity, R.color.primary));
+        AlertDialog dialog = null;
         if (code.equals("accept")) {
-            new AlertDialog.Builder(activity)
+            dialog = new AlertDialog.Builder(activity)
                 .setTitle("Accept Booking Request")
                 .setMessage("Are you sure you want to ACCEPT the booking request?")
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
@@ -137,10 +142,10 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                     }
                 })
                 .setNegativeButton("Cancel", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(icon)
                 .show();
         } else if (code.equals("reject")) {
-            new AlertDialog.Builder(activity)
+            dialog = new AlertDialog.Builder(activity)
                 .setTitle("Reject Booking Request")
                 .setMessage("Are you sure you want to REJECT the booking request?")
                 .setPositiveButton("Reject", new DialogInterface.OnClickListener() {
@@ -149,10 +154,10 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                     }
                 })
                 .setNegativeButton("Cancel", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(icon)
                 .show();
         } else if (code.equals("onTheWay")) {
-            new AlertDialog.Builder(activity)
+            dialog = new AlertDialog.Builder(activity)
                 .setTitle("On The Way!")
                 .setMessage("Are you sure you want to START the ride?")
                 .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
@@ -163,10 +168,10 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                     }
                 })
                 .setNegativeButton("Cancel", null)
-                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setIcon(icon)
                 .show();
         } else if (code.equals("cancelBooking") || code.equals("cancel")) {
-            new AlertDialog.Builder(activity)
+            dialog = new AlertDialog.Builder(activity)
                     .setTitle("Cancel Booking")
                     .setMessage("Are you sure you want to CANCEL the booking?")
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -175,8 +180,12 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                         }
                     })
                     .setNegativeButton("No", null)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(icon)
                     .show();
         }
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(activity, R.color.unselected_color));
+
+// Change the text color of the PositiveButton (optional)
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(activity, R.color.unselected_color));
     }
 }
