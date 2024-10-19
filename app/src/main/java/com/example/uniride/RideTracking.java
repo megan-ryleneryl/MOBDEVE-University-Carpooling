@@ -23,11 +23,13 @@ public class RideTracking extends BottomNavigationActivity {
     public void openChatActivity(View view) {
         Intent i = new Intent(this, HomeChatActivity.class);
         startActivity(i);
+        finish();
     }
 
     public void completeRide(View view) {
-        Intent i = new Intent(this, BookingHomeActivity.class);
+        Intent i = new Intent(this, HomeReviewsActivity.class);
         startActivity(i);
+        finish();
     }
 
     @Override

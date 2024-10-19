@@ -63,7 +63,9 @@ public class HomeReviewsActivity extends AppCompatActivity {
     }
 
     public void submitButtonPressed() {
-        finish();
+        Intent i = new Intent(HomeReviewsActivity.this, BookingHomeActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
     }
 
 
