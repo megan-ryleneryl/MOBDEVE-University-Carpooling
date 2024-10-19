@@ -163,8 +163,9 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO: Move to Ongoing Ride Activity
-
-                        activity.finish();
+                        Intent i = new Intent(activity, RideTracking.class);
+                        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        activity.startActivity(i);
                     }
                 })
                 .setNegativeButton("Cancel", null)
