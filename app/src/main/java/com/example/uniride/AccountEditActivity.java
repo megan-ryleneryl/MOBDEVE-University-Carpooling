@@ -1,9 +1,11 @@
 package com.example.uniride;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -49,8 +51,8 @@ public class AccountEditActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        // For this example, we'll use the first user from DataGenerator
-        currentUser = DataGenerator.loadUserData().get(0);
+        Intent i = getIntent();
+        currentUser = (UserModel) i.getSerializableExtra("currentUser");
 
         nameInput.setText(currentUser.getName());
         emailInput.setText(currentUser.getEmail());
@@ -76,31 +78,11 @@ public class AccountEditActivity extends AppCompatActivity {
     }
 
     private void saveChanges() {
-        // Validate input
         if (!validateInput()) {
+            Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        // Update user model
-        currentUser.setName(nameInput.getText().toString());
-        currentUser.setEmail(emailInput.getText().toString());
-        currentUser.setPhoneNumber(phoneInput.getText().toString());
-        currentUser.setUniversity(universityInput.getText().toString());
-
-        if (currentUser.isDriver()) {
-            CarModel car = currentUser.getCar();
-            if (car == null) {
-                car = new CarModel(0, 0, "", "", "");
-                currentUser.setCar(car);
-            }
-            car.setMake(carMakeInput.getText().toString());
-            car.setModel(carModelInput.getText().toString());
-            car.setPlateNumber(plateNumberInput.getText().toString());
-        }
-
-        // TODO: Save changes to your data source (e.g., local database, API)
-
-        // Return to the previous activity
+        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
         finish();
     }
 

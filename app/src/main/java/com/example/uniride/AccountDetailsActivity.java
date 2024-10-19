@@ -66,7 +66,7 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
 
     private void loadUserData() {
         // For this example, we'll use the first user from DataGenerator
-        currentUser = DataGenerator.loadUserData().get(0);
+        currentUser = DataGenerator.loadUserData().get(1);
         isOwnProfile = true;
 
         if (currentUser != null) {
@@ -107,6 +107,8 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     private void setListeners() {
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(AccountDetailsActivity.this, AccountEditActivity.class);
+            intent.putExtra("isOwnProfile", isOwnProfile);
+            intent.putExtra("currentUser", currentUser);
             startActivity(intent);
         });
 

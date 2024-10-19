@@ -26,7 +26,7 @@ public class RideConfirm extends AppCompatActivity {
 
     public void checkRides(View view) {
         Intent i = new Intent(this, DriverHubActivity.class);
-
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
     }
 }
