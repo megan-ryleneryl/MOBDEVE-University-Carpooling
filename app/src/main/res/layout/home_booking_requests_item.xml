@@ -19,7 +19,7 @@
             android:id="@+id/pfpImage"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/default_profile_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
             android:fontFamily="@font/raleway_extrabold"
             android:text="Passenger :"
             android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/pfpImage"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +49,7 @@
             android:fontFamily="@font/raleway_extrabold"
             android:text="passenger"
             android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/bookingIDLabel"
             app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
             android:fontFamily="@font/raleway"
             android:text="bookingID"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerText"
             app:layout_constraintTop_toBottomOf="@+id/passengerText" />
@@ -77,7 +77,7 @@
             android:fontFamily="@font/raleway"
             android:text="date"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerText"
             app:layout_constraintTop_toBottomOf="@+id/bookingIDText" />
@@ -90,7 +90,7 @@
             android:fontFamily="@font/raleway"
             android:text="Booking ID :"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerLabel"
             app:layout_constraintTop_toBottomOf="@+id/passengerText" />
@@ -103,7 +103,7 @@
             android:fontFamily="@font/raleway"
             android:text="Date :"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/bookingIDLabel"
             app:layout_constraintTop_toBottomOf="@+id/bookingIDLabel" />
@@ -122,6 +122,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="12sp"
                 android:text="Reject"
                 android:maxLines="1"
                 android:backgroundTint="@color/unselected_color"/>
@@ -133,6 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:textSize="12sp"
                 android:text="Accept"
                 android:maxLines="1"
                 android:backgroundTint="@color/primary"/>

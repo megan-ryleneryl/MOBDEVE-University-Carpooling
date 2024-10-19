@@ -19,7 +19,7 @@
             android:id="@+id/pfpImage"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:src="@drawable/default_profile_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
             android:fontFamily="@font/raleway_extrabold"
             android:text="Passenger :"
             android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@id/pfpImage"
             app:layout_constraintTop_toTopOf="parent" />
@@ -49,7 +49,7 @@
             android:fontFamily="@font/raleway_extrabold"
             android:text="passenger"
             android:textColor="@color/primary"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/bookingIDLabel"
             app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
             android:fontFamily="@font/raleway"
             android:text="bookingID"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerText"
             app:layout_constraintTop_toBottomOf="@+id/passengerText" />
@@ -77,7 +77,7 @@
             android:fontFamily="@font/raleway"
             android:text="status"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerText"
             app:layout_constraintTop_toBottomOf="@+id/bookingIDText" />
@@ -90,7 +90,7 @@
             android:fontFamily="@font/raleway"
             android:text="Booking ID :"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/passengerLabel"
             app:layout_constraintTop_toBottomOf="@+id/passengerText" />
@@ -103,7 +103,7 @@
             android:fontFamily="@font/raleway"
             android:text="Status :"
             android:textColor="@color/black"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/bookingIDLabel"
             app:layout_constraintTop_toBottomOf="@+id/bookingIDLabel" />
@@ -117,14 +117,15 @@
 
             <Button
                 android:id="@+id/cancelButton"
-                android:fontFamily="@font/raleway_extrabold"
-                android:layout_marginEnd="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="0.5"
-                android:text="Cancel"
+                android:backgroundTint="@color/unselected_color"
+                android:fontFamily="@font/raleway_extrabold"
                 android:maxLines="1"
-                android:backgroundTint="@color/unselected_color"/>
+                android:text="Cancel"
+                android:textSize="12sp" />
 
             <Button
                 android:id="@+id/onTheWayButton"
@@ -134,6 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
                 android:text="On the Way"
+                android:textSize="12sp"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:backgroundTint="@color/primary"/>
