@@ -49,7 +49,9 @@ public class PassengerHubActivity extends BottomNavigationActivity {
         });
 
         myBookingsButton.setOnClickListener(v -> {
-            // TODO: Navigate to an Activity
+            Intent i = new Intent(this, BookingHomeActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
         });
     }
 }
