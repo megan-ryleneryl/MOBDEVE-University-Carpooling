@@ -1,5 +1,7 @@
 package com.example.uniride;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +13,14 @@ import java.util.List;
 
 public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideViewHolder> {
     private List<RideModel> rideList;
+    private Context context;
 
     public MyRidesAdapter(List<RideModel> rideList) {
+        this.rideList = rideList;
+    }
+
+    public MyRidesAdapter(Context context, List<RideModel> rideList) {
+        this.context = context;
         this.rideList = rideList;
     }
 
@@ -71,6 +79,8 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
             @Override
             public void onClick(View v) {
                 // TODO: Implement edit functionality
+                Intent i = new Intent(context, RideEdit.class);
+                context.startActivity(i);
             }
         });
         holder.deactivateButton.setOnClickListener(new View.OnClickListener() {

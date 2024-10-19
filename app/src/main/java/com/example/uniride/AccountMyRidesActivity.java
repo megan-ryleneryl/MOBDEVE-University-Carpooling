@@ -22,7 +22,7 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
 
         List<RideModel> rideList = DataGenerator.loadRideData();
 
-        MyRidesAdapter adapter = new MyRidesAdapter(rideList);
+        MyRidesAdapter adapter = new MyRidesAdapter(AccountMyRidesActivity.this, rideList);
         recyclerView.setAdapter(adapter);
     }
 
