@@ -117,24 +117,26 @@
 
             <Button
                 android:id="@+id/rejectButton"
-                android:fontFamily="@font/raleway_extrabold"
+                android:fontFamily="@font/raleway"
                 android:layout_marginEnd="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:text="Reject"
                 android:maxLines="1"
                 android:backgroundTint="@color/unselected_color"/>
 
             <Button
                 android:id="@+id/acceptButton"
-                android:fontFamily="@font/raleway_extrabold"
+                android:fontFamily="@font/raleway"
                 android:layout_marginStart="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:text="Accept"
                 android:maxLines="1"
                 android:backgroundTint="@color/primary"/>

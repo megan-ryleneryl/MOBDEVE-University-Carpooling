@@ -122,20 +122,22 @@
                 android:layout_marginEnd="5dp"
                 android:layout_weight="0.5"
                 android:backgroundTint="@color/unselected_color"
-                android:fontFamily="@font/raleway_extrabold"
+                android:fontFamily="@font/raleway"
+                android:textStyle="bold"
                 android:maxLines="1"
                 android:text="Cancel"
                 android:textSize="12sp" />
 
             <Button
                 android:id="@+id/onTheWayButton"
-                android:fontFamily="@font/raleway_extrabold"
+                android:fontFamily="@font/raleway"
                 android:layout_marginStart="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
                 android:text="On the Way"
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:backgroundTint="@color/primary"/>
