@@ -81,10 +81,11 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
         UserModel currentUser = DataGenerator.loadUserData().get(0);
         final MessageModel chat = myChatData.get(position);
 
-        holder.pfpImage.setImageResource(currentUser.getPfp());
         if (chat.getSender() == currentUser) {
+            holder.pfpImage.setImageResource(chat.getRecipient().getPfp());
             holder.nameText.setText(chat.getRecipient().getName());
         } else if(chat.getRecipient() == currentUser) {
+            holder.pfpImage.setImageResource(chat.getSender().getPfp());
             holder.nameText.setText(chat.getSender().getName());
         }
         holder.lastMessageText.setText(chat.getMessage());
