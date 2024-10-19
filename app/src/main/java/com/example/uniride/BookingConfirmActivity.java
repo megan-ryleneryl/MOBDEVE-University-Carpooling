@@ -78,12 +78,19 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
             });
 
             contactBtn.setOnClickListener(v -> {
-                Toast.makeText(BookingConfirmActivity.this, "Move to chat", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BookingConfirmActivity.this, "Move to chat", Toast.LENGTH_SHORT).show();
 
                 // TODO: Coordinate on how to implement this
-//                Intent i = new Intent(BookingConfirmActivity.this, HomeChatActivity.class);
-//                i.putExtra("selectedBooking", selectedBooking);
-//                startActivity(i);
+                // To be implemented on MCO3:
+                //   IF there is no existing chat with the driver
+                //   THEN automatically create a chat and add it to the chat list
+                //   Move to message activity
+
+                // Hardcoded to Jane Smith's chat for now:
+                Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
+                i.putExtra("chatID", 70001);
+                i.putExtra("chatmate", DataGenerator.user2.getName());
+                startActivity(i);
             });
         }
     }

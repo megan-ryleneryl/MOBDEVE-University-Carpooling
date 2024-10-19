@@ -49,15 +49,21 @@ public class DriverHubActivity extends BottomNavigationActivity {
         });
 
         bookingRequestsButton.setOnClickListener(v -> {
-            // TODO: Navigate to Booking Requests Activity
+            Intent i = new Intent(this, HomeBookingActivity.class);
+            i.putExtra("bookingTypePassed", "requests");
+            startActivity(i);
         });
 
         acceptedBookingsButton.setOnClickListener(v -> {
-            // TODO: Navigate to Accepted Bookings Activity
+            Intent i = new Intent(this, HomeBookingActivity.class);
+            i.putExtra("bookingTypePassed", "accepted");
+            startActivity(i);
         });
 
         todayScheduleButton.setOnClickListener(v -> {
-            // TODO: Navigate to Today's Schedule Activity
+            Intent i = new Intent(this, HomeBookingActivity.class);
+            i.putExtra("bookingTypePassed", "scheduled");
+            startActivity(i);
         });
     }
 

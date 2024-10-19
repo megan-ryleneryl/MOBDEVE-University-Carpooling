@@ -65,9 +65,9 @@ public class DataGenerator {
 //    public static final ReviewModel review1 = new ReviewModel(60001, user1, user2, ...);
 
     // Message data
-    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Jane, I'm the driver!", getDate(2024, 10, 9, 2, 24, 0));
-    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi John!", getDate(2024, 10, 10, 5, 51, 0));
-    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "Please let me know if you have any questions.", getDate(2024, 10, 11, 6, 53, 0));
+    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Jane, nice to meet you!", getDate(2024, 10, 9, 2, 24, 0));
+    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi John, nice to meet you as well!", getDate(2024, 10, 10, 5, 51, 0));
+    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "I'll be waiting down in the lobby :)", getDate(2024, 10, 11, 6, 53, 0));
     public static final MessageModel message4 = new MessageModel(70002, user3, user1, "Hello there.", getDate(2024, 10, 12, 8, 2, 0));
     public static final MessageModel message5 = new MessageModel(70002, user1, user3,  "Oh hi Alice! I'll be your driver later!", new Date());
     public static final MessageModel message6 = new MessageModel(70003, user3, user2, "This is not meant to be seen.", getDate(2024, 10, 9, 3, 1, 0));
