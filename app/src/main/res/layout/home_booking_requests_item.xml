@@ -123,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Reject"
+                android:maxLines="1"
                 android:backgroundTint="@color/unselected_color"/>
 
             <Button
@@ -133,6 +134,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Accept"
+                android:maxLines="1"
                 android:backgroundTint="@color/primary"/>
 
             <View

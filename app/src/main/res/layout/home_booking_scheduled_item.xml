@@ -123,6 +123,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.5"
                 android:text="Cancel"
+                android:maxLines="1"
                 android:backgroundTint="@color/unselected_color"/>
 
             <Button
@@ -133,6 +134,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0.7"
                 android:text="On the Way"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:backgroundTint="@color/primary"/>
 
             <View
