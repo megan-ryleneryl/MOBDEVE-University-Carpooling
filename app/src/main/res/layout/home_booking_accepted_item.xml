@@ -145,7 +145,7 @@
                 android:id="@+id/cancelBookingButton"
                 android:fontFamily="@font/raleway_extrabold"
                 android:layout_marginStart="5dp"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
 
