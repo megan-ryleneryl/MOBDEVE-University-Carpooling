@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class RideModel implements Serializable {
     private int rideID;
     private UserModel driver;
-    private LocationModel from; // TODO: Convert references to fromID, toID, etc
+    private LocationModel from;
     private LocationModel to;
     private String type; // toUniversity, fromUniversity
     private String departureTime;
