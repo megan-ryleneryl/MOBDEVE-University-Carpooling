@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "64845868965",
-    "project_id": "uniride-b49ed",
-    "storage_bucket": "uniride-b49ed.appspot.com"
+    "project_number": "809499353555",
+    "project_id": "uniride-45299",
+    "storage_bucket": "uniride-45299.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:64845868965:android:633ec00aa0122c55dec24c",
+        "mobilesdk_app_id": "1:809499353555:android:785abe7aa9ea883928cf26",
         "android_client_info": {
           "package_name": "com.example.uniride"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAGCkf_7cN0abpRFa7b6w8EHrDPC-8kgoA"
+          "current_key": "AIzaSyDHrImXziUcP76z1X-5-74BuzdieNoEJds"
         }
       ],
       "services": {

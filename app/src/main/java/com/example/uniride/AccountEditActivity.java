@@ -2,6 +2,7 @@ package com.example.uniride;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -11,6 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -21,12 +28,28 @@ public class AccountEditActivity extends AppCompatActivity {
     private TextInputEditText carMakeInput, carModelInput, plateNumberInput;
     private LinearLayout carDetailsContainer;
     private Button saveChangesButton, cancelButton;
-    private UserModel currentUser;
+
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private FirebaseUser currentUser;
+    private boolean isDriver = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_edit);
+
+        // Initialize Firebase
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        if (currentUser == null) {
+            // User not logged in, redirect to login
+            startActivity(new Intent(this, AccountLoginActivity.class));
+            finish();
+            return;
+        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -51,25 +74,44 @@ public class AccountEditActivity extends AppCompatActivity {
     }
 
     private void loadUserData() {
-        Intent i = getIntent();
-        currentUser = (UserModel) i.getSerializableExtra("currentUser");
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Set user data
+                        nameInput.setText(documentSnapshot.getString("name"));
+                        emailInput.setText(documentSnapshot.getString("email"));
+                        phoneInput.setText(documentSnapshot.getString("phoneNumber"));
+                        universityInput.setText(documentSnapshot.getString("university"));
 
-        nameInput.setText(currentUser.getName());
-        emailInput.setText(currentUser.getEmail());
-        phoneInput.setText(currentUser.getPhoneNumber());
-        universityInput.setText(currentUser.getUniversity());
+                        // Set profile image
+                        Integer pfpResource = documentSnapshot.getLong("pfp") != null ?
+                                documentSnapshot.getLong("pfp").intValue() : R.drawable.default_profile_image;
+                        profileImage.setImageResource(pfpResource);
 
-        if (currentUser.isDriver() && currentUser.getCar() != null) {
-            carDetailsContainer.setVisibility(View.VISIBLE);
-            CarModel car = currentUser.getCar();
-            carMakeInput.setText(car.getMake());
-            carModelInput.setText(car.getModel());
-            plateNumberInput.setText(car.getPlateNumber());
-        } else {
-            carDetailsContainer.setVisibility(View.GONE);
-        }
+                        // Handle driver-specific data
+                        isDriver = documentSnapshot.getBoolean("isDriver") != null &&
+                                documentSnapshot.getBoolean("isDriver");
 
-        profileImage.setImageResource(currentUser.getPfp());
+                        if (isDriver) {
+                            carDetailsContainer.setVisibility(View.VISIBLE);
+                            Object carData = documentSnapshot.get("car");
+                            if (carData != null) {
+                                Map<String, Object> carMap = (Map<String, Object>) carData;
+                                carMakeInput.setText((String) carMap.get("make"));
+                                carModelInput.setText((String) carMap.get("model"));
+                                plateNumberInput.setText((String) carMap.get("plateNumber"));
+                            }
+                        } else {
+                            carDetailsContainer.setVisibility(View.GONE);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading user data: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void setListeners() {
@@ -79,18 +121,68 @@ public class AccountEditActivity extends AppCompatActivity {
 
     private void saveChanges() {
         if (!validateInput()) {
-            Toast.makeText(this, "Please fill in all required fields", Toast.LENGTH_SHORT).show();
             return;
         }
-        Toast.makeText(this, "Changes saved", Toast.LENGTH_SHORT).show();
-        finish();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", nameInput.getText().toString().trim());
+        updates.put("phoneNumber", phoneInput.getText().toString().trim());
+        updates.put("university", universityInput.getText().toString().trim());
+
+        // If user is a driver, update car details
+        if (isDriver) {
+            Map<String, Object> carData = new HashMap<>();
+            carData.put("make", carMakeInput.getText().toString().trim());
+            carData.put("model", carModelInput.getText().toString().trim());
+            carData.put("plateNumber", plateNumberInput.getText().toString().trim());
+            updates.put("car", carData);
+        }
+
+        // Update Firestore document
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error updating profile: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
     private boolean validateInput() {
-        // TODO: Implement input validation
-        // Check if required fields are not empty
-        // Validate email format
-        // Validate phone number format
+        if (TextUtils.isEmpty(nameInput.getText())) {
+            nameInput.setError("Name is required");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(phoneInput.getText())) {
+            phoneInput.setError("Phone number is required");
+            return false;
+        }
+
+        if (TextUtils.isEmpty(universityInput.getText())) {
+            universityInput.setError("University is required");
+            return false;
+        }
+
+        if (isDriver) {
+            if (TextUtils.isEmpty(carMakeInput.getText())) {
+                carMakeInput.setError("Car make is required");
+                return false;
+            }
+            if (TextUtils.isEmpty(carModelInput.getText())) {
+                carModelInput.setError("Car model is required");
+                return false;
+            }
+            if (TextUtils.isEmpty(plateNumberInput.getText())) {
+                plateNumberInput.setError("Plate number is required");
+                return false;
+            }
+        }
+
         return true;
     }
 }
