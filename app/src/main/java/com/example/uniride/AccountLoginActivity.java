@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -43,6 +44,8 @@ public class AccountLoginActivity extends AppCompatActivity {
         // Set click listeners
         loginButton.setOnClickListener(v -> attemptLogin());
         signupText.setOnClickListener(v -> signup(v));
+
+        setupForgotPassword();
     }
 
     @Override
@@ -151,5 +154,37 @@ public class AccountLoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, AccountRegisterActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void setupForgotPassword() {
+        TextView forgotPasswordText = findViewById(R.id.forgotPassword);
+        forgotPasswordText.setOnClickListener(v -> {
+            String email = emailInput.getText().toString().trim();
+
+            if (TextUtils.isEmpty(email)) {
+                emailInput.setError("Please enter your email first");
+                emailInput.requestFocus();
+                return;
+            }
+
+            // Show a progress dialog
+            ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Sending reset email...");
+            progressDialog.show();
+
+            mAuth.sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        progressDialog.dismiss();
+                        if (task.isSuccessful()) {
+                            Toast.makeText(AccountLoginActivity.this,
+                                    "Password reset email sent. Please check your inbox.",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(AccountLoginActivity.this,
+                                    "Failed to send reset email. " + task.getException().getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+        });
     }
 }
