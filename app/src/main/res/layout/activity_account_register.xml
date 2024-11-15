@@ -8,6 +8,16 @@
     tools:context=".AccountRegisterActivity"
     android:background="@color/white">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -38,10 +48,10 @@
                 android:layout_marginBottom="16dp"/>
 
             <Button
-                android:id="@+id/selectImageButton"
+                android:id="@+id/selectAvatarButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select Profile Picture"
+                android:text="Select Avatar"
                 android:layout_gravity="center"
                 android:layout_marginBottom="24dp"/>
 

@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +17,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +33,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountRegisterActivity extends AppCompatActivity {
     private CircleImageView profileImageView;
-    private Button selectImageButton;
+    private Button selectAvatarButton;
     private EditText usernameInput;
     private EditText emailInput;
     private EditText phoneInput;
@@ -40,6 +43,10 @@ public class AccountRegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView loginRedirectText;
     private Uri selectedImageUri;
+
+    // Add ProgressBar
+    private ProgressBar progressBar;
+    private int selectedAvatarResource = R.drawable.a_icon; // Default avatar
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -57,18 +64,17 @@ public class AccountRegisterActivity extends AppCompatActivity {
 
         // Initialize views
         initializeViews();
-        setupImagePicker();
         setupUniversitySpinner();
 
         // Set click listeners
+        selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
         registerButton.setOnClickListener(v -> attemptRegistration());
         loginRedirectText.setOnClickListener(v -> redirectToLogin(v));
-        selectImageButton.setOnClickListener(v -> imagePickerLauncher.launch("image/*"));
     }
 
     private void initializeViews() {
         profileImageView = findViewById(R.id.profileImageView);
-        selectImageButton = findViewById(R.id.selectImageButton);
+        selectAvatarButton = findViewById(R.id.selectAvatarButton);
         usernameInput = findViewById(R.id.inputUsername);
         emailInput = findViewById(R.id.inputEmail);
         phoneInput = findViewById(R.id.inputPhone);
@@ -77,18 +83,63 @@ public class AccountRegisterActivity extends AppCompatActivity {
         confirmPasswordInput = findViewById(R.id.inputConfirmPassword);
         registerButton = findViewById(R.id.btnRegister);
         loginRedirectText = findViewById(R.id.alreadyHaveAccount);
+        progressBar = findViewById(R.id.progressBar);
     }
 
-    private void setupImagePicker() {
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null) {
-                        selectedImageUri = uri;
-                        profileImageView.setImageURI(uri);
-                    }
-                }
-        );
+    private void showAvatarDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
+        builder.setView(dialogView);
+        builder.setTitle("Select Avatar");
+
+        AlertDialog dialog = builder.create();
+
+        // Find all avatar options in dialog
+        ImageView avatar1 = dialogView.findViewById(R.id.avatar1);
+        ImageView avatar2 = dialogView.findViewById(R.id.avatar2);
+        ImageView avatar3 = dialogView.findViewById(R.id.avatar3);
+        ImageView avatar4 = dialogView.findViewById(R.id.avatar4);
+        ImageView avatar5 = dialogView.findViewById(R.id.avatar5);
+        ImageView avatar6 = dialogView.findViewById(R.id.avatar6);
+
+        // Set click listeners for all avatars
+        avatar1.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.a_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        avatar2.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.b_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        avatar3.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.c_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        avatar4.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.d_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        avatar5.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.e_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        avatar6.setOnClickListener(v -> {
+            selectedAvatarResource = R.drawable.f_icon;
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        });
+
+        dialog.show();
     }
 
     private void setupUniversitySpinner() {
@@ -151,7 +202,7 @@ public class AccountRegisterActivity extends AppCompatActivity {
         }
 
         if (TextUtils.isEmpty(phone) || phone.length() < 11) {
-            phoneInput.setError("Valid phone number is required");
+            phoneInput.setError("Valid 11-digit phone number is required");
             phoneInput.requestFocus();
             return false;
         }
@@ -173,8 +224,13 @@ public class AccountRegisterActivity extends AppCompatActivity {
 
     private void performRegistration(String username, String email, String phone,
                                      String university, String password) {
+
+        // Show progress before starting registration
+        progressBar.setVisibility(View.VISIBLE);
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
+                    progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         createUserInFirestore(user.getUid(), username, email, phone, university);
@@ -193,7 +249,7 @@ public class AccountRegisterActivity extends AppCompatActivity {
                                        String phone, String university) {
         Map<String, Object> user = new HashMap<>();
         user.put("userID", uid);
-        user.put("pfp", R.drawable.default_profile_image); // Default for now
+        user.put("pfp", selectedAvatarResource);
         user.put("name", username);
         user.put("email", email);
         user.put("phoneNumber", phone);
