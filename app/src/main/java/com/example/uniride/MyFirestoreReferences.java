@@ -2,13 +2,13 @@ package com.example.uniride;
 
 public class MyFirestoreReferences {
     // Constants for Firestore collections
-    public static final String BOOKINGS_COLLECTION = "BookingModel";
+    public static final String BOOKINGS_COLLECTION = "bookings";
     public static final String RIDES_COLLECTION = "rides";
-    public static final String USERS_COLLECTION = "UserModel";
+    public static final String USERS_COLLECTION = "users";
     public static final String CARS_COLLECTION = "CarModel";
-    public static final String LOCATIONS_COLLECTION = "LocationModel";
-    public static final String REVIEWS_COLLECTION = "ReviewModel";
-    public static final String MESSAGES_COLLECTION = "MessageModel";
+    public static final String LOCATIONS_COLLECTION = "locations";
+    public static final String REVIEWS_COLLECTION = "reviews";
+    public static final String MESSAGES_COLLECTION = "messages";
 
     // Fields for the Bookings collection
     public static final class Bookings {

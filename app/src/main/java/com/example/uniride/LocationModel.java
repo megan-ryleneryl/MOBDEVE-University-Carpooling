@@ -5,14 +5,16 @@ import java.io.Serializable;
 public class LocationModel implements Serializable {
     private int locationID;
     private String name;
+    private boolean isUniversity = false;
 
     public LocationModel() {
 
     }
 
-    public LocationModel(int locationID, String name) {
+    public LocationModel(int locationID, String name, boolean isUniversity) {
         this.locationID = locationID;
         this.name = name;
+        this.isUniversity = isUniversity;
     }
 
     // Getters
@@ -21,6 +23,18 @@ public class LocationModel implements Serializable {
     }
     public String getName() {
         return name;
+    }
+    public boolean getIsUniversity() {return isUniversity;}
+
+    // Setters
+
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setUniversity(boolean university) {
+        isUniversity = university;
     }
 
     // ToString helper

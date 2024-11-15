@@ -62,12 +62,14 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
 
                             LocationModel from = new LocationModel(
                                     ((Long) fromData.get("locationID")).intValue(),
-                                    (String) fromData.get("name")
+                                    (String) fromData.get("name"),
+                                    (boolean) fromData.get("isUniversity")
                             );
 
                             LocationModel to = new LocationModel(
                                     ((Long) toData.get("locationID")).intValue(),
-                                    (String) toData.get("name")
+                                    (String) toData.get("name"),
+                                    (boolean) fromData.get("isUniversity")
                             );
 
                             // Then create RideModel
@@ -124,7 +126,8 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
     private LocationModel convertMapToLocationModel(Map<String, Object> map) {
         return new LocationModel(
                 ((Long) map.get("locationID")).intValue(),
-                (String) map.get("name")
+                (String) map.get("name"),
+                (boolean) map.get("isUniversity")
         );
     }
 
