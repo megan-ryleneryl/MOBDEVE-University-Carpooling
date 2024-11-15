@@ -22,7 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -245,25 +247,55 @@ public class AccountRegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void createUserInFirestore(String uid, String username, String email,
-                                       String phone, String university) {
-        Map<String, Object> user = new HashMap<>();
-        user.put("userID", uid);
-        user.put("pfp", selectedAvatarResource);
-        user.put("name", username);
-        user.put("email", email);
-        user.put("phoneNumber", phone);
-        user.put("university", university);
-        user.put("isDriver", false);
-        user.put("balance", 0.0);
-
+    private void createUserInFirestore(String uid, String username, String email, String phone, String university) {
+        // First query to get the highest existing userID
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
-                .document(uid)
-                .set(user)
-                .addOnSuccessListener(aVoid -> navigateToHome())
+                .orderBy("userID", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(task -> {
+                    int nextUserId = 30001; // Default starting ID
+
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Get the highest existing userID and increment
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        Long highestId = document.getLong("userID");
+                        if (highestId != null) {
+                            nextUserId = highestId.intValue() + 1;
+                        }
+                    }
+
+                    // Create the user document with the new ID
+                    Map<String, Object> user = new HashMap<>();
+                    user.put("userID", nextUserId);
+                    user.put("pfp", selectedAvatarResource);
+                    user.put("name", username);
+                    user.put("email", email);
+                    user.put("phoneNumber", phone);
+                    user.put("university", university);
+                    user.put("isDriver", false);
+                    user.put("balance", 0.0);
+
+                    db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                            .document(uid)
+                            .set(user)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(AccountRegisterActivity.this,
+                                        "Registration successful!", Toast.LENGTH_SHORT).show();
+                                navigateToHome();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(AccountRegisterActivity.this,
+                                        "Failed to create user profile: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                if (mAuth.getCurrentUser() != null) {
+                                    mAuth.getCurrentUser().delete();
+                                }
+                            });
+                })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AccountRegisterActivity.this,
-                            "Failed to create user profile: " + e.getMessage(),
+                            "Failed to generate user ID: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                     if (mAuth.getCurrentUser() != null) {
                         mAuth.getCurrentUser().delete();
