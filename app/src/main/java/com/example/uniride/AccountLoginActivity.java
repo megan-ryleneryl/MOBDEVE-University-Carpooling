@@ -17,13 +17,32 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
+import java.util.HashMap;
+import java.util.Map;
+
 public class AccountLoginActivity extends AppCompatActivity {
+    // Existing fields
     private EditText emailInput;
     private EditText passwordInput;
     private Button loginButton;
     private TextView signupText;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
+
+    // Add these new fields
+    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient mGoogleSignInClient;
+    private Button btnGoogle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,15 +54,24 @@ public class AccountLoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
+        // Initialize Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
         // Initialize views
         emailInput = findViewById(R.id.inputEmail);
         passwordInput = findViewById(R.id.inputPassword);
         loginButton = findViewById(R.id.btnlogin);
         signupText = findViewById(R.id.textViewSignUp);
+        btnGoogle = findViewById(R.id.btnGoogle);
 
         // Set click listeners
         loginButton.setOnClickListener(v -> attemptLogin());
         signupText.setOnClickListener(v -> signup(v));
+        btnGoogle.setOnClickListener(v -> signInWithGoogle());
 
         setupForgotPassword();
     }
@@ -186,5 +214,108 @@ public class AccountLoginActivity extends AppCompatActivity {
                         }
                     });
         });
+    }
+
+    // Add these new methods for Google Sign In
+    private void signInWithGoogle() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account.getIdToken());
+            } catch (ApiException e) {
+                Toast.makeText(this, "Google sign in failed: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+
+                        // Check if user exists in Firestore
+                        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                                .document(user.getUid())
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        // User exists, proceed to home
+                                        navigateToHome();
+                                    } else {
+                                        // Create new user in Firestore
+                                        createGoogleUserInFirestore(user);
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(AccountLoginActivity.this,
+                                            "Error checking user data: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                    mAuth.signOut();
+                                });
+                    } else {
+                        Toast.makeText(AccountLoginActivity.this,
+                                "Authentication failed: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void createGoogleUserInFirestore(FirebaseUser user) {
+        // First query to get the highest existing userID
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .orderBy("userID", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(task -> {
+                    int nextUserId = 30001; // Default starting ID
+
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        Long highestId = document.getLong("userID");
+                        if (highestId != null) {
+                            nextUserId = highestId.intValue() + 1;
+                        }
+                    }
+
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("userID", nextUserId);
+                    userData.put("name", user.getDisplayName());
+                    userData.put("email", user.getEmail());
+                    userData.put("phoneNumber", user.getPhoneNumber() != null ?
+                            user.getPhoneNumber() : "");
+                    userData.put("university", "");
+                    userData.put("isDriver", false);
+                    userData.put("balance", 0.0);
+                    userData.put("pfp", R.drawable.default_profile_image);
+
+                    db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                            .document(user.getUid())
+                            .set(userData)
+                            .addOnSuccessListener(aVoid -> {
+                                // Navigate to complete profile setup since university is required
+                                Intent intent = new Intent(AccountLoginActivity.this,
+                                        AccountEditActivity.class);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(AccountLoginActivity.this,
+                                        "Error creating user profile: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                            });
+                });
     }
 }
