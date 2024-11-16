@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +18,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -24,7 +28,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class AccountEditActivity extends AppCompatActivity {
 
     private CircleImageView profileImage;
-    private TextInputEditText nameInput, emailInput, phoneInput, universityInput;
+    private TextInputEditText nameInput, emailInput, phoneInput;
+    private Spinner universitySpinner;
     private TextInputEditText carMakeInput, carModelInput, plateNumberInput;
     private LinearLayout carDetailsContainer;
     private Button saveChangesButton, cancelButton;
@@ -33,6 +38,7 @@ public class AccountEditActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private boolean isDriver = false;
+    private String currentUniversity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +61,7 @@ public class AccountEditActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         initViews();
+        setupUniversitySpinner();
         loadUserData();
         setListeners();
     }
@@ -64,13 +71,33 @@ public class AccountEditActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.name_input);
         emailInput = findViewById(R.id.email_input);
         phoneInput = findViewById(R.id.phone_input);
-        universityInput = findViewById(R.id.university_input);
+        universitySpinner = findViewById(R.id.university_spinner); // Update layout to use Spinner
         carDetailsContainer = findViewById(R.id.car_details_container);
         carMakeInput = findViewById(R.id.car_make_input);
         carModelInput = findViewById(R.id.car_model_input);
         plateNumberInput = findViewById(R.id.plate_number_input);
         saveChangesButton = findViewById(R.id.save_changes_button);
         cancelButton = findViewById(R.id.cancel_button);
+    }
+
+    private void setupUniversitySpinner() {
+        ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
+        List<LocationModel> universities = new ArrayList<>();
+
+        // Filter for universities only
+        for (LocationModel location : allLocations) {
+            if (location.getIsUniversity()) {
+                universities.add(location);
+            }
+        }
+
+        ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                universities
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        universitySpinner.setAdapter(adapter);
     }
 
     private void loadUserData() {
@@ -83,7 +110,17 @@ public class AccountEditActivity extends AppCompatActivity {
                         nameInput.setText(documentSnapshot.getString("name"));
                         emailInput.setText(documentSnapshot.getString("email"));
                         phoneInput.setText(documentSnapshot.getString("phoneNumber"));
-                        universityInput.setText(documentSnapshot.getString("university"));
+                        currentUniversity = documentSnapshot.getString("university");
+
+                        // Set selected university in spinner
+                        ArrayAdapter<LocationModel> adapter = (ArrayAdapter<LocationModel>) universitySpinner.getAdapter();
+                        for (int i = 0; i < adapter.getCount(); i++) {
+                            LocationModel location = adapter.getItem(i);
+                            if (location != null && location.getName().equals(currentUniversity)) {
+                                universitySpinner.setSelection(i);
+                                break;
+                            }
+                        }
 
                         // Set profile image
                         Integer pfpResource = documentSnapshot.getLong("pfp") != null ?
@@ -127,7 +164,10 @@ public class AccountEditActivity extends AppCompatActivity {
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", nameInput.getText().toString().trim());
         updates.put("phoneNumber", phoneInput.getText().toString().trim());
-        updates.put("university", universityInput.getText().toString().trim());
+
+        // Get selected university from spinner
+        LocationModel selectedUniversity = (LocationModel) universitySpinner.getSelectedItem();
+        updates.put("university", selectedUniversity.getName());
 
         // If user is a driver, update car details
         if (isDriver) {
@@ -144,6 +184,11 @@ public class AccountEditActivity extends AppCompatActivity {
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+
+                    // Refresh AccountDetailsActivity by restarting it
+                    Intent intent = new Intent(this, AccountDetailsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {
@@ -163,8 +208,8 @@ public class AccountEditActivity extends AppCompatActivity {
             return false;
         }
 
-        if (TextUtils.isEmpty(universityInput.getText())) {
-            universityInput.setError("University is required");
+        if (universitySpinner.getSelectedItem() == null) {
+            Toast.makeText(this, "Please select a university", Toast.LENGTH_SHORT).show();
             return false;
         }
 
