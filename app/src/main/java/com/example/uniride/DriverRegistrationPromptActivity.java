@@ -16,8 +16,8 @@ public class DriverRegistrationPromptActivity extends BottomNavigationActivity {
 
         registerAsDriverButton = findViewById(R.id.registerAsDriverButton);
         registerAsDriverButton.setOnClickListener(v -> {
-            // TODO: Navigate to driver registration form
-            Toast.makeText(this, "Driver registration coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(DriverRegistrationPromptActivity.this, DriverRegistrationActivity.class);
+            startActivity(intent);
         });
     }
 
