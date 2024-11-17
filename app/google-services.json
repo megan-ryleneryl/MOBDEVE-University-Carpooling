@@ -12,7 +12,20 @@
           "package_name": "com.example.uniride"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "809499353555-n4lvq6sfi0v8a4s06vpt7irggo1a9067.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uniride",
+            "certificate_hash": "525e7450cc93a82c5c89412f90d0efbc3b7231fe"
+          }
+        },
+        {
+          "client_id": "809499353555-p9aqj35050mvi00jgd4mp82cabb8479d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDHrImXziUcP76z1X-5-74BuzdieNoEJds"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809499353555-p9aqj35050mvi00jgd4mp82cabb8479d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

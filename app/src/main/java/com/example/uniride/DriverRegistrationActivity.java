@@ -173,11 +173,9 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
                                         .addOnSuccessListener(aVoid -> {
                                             Toast.makeText(DriverRegistrationActivity.this,
                                                     "Registration successful!", Toast.LENGTH_SHORT).show();
-                                            // Navigate to Driver Hub
+                                            // Navigate to Success page
                                             Intent intent = new Intent(DriverRegistrationActivity.this,
-                                                    DriverHubActivity.class);
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                                                    Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    DriverRegistrationSuccessActivity.class);
                                             startActivity(intent);
                                             finish();
                                         })
