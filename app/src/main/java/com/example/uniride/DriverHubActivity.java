@@ -4,7 +4,12 @@ import android.os.Bundle;
 import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DriverHubActivity extends BottomNavigationActivity {
     private TextView newRequestsCount;
@@ -17,15 +22,43 @@ public class DriverHubActivity extends BottomNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_driver_hub);
 
-        // Initialize views
-        initializeViews();
-        setupClickListeners();
-
-        // TODO: Update these counts from your backend
-        updateDashboardCounts(2, 3);
+        // Check if user is a driver
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            FirebaseFirestore.getInstance()
+                    .collection(MyFirestoreReferences.USERS_COLLECTION)
+                    .document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            boolean isDriver = documentSnapshot.getBoolean("isDriver") != null &&
+                                    documentSnapshot.getBoolean("isDriver");
+                            if (!isDriver) {
+                                // User is not a driver, redirect to registration prompt
+                                Intent intent = new Intent(this, DriverRegistrationPromptActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
+                        }
+                        // User is a driver, continue with normal Driver Hub setup
+                        EdgeToEdge.enable(this);
+                        setContentView(R.layout.activity_driver_hub);
+                        initializeViews();
+                        setupClickListeners();
+                        updateDashboardCounts(2, 3);
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error checking driver status", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        } else {
+            // No user logged in, redirect to login
+            Intent intent = new Intent(this, AccountLoginActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void initializeViews() {
