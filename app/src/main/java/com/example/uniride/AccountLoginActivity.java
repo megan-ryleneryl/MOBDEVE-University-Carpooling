@@ -316,4 +316,16 @@ public class AccountLoginActivity extends AppCompatActivity {
                             });
                 });
     }
+
+    private void signOut() {
+        // Sign out from Firebase
+        mAuth.signOut();
+
+        // Sign out from Google
+        if (mGoogleSignInClient != null) {
+            mGoogleSignInClient.signOut().addOnCompleteListener(this, task -> {
+                // Google Sign out complete
+            });
+        }
+    }
 }

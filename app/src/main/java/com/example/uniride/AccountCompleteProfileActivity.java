@@ -12,6 +12,10 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -219,12 +223,20 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                     // Delete the Firebase Auth account
                     if (currentUser != null) {
                         currentUser.delete().addOnCompleteListener(task -> {
+                            // Sign out from both Firebase and Google
                             mAuth.signOut();
-                            startActivity(new Intent(AccountCompleteProfileActivity.this, AccountLoginActivity.class));
-                            finish();
+                            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
+                                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                            .requestIdToken(getString(R.string.default_web_client_id))
+                                            .requestEmail()
+                                            .build());
+                            googleSignInClient.signOut().addOnCompleteListener(signOutTask -> {
+                                startActivity(new Intent(AccountCompleteProfileActivity.this, AccountLoginActivity.class));
+                                finish();
+                                super.onBackPressed();
+                            });
                         });
                     }
-                    super.onBackPressed(); // Call super method when user confirms
                 })
                 .setNegativeButton("No", null)
                 .show();

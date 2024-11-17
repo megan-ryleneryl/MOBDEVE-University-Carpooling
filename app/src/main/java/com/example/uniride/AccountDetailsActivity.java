@@ -13,6 +13,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -144,10 +147,18 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         });
 
         logoutButton.setOnClickListener(v -> {
+            // Sign out from both Firebase and Google
             mAuth.signOut();
-            Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
+                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken(getString(R.string.default_web_client_id))
+                            .requestEmail()
+                            .build());
+            googleSignInClient.signOut().addOnCompleteListener(task -> {
+                Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            });
         });
 
         deleteAccountButton.setOnClickListener(v -> {
@@ -186,10 +197,19 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                     // Then delete the Firebase Auth account
                     currentUser.delete()
                             .addOnSuccessListener(aVoid1 -> {
-                                Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                // Sign out from both Firebase and Google
+                                mAuth.signOut();
+                                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
+                                        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                .requestIdToken(getString(R.string.default_web_client_id))
+                                                .requestEmail()
+                                                .build());
+                                googleSignInClient.signOut().addOnCompleteListener(task -> {
+                                    Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                });
                             })
                             .addOnFailureListener(e -> {
                                 Toast.makeText(this, "Error deleting authentication: " + e.getMessage(),
