@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -34,6 +35,9 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     private Button editProfileButton, logoutButton, deleteAccountButton;
     private Button withdrawButton, depositButton;
 
+    private CardView carDetailsCard;
+    private CardView balanceCard;
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -41,7 +45,7 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_account_details);
+        super.setContentView(R.layout.activity_account_details); // Use super.setContentView
 
         // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -49,14 +53,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
-            // User not logged in, redirect to login
             startActivity(new Intent(this, AccountLoginActivity.class));
             finish();
             return;
         }
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         initViews();
         loadUserData();
@@ -75,17 +75,21 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         phoneText = findViewById(R.id.phone_text);
         universityText = findViewById(R.id.university_text);
         accountStatusText = findViewById(R.id.account_status_text);
-        carDetailsLabel = findViewById(R.id.car_details_label);
+
+        // Car details card
+        carDetailsCard = findViewById(R.id.car_details_card);
         carDetailsText = findViewById(R.id.car_details_text);
 
-        accountActionsContainer = findViewById(R.id.account_actions_container);
-        balanceContainer = findViewById(R.id.balance_container);
+        // Balance card
+        balanceCard = findViewById(R.id.balance_card);
         balanceText = findViewById(R.id.balance_text);
+        withdrawButton = findViewById(R.id.withdraw_button);
+        depositButton = findViewById(R.id.deposit_button);
+
+        // Action buttons
         editProfileButton = findViewById(R.id.edit_profile_button);
         logoutButton = findViewById(R.id.logout_button);
         deleteAccountButton = findViewById(R.id.delete_account_button);
-        withdrawButton = findViewById(R.id.withdraw_button);
-        depositButton = findViewById(R.id.deposit_button);
     }
 
     private void loadUserData() {
@@ -94,14 +98,12 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Set user data
                         nameText.setText(documentSnapshot.getString("name"));
                         emailText.setText(documentSnapshot.getString("email"));
                         phoneText.setText(documentSnapshot.getString("phoneNumber"));
                         universityText.setText(documentSnapshot.getString("university"));
                         accountStatusText.setText(documentSnapshot.getBoolean("isDriver") ? "Driver" : "Passenger");
 
-                        // Set profile image
                         Integer pfpResource = documentSnapshot.getLong("pfp") != null ?
                                 documentSnapshot.getLong("pfp").intValue() : R.drawable.default_profile_image;
                         profileImage.setImageResource(pfpResource);
@@ -111,16 +113,13 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
 
                         // Handle driver-specific UI
                         if (isDriver) {
-                            balanceContainer.setVisibility(View.VISIBLE);
+                            balanceCard.setVisibility(View.VISIBLE);
                             Double balance = documentSnapshot.getDouble("balance");
                             balanceText.setText(String.format("P %.2f", balance != null ? balance : 0.0));
 
-                            // Load car details if available
                             Object carData = documentSnapshot.get("car");
                             if (carData != null) {
-                                carDetailsLabel.setVisibility(View.VISIBLE);
-                                carDetailsText.setVisibility(View.VISIBLE);
-                                // Assuming car data structure matches CarModel
+                                carDetailsCard.setVisibility(View.VISIBLE);
                                 String carDetails = String.format("%s %s\nPlate Number: %s",
                                         ((Map<String, Object>) carData).get("make"),
                                         ((Map<String, Object>) carData).get("model"),
@@ -128,9 +127,8 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                                 carDetailsText.setText(carDetails);
                             }
                         } else {
-                            balanceContainer.setVisibility(View.GONE);
-                            carDetailsLabel.setVisibility(View.GONE);
-                            carDetailsText.setVisibility(View.GONE);
+                            balanceCard.setVisibility(View.GONE);
+                            carDetailsCard.setVisibility(View.GONE);
                         }
                     }
                 })
@@ -139,6 +137,7 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                             Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void setListeners() {
         editProfileButton.setOnClickListener(v -> {

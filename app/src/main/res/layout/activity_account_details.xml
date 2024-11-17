@@ -1,278 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/content_frame"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="@color/background_color"
+        android:fillViewport="true">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Account Details"
-                android:layout_marginStart="20dp"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_marginTop="24dp"
-                android:src="@drawable/default_profile_image"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/name_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:textColor="@color/black"
+                android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/profile_image"
-                tools:text="Luke Aniago" />
-
-            <TextView
-                android:id="@+id/email_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/unselected_color"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/name_text"
-                tools:text="luke_marion_aniago@dlsu.edu.ph" />
-
-            <TextView
-                android:id="@+id/phone_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
                 android:layout_marginTop="24dp"
-                android:text="Phone Number:"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/email_text" />
+                android:fontFamily="@font/raleway_extrabold"/>
 
-            <TextView
-                android:id="@+id/phone_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="24dp"
-                android:textColor="@color/unselected_color"
-                android:textSize="16sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/phone_label"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/phone_label"
-                tools:text="09565482850" />
-
-            <TextView
-                android:id="@+id/university_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:text="University:"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/phone_label" />
-
-            <TextView
-                android:id="@+id/university_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="24dp"
-                android:textColor="@color/unselected_color"
-                android:textSize="16sp"
-                app:layout_constraintBaseline_toBaselineOf="@id/university_label"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/university_label"
-                tools:text="De La Salle University" />
-
-            <TextView
-                android:id="@+id/account_status_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:text="Account Type:"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/university_label" />
-
-            <TextView
-                android:id="@+id/account_status_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="24dp"
-                android:textColor="@color/primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/account_status_label"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/account_status_label"
-                tools:text="Driver" />
-
-            <TextView
-                android:id="@+id/car_details_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="16dp"
-                android:text="Car Details:"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/account_status_text" />
-
-            <TextView
-                android:id="@+id/car_details_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/unselected_color"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/car_details_label"
-                tools:text="Mitsubishi EVO\nPlate Number: NDE1923"/>
-
-            <LinearLayout
-                android:id="@+id/account_actions_container"
+            <!-- Profile Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/profile_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="24dp"
-                android:layout_marginEnd="24dp"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="24dp"
-                app:layout_constraintTop_toBottomOf="@id/car_details_text"
-                app:layout_constraintBottom_toBottomOf="parent">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
-                    android:id="@+id/balance_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background= "@color/secondary"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp">
+                    android:padding="24dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/default_profile_image"/>
 
                     <TextView
+                        android:id="@+id/name_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Balance:"
-                        android:textColor="@android:color/black"
-                        android:textSize="16sp"/>
-
-                    <TextView
-                        android:id="@+id/balance_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/black"
-                        android:textSize="24sp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:textSize="20sp"
                         android:textStyle="bold"
-                        tools:text="P 100.00"/>
+                        android:fontFamily="@font/raleway_extrabold"
+                        tools:text="Luke Aniago"/>
+
+                    <TextView
+                        android:id="@+id/email_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/unselected_color"
+                        android:fontFamily="@font/raleway"
+                        tools:text="luke_marion_aniago@dlsu.edu.ph"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@color/secondary"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_marginTop="8dp">
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phone Number:"
+                            android:textColor="@color/unselected_color"
+                            android:fontFamily="@font/raleway"/>
+
+                        <TextView
+                            android:id="@+id/phone_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/raleway"
+                            tools:text="09565482850"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="University:"
+                            android:textColor="@color/unselected_color"
+                            android:fontFamily="@font/raleway"/>
+
+                        <TextView
+                            android:id="@+id/university_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/black"
+                            android:fontFamily="@font/raleway"
+                            tools:text="De La Salle University"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Account Type:"
+                            android:textColor="@color/unselected_color"
+                            android:fontFamily="@font/raleway"/>
+
+                        <TextView
+                            android:id="@+id/account_status_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/primary"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/raleway_extrabold"
+                            tools:text="Driver"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Car Details Card (Visible only for drivers) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/car_details_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Car Details"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/raleway_extrabold"/>
+
+                    <TextView
+                        android:id="@+id/car_details_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/raleway"
+                        tools:text="Mitsubishi EVO\nPlate Number: NDE1923"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Balance Card (Visible only for drivers) -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/balance_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Balance"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:fontFamily="@font/raleway_extrabold"/>
+
+                    <TextView
+                        android:id="@+id/balance_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="24sp"
+                        android:textColor="@color/primary"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/raleway_extrabold"
+                        tools:text="₱ 100.00"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="16dp">
 
                         <Button
                             android:id="@+id/withdraw_button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:backgroundTint="@color/primary"
+                            android:layout_marginEnd="8dp"
                             android:text="Withdraw"
-                            android:textColor="@android:color/white"
-                            android:layout_marginEnd="4dp"/>
+                            android:backgroundTint="@color/primary"
+                            android:fontFamily="@font/raleway"/>
 
                         <Button
                             android:id="@+id/deposit_button"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:backgroundTint="@color/primary"
+                            android:layout_marginStart="8dp"
                             android:text="Deposit"
-                            android:textColor="@android:color/white"
-                            android:layout_marginStart="4dp"/>
-
+                            android:backgroundTint="@color/primary"
+                            android:fontFamily="@font/raleway"/>
                     </LinearLayout>
-
                 </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                <Button
-                    android:id="@+id/edit_profile_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/primary"
-                    android:text="Edit Profile"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="8dp" />
+            <!-- Action Buttons -->
+            <Button
+                android:id="@+id/edit_profile_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Edit Profile"
+                android:backgroundTint="@color/primary"
+                android:fontFamily="@font/raleway_extrabold"/>
 
-                <Button
-                    android:id="@+id/logout_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/secondary"
-                    android:text="Logout"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="8dp" />
+            <Button
+                android:id="@+id/logout_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Logout"
+                android:backgroundTint="@color/unselected_color"
+                android:fontFamily="@font/raleway"/>
 
-                <Button
-                    android:id="@+id/delete_account_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/cancel_color"
-                    android:text="Delete Account"
-                    android:textColor="@color/white" />
+            <Button
+                android:id="@+id/delete_account_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Delete Account"
+                android:backgroundTint="@color/cancel_color"
+                android:fontFamily="@font/raleway"/>
 
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

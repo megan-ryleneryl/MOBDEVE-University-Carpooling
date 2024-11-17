@@ -1,39 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    android:id="@+id/content_frame"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background_color">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/primary"
-            app:layout_scrollFlags="scroll|enterAlways">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit Account"
-                android:layout_marginStart="20dp"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+    android:layout_height="match_parent">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:background="@color/background_color"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -41,146 +19,172 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/default_profile_image"
-                android:layout_marginBottom="24dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit Account"
+                android:textColor="@color/primary"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/raleway_extrabold"/>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- Profile Card -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Name">
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/name_input"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName" />
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/default_profile_image"/>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Email">
+                    <Button
+                        android:id="@+id/select_avatar_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="16dp"
+                        android:text="Change Avatar"
+                        android:backgroundTint="@color/unselected_color"
+                        android:fontFamily="@font/raleway"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/email_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress" />
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:hint="Name"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/name_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/raleway"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="Phone Number">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Phone Number"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/phone_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone" />
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/phone_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="phone"
+                            android:fontFamily="@font/raleway"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="University"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:hint="University">
+                        <AutoCompleteTextView
+                            android:id="@+id/university_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:fontFamily="@font/raleway"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
-                <Spinner
-                    android:id="@+id/university_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="12dp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
+            <!-- Car Details Section -->
             <LinearLayout
                 android:id="@+id/car_details_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
                     android:text="Car Details"
+                    android:textStyle="bold"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/raleway_extrabold"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Car Make">
+                    android:layout_marginTop="16dp"
+                    android:hint="Car Make"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/car_make_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
-
+                        android:fontFamily="@font/raleway"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Car Model">
+                    android:layout_marginTop="16dp"
+                    android:hint="Car Model"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/car_model_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
-
+                        android:fontFamily="@font/raleway"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:hint="Plate Number">
+                    android:layout_marginTop="16dp"
+                    android:hint="Plate Number"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/plate_number_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="text" />
-
+                        android:fontFamily="@font/raleway"/>
                 </com.google.android.material.textfield.TextInputLayout>
-
             </LinearLayout>
 
+            <!-- Action Buttons -->
             <Button
                 android:id="@+id/save_changes_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
                 android:text="Save Changes"
                 android:backgroundTint="@color/primary"
-                android:textColor="@color/white" />
+                android:fontFamily="@font/raleway_extrabold"/>
 
             <Button
                 android:id="@+id/cancel_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/secondary"
-                android:text="Cancel" />
+                android:layout_marginTop="8dp"
+                android:text="Cancel"
+                android:backgroundTint="@color/unselected_color"
+                android:fontFamily="@font/raleway"/>
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>
