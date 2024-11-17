@@ -304,9 +304,7 @@ public class AccountLoginActivity extends AppCompatActivity {
                             .document(user.getUid())
                             .set(userData)
                             .addOnSuccessListener(aVoid -> {
-                                // Navigate to complete profile setup since university is required
-                                Intent intent = new Intent(AccountLoginActivity.this,
-                                        AccountEditActivity.class);
+                                Intent intent = new Intent(AccountLoginActivity.this, AccountCompleteProfileActivity.class);
                                 startActivity(intent);
                                 finish();
                             })

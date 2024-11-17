@@ -71,7 +71,7 @@ public class AccountEditActivity extends AppCompatActivity {
         nameInput = findViewById(R.id.name_input);
         emailInput = findViewById(R.id.email_input);
         phoneInput = findViewById(R.id.phone_input);
-        universitySpinner = findViewById(R.id.university_spinner); // Update layout to use Spinner
+        universitySpinner = findViewById(R.id.university_spinner);
         carDetailsContainer = findViewById(R.id.car_details_container);
         carMakeInput = findViewById(R.id.car_make_input);
         carModelInput = findViewById(R.id.car_model_input);
