@@ -27,8 +27,19 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+
 
 public class AccountLoginActivity extends AppCompatActivity {
     // Existing fields
@@ -39,10 +50,14 @@ public class AccountLoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
-    // Add these new fields
+    // Google Sign In fields
     private static final int RC_SIGN_IN = 9001;
     private GoogleSignInClient mGoogleSignInClient;
     private Button btnGoogle;
+
+    // Facebook fields
+    private CallbackManager mCallbackManager;
+    private Button btnFacebook;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +76,25 @@ public class AccountLoginActivity extends AppCompatActivity {
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
+        // Initialize Facebook Login
+        mCallbackManager = CallbackManager.Factory.create();
+
         // Initialize views
         emailInput = findViewById(R.id.inputEmail);
         passwordInput = findViewById(R.id.inputPassword);
         loginButton = findViewById(R.id.btnlogin);
         signupText = findViewById(R.id.textViewSignUp);
         btnGoogle = findViewById(R.id.btnGoogle);
+        btnFacebook = findViewById(R.id.btnFacebook);
 
         // Set click listeners
         loginButton.setOnClickListener(v -> attemptLogin());
         signupText.setOnClickListener(v -> signup(v));
         btnGoogle.setOnClickListener(v -> signInWithGoogle());
+        btnFacebook.setOnClickListener(v -> signInWithFacebook());
 
         setupForgotPassword();
+        setupFacebookCallback();
     }
 
     @Override
@@ -84,6 +105,112 @@ public class AccountLoginActivity extends AppCompatActivity {
         if(currentUser != null){
             navigateToHome();
         }
+    }
+
+    private void setupFacebookCallback() {
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Toast.makeText(AccountLoginActivity.this,
+                                "Facebook login cancelled", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Toast.makeText(AccountLoginActivity.this,
+                                "Facebook login failed: " + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void signInWithFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions(this,
+                Arrays.asList("email", "public_profile"));
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        checkUserInFirestore(user);
+                    } else {
+                        Toast.makeText(AccountLoginActivity.this,
+                                "Authentication failed: " + task.getException().getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void checkUserInFirestore(FirebaseUser user) {
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        navigateToHome();
+                    } else {
+                        createFacebookUserInFirestore(user);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AccountLoginActivity.this,
+                            "Error checking user data: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    mAuth.signOut();
+                });
+    }
+
+    private void createFacebookUserInFirestore(FirebaseUser user) {
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .orderBy("userID", Query.Direction.DESCENDING)
+                .limit(1)
+                .get()
+                .addOnCompleteListener(task -> {
+                    int nextUserId = 30001;
+
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                        Long highestId = document.getLong("userID");
+                        if (highestId != null) {
+                            nextUserId = highestId.intValue() + 1;
+                        }
+                    }
+
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("userID", nextUserId);
+                    userData.put("name", user.getDisplayName());
+                    userData.put("email", user.getEmail());
+                    userData.put("phoneNumber", "");
+                    userData.put("university", "");
+                    userData.put("isDriver", false);
+                    userData.put("balance", 0.0);
+                    userData.put("pfp", R.drawable.default_profile_image);
+
+                    db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                            .document(user.getUid())
+                            .set(userData)
+                            .addOnSuccessListener(aVoid -> {
+                                Intent intent = new Intent(AccountLoginActivity.this,
+                                        AccountCompleteProfileActivity.class);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(AccountLoginActivity.this,
+                                        "Error creating user profile: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                mAuth.signOut();
+                            });
+                });
     }
 
     private void attemptLogin() {
@@ -223,9 +350,13 @@ public class AccountLoginActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        // Handle Facebook login result
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+
+        // Handle Google login result
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
