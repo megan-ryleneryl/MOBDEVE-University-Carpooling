@@ -49,7 +49,6 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
-            // No authenticated user, return to login
             startActivity(new Intent(this, AccountLoginActivity.class));
             finish();
             return;
@@ -58,12 +57,10 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         initializeViews();
         setupUniversitySpinner();
 
-        // Pre-fill username if available from Google account
         if (currentUser.getDisplayName() != null) {
             usernameInput.setText(currentUser.getDisplayName());
         }
 
-        // Pre-fill phone if available from Google account
         if (currentUser.getPhoneNumber() != null) {
             phoneInput.setText(currentUser.getPhoneNumber());
         }
@@ -79,6 +76,25 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         phoneInput = findViewById(R.id.inputPhone);
         universitySpinner = findViewById(R.id.universitySpinner);
         completeButton = findViewById(R.id.btnComplete);
+    }
+
+    private void setupUniversitySpinner() {
+        ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
+        List<LocationModel> universities = new ArrayList<>();
+
+        for (LocationModel location : allLocations) {
+            if (location.getIsUniversity()) {
+                universities.add(location);
+            }
+        }
+
+        ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                universities
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        universitySpinner.setAdapter(adapter);
     }
 
     private void showAvatarDialog() {
@@ -119,25 +135,6 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void setupUniversitySpinner() {
-        ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
-        List<LocationModel> universities = new ArrayList<>();
-
-        for (LocationModel location : allLocations) {
-            if (location.getIsUniversity()) {
-                universities.add(location);
-            }
-        }
-
-        ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                universities
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        universitySpinner.setAdapter(adapter);
-    }
-
     private void attemptProfileCompletion() {
         String username = usernameInput.getText().toString().trim();
         String phone = phoneInput.getText().toString().trim();
@@ -147,7 +144,7 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
             return;
         }
 
-        createUserInFirestore(username, phone, selectedUniversity.getName());
+        createUserInFirestore(username, phone, selectedUniversity.getLocationID());
     }
 
     private boolean validateInputs(String username, String phone) {
@@ -166,14 +163,13 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         return true;
     }
 
-    private void createUserInFirestore(String username, String phone, String university) {
-        // Get the next available userID
+    private void createUserInFirestore(String username, String phone, int universityId) {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .orderBy("userID", Query.Direction.DESCENDING)
                 .limit(1)
                 .get()
                 .addOnCompleteListener(task -> {
-                    int nextUserId = 30001; // Default starting ID
+                    int nextUserId = 30001;
 
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         Long highestId = task.getResult().getDocuments().get(0).getLong("userID");
@@ -188,8 +184,9 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                     user.put("name", username);
                     user.put("email", currentUser.getEmail());
                     user.put("phoneNumber", phone);
-                    user.put("university", university);
+                    user.put("universityID", universityId);
                     user.put("isDriver", false);
+                    user.put("carID", 0);
                     user.put("balance", 0.0);
 
                     db.collection(MyFirestoreReferences.USERS_COLLECTION)
@@ -220,17 +217,14 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                 .setTitle("Cancel Registration")
                 .setMessage("If you go back, your account will not be created. Are you sure?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    String uid = currentUser.getUid(); // Store UID before deleting auth
+                    String uid = currentUser.getUid();
 
-                    // First delete the Firestore document
                     db.collection(MyFirestoreReferences.USERS_COLLECTION)
                             .document(uid)
                             .delete()
                             .addOnCompleteListener(task -> {
-                                // Then delete the Firebase Auth account
                                 if (currentUser != null) {
                                     currentUser.delete().addOnCompleteListener(deleteTask -> {
-                                        // Sign out from both Firebase and Google
                                         mAuth.signOut();
                                         GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
                                                 new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -240,7 +234,7 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                                         googleSignInClient.signOut().addOnCompleteListener(signOutTask -> {
                                             startActivity(new Intent(AccountCompleteProfileActivity.this, AccountLoginActivity.class));
                                             finish();
-                                            super.onBackPressed(); // Call super after cleanup
+                                            super.onBackPressed();
                                         });
                                     });
                                 }

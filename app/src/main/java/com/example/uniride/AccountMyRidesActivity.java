@@ -37,63 +37,35 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Initialize RecyclerView first
+        // Initialize RecyclerView
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         rideList = new ArrayList<>();
         adapter = new MyRidesAdapter(this, rideList);
         recyclerView.setAdapter(adapter);
 
-        // Then load data
+        // Load ride data
         loadRides();
     }
 
     private void loadRides() {
-        Log.d("AccountMyRidesActivity", "Starting to load rides...");
         db.collection(MyFirestoreReferences.RIDES_COLLECTION)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+                .addOnSuccessListener(querySnapshot -> {
                     rideList.clear();
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        try {
-                            // Create LocationModel objects first
-                            Map<String, Object> fromData = (Map<String, Object>) document.get("from");
-                            Map<String, Object> toData = (Map<String, Object>) document.get("to");
-
-                            LocationModel from = new LocationModel(
-                                    ((Long) fromData.get("locationID")).intValue(),
-                                    (String) fromData.get("name"),
-                                    (boolean) fromData.get("isUniversity")
-                            );
-
-                            LocationModel to = new LocationModel(
-                                    ((Long) toData.get("locationID")).intValue(),
-                                    (String) toData.get("name"),
-                                    (boolean) fromData.get("isUniversity")
-                            );
-
-                            // Then create RideModel
-                            RideModel ride = new RideModel(
-                                    document.getLong("rideID").intValue(),
-                                    null, // We'll skip driver for now
-                                    from,
-                                    to,
-                                    document.getString("type"),
-                                    document.getString("departureTime"),
-                                    document.getString("arrivalTime"),
-                                    document.getLong("availableSeats").intValue(),
-                                    document.getLong("totalSeats").intValue(),
-                                    document.getDouble("price"),
-                                    document.getBoolean("isActive")
-                            );
-                            rideList.add(ride);
-                        } catch (Exception e) {
-                            Log.e("AccountMyRidesActivity", "Error parsing document: " + e.getMessage());
-                        }
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        RideModel ride = document.toObject(RideModel.class);
+                        ride.populateObjects(db, this::onRidePopulateComplete);
+                        rideList.add(ride);
                     }
                     adapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> Log.e("AccountMyRidesActivity", "Error loading rides", e));
+    }
+
+    private void onRidePopulateComplete(RideModel ride) {
+        // Ride object is now fully populated
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -110,26 +82,4 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
         Intent intent = new Intent(this, RideEdit.class);
         startActivity(intent);
     }
-
-    private UserModel convertMapToUserModel(Map<String, Object> map) {
-        return new UserModel(
-                ((Long) map.get("userID")).intValue(),
-                ((Long) map.get("pfp")).intValue(),
-                (String) map.get("name"),
-                (String) map.get("email"),
-                (String) map.get("phoneNumber"),
-                (String) map.get("university"),
-                (Boolean) map.get("isDriver")
-        );
-    }
-
-    private LocationModel convertMapToLocationModel(Map<String, Object> map) {
-        return new LocationModel(
-                ((Long) map.get("locationID")).intValue(),
-                (String) map.get("name"),
-                (boolean) map.get("isUniversity")
-        );
-    }
-
-
 }

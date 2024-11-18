@@ -35,8 +35,8 @@ public class DataGenerator {
     public static final LocationModel location27 = new LocationModel(10027, "Montalban", false);
     public static final LocationModel location28 = new LocationModel(10028, "Taytay", false);
     public static final LocationModel location29 = new LocationModel(10029, "Cainta", false);
-    public static final LocationModel location30 = new LocationModel(10030, "UST", false);
-    public static final LocationModel location31 = new LocationModel(10031, "UP", false);
+    public static final LocationModel location30 = new LocationModel(10030, "UST", true);
+    public static final LocationModel location31 = new LocationModel(10031, "UP", true);
 
 
     // Sample rides (assuming userID 30003 and 30004 are drivers)

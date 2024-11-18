@@ -27,27 +27,25 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountDetailsActivity extends BottomNavigationActivity {
-
     private CircleImageView profileImage;
     private TextView nameText, emailText, phoneText, universityText, accountStatusText;
     private TextView carDetailsLabel, carDetailsText, balanceText;
-    private LinearLayout accountActionsContainer, balanceContainer;
+    private LinearLayout balanceContainer;
     private Button editProfileButton, logoutButton, deleteAccountButton;
     private Button withdrawButton, depositButton;
 
-    private CardView carDetailsCard;
-    private CardView balanceCard;
+    private CardView carDetailsCard, balanceCard;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        super.setContentView(R.layout.activity_account_details); // Use super.setContentView
+        setContentView(R.layout.activity_account_details);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -76,17 +74,14 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         universityText = findViewById(R.id.university_text);
         accountStatusText = findViewById(R.id.account_status_text);
 
-        // Car details card
         carDetailsCard = findViewById(R.id.car_details_card);
         carDetailsText = findViewById(R.id.car_details_text);
 
-        // Balance card
         balanceCard = findViewById(R.id.balance_card);
         balanceText = findViewById(R.id.balance_text);
         withdrawButton = findViewById(R.id.withdraw_button);
         depositButton = findViewById(R.id.deposit_button);
 
-        // Action buttons
         editProfileButton = findViewById(R.id.edit_profile_button);
         logoutButton = findViewById(R.id.logout_button);
         deleteAccountButton = findViewById(R.id.delete_account_button);
@@ -98,47 +93,63 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        nameText.setText(documentSnapshot.getString("name"));
-                        emailText.setText(documentSnapshot.getString("email"));
-                        phoneText.setText(documentSnapshot.getString("phoneNumber"));
-                        universityText.setText(documentSnapshot.getString("university"));
-                        accountStatusText.setText(documentSnapshot.getBoolean("isDriver") ? "Driver" : "Passenger");
-
-                        Integer pfpResource = documentSnapshot.getLong("pfp") != null ?
-                                documentSnapshot.getLong("pfp").intValue() : R.drawable.default_profile_image;
-                        profileImage.setImageResource(pfpResource);
-
-                        boolean isDriver = documentSnapshot.getBoolean("isDriver") != null &&
-                                documentSnapshot.getBoolean("isDriver");
-
-                        // Handle driver-specific UI
-                        if (isDriver) {
-                            balanceCard.setVisibility(View.VISIBLE);
-                            Double balance = documentSnapshot.getDouble("balance");
-                            balanceText.setText(String.format("P %.2f", balance != null ? balance : 0.0));
-
-                            Object carData = documentSnapshot.get("car");
-                            if (carData != null) {
-                                carDetailsCard.setVisibility(View.VISIBLE);
-                                String carDetails = String.format("%s %s\nPlate Number: %s",
-                                        ((Map<String, Object>) carData).get("make"),
-                                        ((Map<String, Object>) carData).get("model"),
-                                        ((Map<String, Object>) carData).get("plateNumber"));
-                                carDetailsText.setText(carDetails);
-                            }
-                        } else {
-                            balanceCard.setVisibility(View.GONE);
-                            carDetailsCard.setVisibility(View.GONE);
-                        }
+                        userModel = documentSnapshot.toObject(UserModel.class);
+                        userModel.populateObjects(db, this::onUserPopulateComplete);
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error loading user data: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error loading user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
+    private void onUserPopulateComplete(UserModel user) {
+        nameText.setText(user.getName());
+        emailText.setText(user.getEmail());
+        phoneText.setText(user.getPhoneNumber());
 
+        db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
+                .whereEqualTo("locationID", user.getUniversityID())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        LocationModel university = querySnapshot.getDocuments().get(0).toObject(LocationModel.class);
+                        universityText.setText(university.getName());
+                    } else {
+                        universityText.setText("");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error loading university data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+
+        accountStatusText.setText(user.isDriver() ? "Driver" : "Passenger");
+        profileImage.setImageResource(user.getPfp());
+
+        if (user.isDriver()) {
+            balanceCard.setVisibility(View.VISIBLE);
+            balanceText.setText(String.format("P %.2f", user.getBalance()));
+
+            if (user.getCarID() != 0) {
+                carDetailsCard.setVisibility(View.VISIBLE);
+                db.collection(MyFirestoreReferences.CARS_COLLECTION)
+                        .whereEqualTo("carID", user.getCarID())
+                        .get()
+                        .addOnSuccessListener(querySnapshot -> {
+                            if (!querySnapshot.isEmpty()) {
+                                CarModel car = querySnapshot.getDocuments().get(0).toObject(CarModel.class);
+                                String carDetails = String.format("%s %s\nPlate Number: %s", car.getMake(), car.getModel(), car.getPlateNumber());
+                                carDetailsText.setText(carDetails);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Error loading car data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
+        } else {
+            balanceCard.setVisibility(View.GONE);
+            carDetailsCard.setVisibility(View.GONE);
+        }
+    }
     private void setListeners() {
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(AccountDetailsActivity.this, AccountEditActivity.class);
@@ -146,18 +157,17 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         });
 
         logoutButton.setOnClickListener(v -> {
-            // Sign out from both Firebase and Google
             mAuth.signOut();
-            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
-                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestIdToken(getString(R.string.default_web_client_id))
                             .requestEmail()
-                            .build());
-            googleSignInClient.signOut().addOnCompleteListener(task -> {
-                Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            });
+                            .build())
+                    .signOut()
+                    .addOnCompleteListener(task -> {
+                        Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    });
         });
 
         deleteAccountButton.setOnClickListener(v -> {
@@ -188,36 +198,31 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     }
 
     private void deleteAccount() {
-        // Delete from Firestore first
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .document(currentUser.getUid())
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    // Then delete the Firebase Auth account
                     currentUser.delete()
                             .addOnSuccessListener(aVoid1 -> {
-                                // Sign out from both Firebase and Google
                                 mAuth.signOut();
-                                GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
-                                        new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                                                 .requestIdToken(getString(R.string.default_web_client_id))
                                                 .requestEmail()
-                                                .build());
-                                googleSignInClient.signOut().addOnCompleteListener(task -> {
-                                    Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                    startActivity(intent);
-                                });
+                                                .build())
+                                        .signOut()
+                                        .addOnCompleteListener(task -> {
+                                            Toast.makeText(this, "Account deleted successfully", Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(AccountDetailsActivity.this, AccountLoginActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
+                                        });
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error deleting authentication: " + e.getMessage(),
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Error deleting authentication: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error deleting user data: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Error deleting user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 }

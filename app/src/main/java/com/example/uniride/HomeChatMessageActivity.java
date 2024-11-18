@@ -99,8 +99,8 @@ public class HomeChatMessageActivity extends AppCompatActivity {
         String messageText = inputText.getText().toString();
 
         if (!messageText.isEmpty()) {
-            MessageModel message = new MessageModel(chatID, currentUser, chatmate, messageText, new Date());
-            myChatData.add(message);
+            //MessageModel message = new MessageModel(chatID, currentUser, chatmate, messageText, new Date());
+            //myChatData.add(message);
             adapter.updateData(myChatData);
             adapter.notifyItemInserted(myChatData.size() - 1);
             recyclerView.post(() -> recyclerView.scrollToPosition(myChatData.size() - 1));

@@ -112,8 +112,9 @@ public class AccountEditActivity extends AppCompatActivity {
                         // Set user data
                         nameInput.setText(documentSnapshot.getString("name"));
                         phoneInput.setText(documentSnapshot.getString("phoneNumber"));
-                        currentUniversity = documentSnapshot.getString("university");
-                        universityInput.setText(currentUniversity, false);
+                        int currentUniversityID = documentSnapshot.getLong("universityID").intValue();
+                        LocationModel currentUniversity = getUniversityById(currentUniversityID);
+                        universityInput.setText(currentUniversity.getName(), false);
 
                         // Set profile image
                         selectedAvatarResource = documentSnapshot.getLong("pfp") != null ?
@@ -142,6 +143,60 @@ public class AccountEditActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error loading user data: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void saveChanges() {
+        if (!validateInput()) {
+            return;
+        }
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", nameInput.getText().toString().trim());
+        updates.put("phoneNumber", phoneInput.getText().toString().trim());
+        updates.put("universityID", getUniversityIdByName(universityInput.getText().toString().trim()));
+        updates.put("pfp", selectedAvatarResource);
+
+        // If user is a driver, update car details
+        if (isDriver) {
+            Map<String, Object> carData = new HashMap<>();
+            carData.put("make", carMakeInput.getText().toString().trim());
+            carData.put("model", carModelInput.getText().toString().trim());
+            carData.put("plateNumber", plateNumberInput.getText().toString().trim());
+            updates.put("car", carData);
+        }
+
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .update(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(this, AccountDetailsActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error updating profile: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private LocationModel getUniversityById(int id) {
+        for (LocationModel location : DataGenerator.loadLocationData()) {
+            if (location.getLocationID() == id) {
+                return location;
+            }
+        }
+        return null;
+    }
+
+    private int getUniversityIdByName(String name) {
+        for (LocationModel location : DataGenerator.loadLocationData()) {
+            if (location.getName().equals(name)) {
+                return location.getLocationID();
+            }
+        }
+        return -1;
     }
 
     private void setListeners() {
@@ -188,42 +243,6 @@ public class AccountEditActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void saveChanges() {
-        if (!validateInput()) {
-            return;
-        }
-
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("name", nameInput.getText().toString().trim());
-        updates.put("phoneNumber", phoneInput.getText().toString().trim());
-        updates.put("university", universityInput.getText().toString().trim());
-        updates.put("pfp", selectedAvatarResource);
-
-        // If user is a driver, update car details
-        if (isDriver) {
-            Map<String, Object> carData = new HashMap<>();
-            carData.put("make", carMakeInput.getText().toString().trim());
-            carData.put("model", carModelInput.getText().toString().trim());
-            carData.put("plateNumber", plateNumberInput.getText().toString().trim());
-            updates.put("car", carData);
-        }
-
-        // Update Firestore document
-        db.collection(MyFirestoreReferences.USERS_COLLECTION)
-                .document(currentUser.getUid())
-                .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, AccountDetailsActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error updating profile: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                });
-    }
 
     private boolean validateInput() {
         if (TextUtils.isEmpty(nameInput.getText())) {

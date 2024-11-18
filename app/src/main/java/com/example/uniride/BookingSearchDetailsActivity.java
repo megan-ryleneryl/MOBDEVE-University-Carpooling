@@ -65,7 +65,7 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
             carModelTv.setText(selectedBooking.getRide().getDriver().getCar().getModel() + " " + selectedBooking.getRide().getDriver().getCar().getMake());
             userImage.setImageResource(selectedBooking.getPassenger().getPfp());
             userNameTv.setText(selectedBooking.getRide().getDriver().getName());
-            ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
+            //ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
 
             cancelBtn.setOnClickListener(v -> {
                 finish();

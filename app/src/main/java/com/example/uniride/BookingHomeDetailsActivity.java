@@ -95,7 +95,7 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
         carModelTv.setText(booking.getRide().getDriver().getCar().getModel() + " " + booking.getRide().getDriver().getCar().getMake());
         userImage.setImageResource(booking.getPassenger().getPfp());
         userNameTv.setText(booking.getRide().getDriver().getName());
-        ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
+        //ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
     }
 
     @Override

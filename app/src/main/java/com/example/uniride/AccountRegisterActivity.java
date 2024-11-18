@@ -1,7 +1,6 @@
 package com.example.uniride;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,24 +12,16 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.activity.EdgeToEdge;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountRegisterActivity extends AppCompatActivity {
@@ -44,34 +35,23 @@ public class AccountRegisterActivity extends AppCompatActivity {
     private EditText confirmPasswordInput;
     private Button registerButton;
     private TextView loginRedirectText;
-    private Uri selectedImageUri;
-
-    // Add ProgressBar
     private ProgressBar progressBar;
-    private int selectedAvatarResource = R.drawable.a_icon; // Default avatar
+    private int selectedAvatarResource = R.drawable.a_icon;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
-    private ActivityResultLauncher<String> imagePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_account_register);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
 
-        // Initialize views
         initializeViews();
         setupUniversitySpinner();
-
-        // Set click listeners
-        selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
-        registerButton.setOnClickListener(v -> attemptRegistration());
-        loginRedirectText.setOnClickListener(v -> redirectToLogin(v));
+        setClickListeners();
     }
 
     private void initializeViews() {
@@ -88,67 +68,10 @@ public class AccountRegisterActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
-    private void showAvatarDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
-        builder.setView(dialogView);
-        builder.setTitle("Select Avatar");
-
-        AlertDialog dialog = builder.create();
-
-        // Find all avatar options in dialog
-        ImageView avatar1 = dialogView.findViewById(R.id.avatar1);
-        ImageView avatar2 = dialogView.findViewById(R.id.avatar2);
-        ImageView avatar3 = dialogView.findViewById(R.id.avatar3);
-        ImageView avatar4 = dialogView.findViewById(R.id.avatar4);
-        ImageView avatar5 = dialogView.findViewById(R.id.avatar5);
-        ImageView avatar6 = dialogView.findViewById(R.id.avatar6);
-
-        // Set click listeners for all avatars
-        avatar1.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.a_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        avatar2.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.b_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        avatar3.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.c_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        avatar4.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.d_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        avatar5.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.e_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        avatar6.setOnClickListener(v -> {
-            selectedAvatarResource = R.drawable.f_icon;
-            profileImageView.setImageResource(selectedAvatarResource);
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
-
     private void setupUniversitySpinner() {
         ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
         List<LocationModel> universities = new ArrayList<>();
 
-        // Filter for universities only
         for (LocationModel location : allLocations) {
             if (location.getIsUniversity()) {
                 universities.add(location);
@@ -164,15 +87,51 @@ public class AccountRegisterActivity extends AppCompatActivity {
         universitySpinner.setAdapter(adapter);
     }
 
-    private void attemptRegistration() {
-        // Reset errors
-        usernameInput.setError(null);
-        emailInput.setError(null);
-        phoneInput.setError(null);
-        passwordInput.setError(null);
-        confirmPasswordInput.setError(null);
+    private void setClickListeners() {
+        selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
+        registerButton.setOnClickListener(v -> attemptRegistration());
+        loginRedirectText.setOnClickListener(v -> redirectToLogin());
+    }
 
-        // Get values
+    private void showAvatarDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
+        builder.setView(dialogView);
+        builder.setTitle("Select Avatar");
+
+        AlertDialog dialog = builder.create();
+
+        ImageView avatar1 = dialogView.findViewById(R.id.avatar1);
+        ImageView avatar2 = dialogView.findViewById(R.id.avatar2);
+        ImageView avatar3 = dialogView.findViewById(R.id.avatar3);
+        ImageView avatar4 = dialogView.findViewById(R.id.avatar4);
+        ImageView avatar5 = dialogView.findViewById(R.id.avatar5);
+        ImageView avatar6 = dialogView.findViewById(R.id.avatar6);
+
+        View.OnClickListener avatarClickListener = v -> {
+            int id = v.getId();
+            if (id == R.id.avatar1) selectedAvatarResource = R.drawable.a_icon;
+            else if (id == R.id.avatar2) selectedAvatarResource = R.drawable.b_icon;
+            else if (id == R.id.avatar3) selectedAvatarResource = R.drawable.c_icon;
+            else if (id == R.id.avatar4) selectedAvatarResource = R.drawable.d_icon;
+            else if (id == R.id.avatar5) selectedAvatarResource = R.drawable.e_icon;
+            else if (id == R.id.avatar6) selectedAvatarResource = R.drawable.f_icon;
+
+            profileImageView.setImageResource(selectedAvatarResource);
+            dialog.dismiss();
+        };
+
+        avatar1.setOnClickListener(avatarClickListener);
+        avatar2.setOnClickListener(avatarClickListener);
+        avatar3.setOnClickListener(avatarClickListener);
+        avatar4.setOnClickListener(avatarClickListener);
+        avatar5.setOnClickListener(avatarClickListener);
+        avatar6.setOnClickListener(avatarClickListener);
+
+        dialog.show();
+    }
+
+    private void attemptRegistration() {
         String username = usernameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
         String phone = phoneInput.getText().toString().trim();
@@ -180,13 +139,12 @@ public class AccountRegisterActivity extends AppCompatActivity {
         String password = passwordInput.getText().toString();
         String confirmPassword = confirmPasswordInput.getText().toString();
 
-        // Validate input
         if (!validateInputs(username, email, phone, password, confirmPassword)) {
             return;
         }
 
-        // Perform registration
-        performRegistration(username, email, phone, selectedUniversity.getName(), password);
+        progressBar.setVisibility(View.VISIBLE);
+        performRegistration(username, email, phone, selectedUniversity.getLocationID(), password);
     }
 
     private boolean validateInputs(String username, String email, String phone,
@@ -225,21 +183,16 @@ public class AccountRegisterActivity extends AppCompatActivity {
     }
 
     private void performRegistration(String username, String email, String phone,
-                                     String university, String password) {
-
-        // Show progress before starting registration
-        progressBar.setVisibility(View.VISIBLE);
-
+                                     int universityID, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, task -> {
-                    progressBar.setVisibility(View.GONE);
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
-                        createUserInFirestore(user.getUid(), username, email, phone, university);
+                        createUserInFirestore(user.getUid(), username, email, phone, universityID);
                     } else {
+                        progressBar.setVisibility(View.GONE);
                         String errorMessage = task.getException() != null ?
-                                task.getException().getMessage() :
-                                "Registration failed";
+                                task.getException().getMessage() : "Registration failed";
                         Toast.makeText(AccountRegisterActivity.this,
                                 "Registration failed: " + errorMessage,
                                 Toast.LENGTH_SHORT).show();
@@ -247,8 +200,8 @@ public class AccountRegisterActivity extends AppCompatActivity {
                 });
     }
 
-    private void createUserInFirestore(String uid, String username, String email, String phone, String university) {
-        // First query to get the highest existing userID
+    private void createUserInFirestore(String uid, String username, String email,
+                                       String phone, int universityID) {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .orderBy("userID", Query.Direction.DESCENDING)
                 .limit(1)
@@ -257,22 +210,19 @@ public class AccountRegisterActivity extends AppCompatActivity {
                     int nextUserId = 30001; // Default starting ID
 
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        // Get the highest existing userID and increment
-                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                        Long highestId = document.getLong("userID");
+                        Long highestId = task.getResult().getDocuments().get(0).getLong("userID");
                         if (highestId != null) {
                             nextUserId = highestId.intValue() + 1;
                         }
                     }
 
-                    // Create the user document with the new ID
                     Map<String, Object> user = new HashMap<>();
                     user.put("userID", nextUserId);
                     user.put("pfp", selectedAvatarResource);
                     user.put("name", username);
                     user.put("email", email);
                     user.put("phoneNumber", phone);
-                    user.put("university", university);
+                    user.put("universityID", universityID);
                     user.put("isDriver", false);
                     user.put("balance", 0.0);
 
@@ -280,11 +230,13 @@ public class AccountRegisterActivity extends AppCompatActivity {
                             .document(uid)
                             .set(user)
                             .addOnSuccessListener(aVoid -> {
+                                progressBar.setVisibility(View.GONE);
                                 Toast.makeText(AccountRegisterActivity.this,
                                         "Registration successful!", Toast.LENGTH_SHORT).show();
                                 navigateToHome();
                             })
                             .addOnFailureListener(e -> {
+                                progressBar.setVisibility(View.GONE);
                                 Toast.makeText(AccountRegisterActivity.this,
                                         "Failed to create user profile: " + e.getMessage(),
                                         Toast.LENGTH_SHORT).show();
@@ -292,14 +244,6 @@ public class AccountRegisterActivity extends AppCompatActivity {
                                     mAuth.getCurrentUser().delete();
                                 }
                             });
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(AccountRegisterActivity.this,
-                            "Failed to generate user ID: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                    if (mAuth.getCurrentUser() != null) {
-                        mAuth.getCurrentUser().delete();
-                    }
                 });
     }
 
@@ -310,7 +254,7 @@ public class AccountRegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    public void redirectToLogin(View v) {
+    private void redirectToLogin() {
         Intent intent = new Intent(this, AccountLoginActivity.class);
         startActivity(intent);
         finish();
