@@ -1,13 +1,11 @@
 package com.example.uniride;
 
-import java.lang.reflect.Array;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
+import java.util.Calendar;
 
 public class DataGenerator {
-    // Location data
+    // Location data (universities and common locations)
     public static final LocationModel location1 = new LocationModel(10001, "DLSU", true);
     public static final LocationModel location2 = new LocationModel(10002, "ADMU", true);
     public static final LocationModel location3 = new LocationModel(10003, "Taguig", false);
@@ -40,42 +38,65 @@ public class DataGenerator {
     public static final LocationModel location30 = new LocationModel(10030, "UST", false);
     public static final LocationModel location31 = new LocationModel(10031, "UP", false);
 
-    // Car data
-    public static final CarModel car1 = new CarModel(20001, R.drawable.sedan, "Toyota", "Corolla", "ABC 123");
-    public static final CarModel car2 = new CarModel(20002, R.drawable.hatchback, "Honda", "Civic", "XYZ 789");
 
+    // Sample rides (assuming userID 30003 and 30004 are drivers)
+    public static final RideModel ride1 = new RideModel(40001, 30003, // driver 30003
+            10003, 10001, // Taguig to DLSU
+            "toUniversity", "07:30 AM", "08:30 AM",
+            4, 4, 150.0, true);
+
+    public static final RideModel ride2 = new RideModel(40002, 30003, // driver 30003
+            10001, 10004, // DLSU to Binondo
+            "fromUniversity", "05:30 PM", "06:30 PM",
+            4, 4, 180.0, true);
+
+    public static final RideModel ride3 = new RideModel(40003, 30004, // driver 30004
+            10006, 10002, // Quezon City to ADMU
+            "toUniversity", "06:45 AM", "07:45 AM",
+            6, 6, 200.0, true);
+
+    public static final RideModel ride4 = new RideModel(40004, 30004, // driver 30004
+            10002, 10005, // ADMU to Marikina
+            "fromUniversity", "04:30 PM", "05:30 PM",
+            6, 6, 220.0, true);
+
+    // Sample bookings (userID 30001 and 30002 are passengers)
+    public static final BookingModel booking1 = new BookingModel(50001, 40001, 30001, // passenger books ride to DLSU
+            getDate(2024, 11, 18, 7, 30, 0));
+
+    public static final BookingModel booking2 = new BookingModel(50002, 40003, 30002, // passenger books ride to ADMU
+            getDate(2024, 11, 18, 6, 45, 0));
+
+
+
+    ////FRONTEND DEMO ONLY DONT USE FOR FIREBASE
+    // Car Data
+    public static final CarModel car1 = new CarModel(20001, R.drawable.sedan, "Toyota", "Corolla", "ABC 123", 4);
+    public static final CarModel car2 = new CarModel(20002, R.drawable.hatchback, "Honda", "Civic", "XYZ 789", 4);
     // User data
-    public static final UserModel user1 = new UserModel(30001, R.drawable.a_icon, "Alice Johnson", "alice@example.com", "+639123456789", "DLSU", true, car1);
-    public static final UserModel user2 = new UserModel(30002, R.drawable.b_icon, "Barbie Smith", "barbie@example.com", "+639987654321", "ADMU", false);
-    public static final UserModel user3 = new UserModel(30003, R.drawable.c_icon, "Cherry Joe", "cherry@example.com", "+639111222333", "DLSU", true, car2);
-    public static final UserModel user4 = new UserModel(30004, R.drawable.d_icon, "Daniella Mellow", "daniella@example.com", "+639123123123", "ADMU", false);
-    public static final UserModel user5 = new UserModel(30005, R.drawable.e_icon, "Elon Sunshine", "elon@example.com", "+639321321321", "DLSU", false);
-    public static final UserModel user6 = new UserModel(30004, R.drawable.f_icon, "Fairy Akew", "fairy@example.com", "+639132132132", "ADMU", false);
-
-    // Ride data
-    public static final RideModel ride1 = new RideModel(40001, user1, location3, location1, "toUniversity", "08:00 AM", "09:00 AM", 3, 4, 150.0, true);
-    public static final RideModel ride2 = new RideModel(40002, user3, location2, location5, "fromUniversity", "05:00 PM", "06:30 PM", 2, 3, 200.0, true);
-    public static final RideModel ride3 = new RideModel(40003, user1, location1, location4, "fromUniversity", "04:30 PM", "05:45 PM", 1, 4, 180.0, true);
-
-    // Booking data
-    public static final BookingModel booking1 = new BookingModel(50001, ride1, user1, getDate(2024, 10, 11, 0, 0, 0));
-    public static final BookingModel booking2 = new BookingModel(50002, ride2, user2, getDate(2024, 10, 12, 0, 0, 0));
-    public static final BookingModel booking3 = new BookingModel(50003, ride3, user3, getDate(2024, 10, 13, 0, 0, 0));
-
-//    public static final ReviewModel review1 = new ReviewModel(60001, user1, user2, ...);
-
+    public static final UserModel user1 = new UserModel(30001, R.drawable.a_icon, "Alice Johnson",
+            "alice@example.com", "+639123456789", 10001); // DLSU
+    public static final UserModel user2 = new UserModel(30002, R.drawable.b_icon, "Barbie Smith",
+            "barbie@example.com", "+639987654321", 10002); // ADMU
+    public static final UserModel user3 = new UserModel(30003, R.drawable.c_icon, "Cherry Joe",
+            "cherry@example.com", "+639111222333", 10001); // DLSU
+    public static final UserModel user4 = new UserModel(30004, R.drawable.d_icon, "Daniella Mellow",
+            "daniella@example.com", "+639123123123", 10002); // ADMU
+    public static final UserModel user5 = new UserModel(30005, R.drawable.e_icon, "Elon Sunshine",
+            "elon@example.com", "+639321321321", 10001); // DLSU
+    public static final UserModel user6 = new UserModel(30006, R.drawable.f_icon, "Fairy Akew",
+            "fairy@example.com", "+639132132132", 10002); // ADMU
     // Message data
-    public static final MessageModel message1 = new MessageModel(70001, user1, user2, "Hi Barbie, nice to meet you!", getDate(2024, 10, 9, 2, 24, 0));
-    public static final MessageModel message2 = new MessageModel(70001, user2, user1, "Hi Alice, nice to meet you as well!", getDate(2024, 10, 10, 5, 51, 0));
-    public static final MessageModel message3 = new MessageModel(70001, user1, user2, "I'll be waiting down in the lobby :)", getDate(2024, 10, 11, 6, 53, 0));
-    public static final MessageModel message4 = new MessageModel(70002, user3, user1, "Hello there.", getDate(2024, 10, 12, 8, 2, 0));
-    public static final MessageModel message5 = new MessageModel(70002, user1, user3,  "Oh hi Cherry! I'll be your driver later!", new Date());
-    public static final MessageModel message6 = new MessageModel(70003, user3, user2, "This is not meant to be seen.", getDate(2024, 10, 9, 3, 1, 0));
-    public static final MessageModel message7 = new MessageModel(70004, user1, user4, "Morning! Should I call you Dani?", getDate(2024, 10, 9, 5, 33, 0));
-    public static final MessageModel message8 = new MessageModel(70005, user5, user1, "Hello, are you there?", getDate(2024, 10, 18, 9, 14, 0));
-    public static final MessageModel message9 = new MessageModel(70006, user1, user6, "Hi Ms.Fairy! What a cute name hehe", getDate(2024, 10, 18, 14, 55, 0));
-
-
+    public static final MessageModel message1 = new MessageModel(70001, 30001, 30002, // Alice to Barbie
+            "Hi Barbie, nice to meet you!", getDate(2024, 10, 9, 2, 24, 0));
+    public static final MessageModel message2 = new MessageModel(70001, 30002, 30001, // Barbie to Alice
+            "Hi Alice, nice to meet you as well!", getDate(2024, 10, 10, 5, 51, 0));
+    public static final MessageModel message3 = new MessageModel(70001, 30001, 30002, // Alice to Barbie
+            "I'll be waiting down in the lobby :)", getDate(2024, 10, 11, 6, 53, 0));
+    public static final MessageModel message4 = new MessageModel(70002, 30003, 30001, // Cherry to Alice
+            "Hello there.", getDate(2024, 10, 12, 8, 2, 0));
+    public static final MessageModel message5 = new MessageModel(70002, 30001, 30003, // Alice to Cherry
+            "Oh hi Cherry! I'll be your driver later!", new Date());
     // Data-loading functions
     public static ArrayList<LocationModel> loadLocationData() {
         ArrayList<LocationModel> data = new ArrayList<LocationModel>();
@@ -115,6 +136,25 @@ public class DataGenerator {
         return data;
     }
 
+
+
+    public static ArrayList<RideModel> loadRideData() {
+        ArrayList<RideModel> data = new ArrayList<>();
+        data.add(ride1);
+        data.add(ride2);
+        data.add(ride3);
+        data.add(ride4);
+        return data;
+    }
+
+    public static ArrayList<BookingModel> loadBookingData() {
+        ArrayList<BookingModel> data = new ArrayList<>();
+        data.add(booking1);
+        data.add(booking2);
+        return data;
+    }
+
+    //FRONTEND DEMO ONLY DONT USE FOR FIREBASE
     public static ArrayList<CarModel> loadCarData() {
         ArrayList<CarModel> data = new ArrayList<>();
         data.add(car1);
@@ -122,8 +162,11 @@ public class DataGenerator {
         return data;
     }
 
+    //FRONTEND DEMO ONLY DONT USE FOR FIREBASE
     public static ArrayList<UserModel> loadUserData() {
         ArrayList<UserModel> data = new ArrayList<>();
+
+        // Add base users
         data.add(user1);
         data.add(user2);
         data.add(user3);
@@ -131,61 +174,32 @@ public class DataGenerator {
         data.add(user5);
         data.add(user6);
 
-        // Set cars for drivers
-        user1.setCar(car1);
-        user3.setCar(car2);
-
-        // Set initial balance for drivers
+        // Set up drivers with cars and initial balance
+        user1.setDriver(true);
+        user1.setCarID(20001); // car1
         user1.setBalance(500.0);
+
+        user3.setDriver(true);
+        user3.setCarID(20002); // car2
         user3.setBalance(750.0);
 
         return data;
     }
-
-    public static ArrayList<RideModel> loadRideData() {
-        ArrayList<RideModel> data = new ArrayList<>();
-        data.add(ride1);
-        data.add(ride2);
-        data.add(ride3);
-        return data;
-    }
-
-    public static ArrayList<BookingModel> loadBookingData() {
-        ArrayList<BookingModel> data = new ArrayList<BookingModel>();
-
-        data.add(booking1);
-        data.add(booking2);
-        data.add(booking3);
-
-        return data;
-    }
-
-    public static ArrayList<ReviewModel> loadReviewData() {
-        ArrayList<ReviewModel> data = new ArrayList<ReviewModel>();
-
-//        data.add(review1);
-
-        return data;
-    }
-
+    //FRONTEND DEMO ONLY DONT USE FOR FIREBASE
     public static ArrayList<MessageModel> loadMessageData() {
-        ArrayList<MessageModel> data = new ArrayList<MessageModel>();
+        ArrayList<MessageModel> data = new ArrayList<>();
         data.add(message1);
         data.add(message2);
         data.add(message3);
         data.add(message4);
         data.add(message5);
-        data.add(message6);
-        data.add(message7);
-        data.add(message8);
-        data.add(message9);
         return data;
     }
 
     // Helper method to get a java.util.Date object
     private static Date getDate(int year, int month, int day, int hour, int minute, int second) {
         Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, day, hour, minute, second); // Month is 0-indexed
+        calendar.set(year, month - 1, day, hour, minute, second);
         return calendar.getTime();
     }
 }

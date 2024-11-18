@@ -13,8 +13,8 @@ public class MyFirestoreReferences {
     // Fields for the Bookings collection
     public static final class Bookings {
         public static final String ID = "bookingID";
-        public static final String RIDE = "ride";
-        public static final String USER = "user"; // TODO: Is it better to use the object or the id?
+        public static final String RIDE_ID = "rideID";         // Changed from RIDE
+        public static final String PASSENGER_ID = "passengerID"; // Changed from USER
         public static final String DATE = "date";
         public static final String IS_PAYMENT_COMPLETE = "isPaymentComplete";
         public static final String IS_BOOKING_DONE = "isBookingDone";
@@ -23,10 +23,10 @@ public class MyFirestoreReferences {
     // Fields for the Rides collection
     public static final class Rides {
         public static final String ID = "rideID";
-        public static final String DRIVER = "driver";
-        public static final String FROM_LOCATION = "from";
-        public static final String TO_LOCATION = "to";
-        public static final String RIDE_TYPE = "type";
+        public static final String DRIVER_ID = "driverID";           // Changed from DRIVER
+        public static final String FROM_LOCATION_ID = "fromLocationID"; // Changed from FROM_LOCATION
+        public static final String TO_LOCATION_ID = "toLocationID";     // Changed from TO_LOCATION
+        public static final String TYPE = "type";
         public static final String DEPARTURE_TIME = "departureTime";
         public static final String ARRIVAL_TIME = "arrivalTime";
         public static final String AVAILABLE_SEATS = "availableSeats";
@@ -42,9 +42,9 @@ public class MyFirestoreReferences {
         public static final String NAME = "name";
         public static final String EMAIL = "email";
         public static final String PHONE_NUMBER = "phoneNumber";
-        public static final String UNIVERSITY = "university";
+        public static final String UNIVERSITY_ID = "universityID";  // Changed from UNIVERSITY
         public static final String IS_DRIVER = "isDriver";
-        public static final String CAR = "car";
+        public static final String CAR_ID = "carID";               // Changed from CAR
         public static final String BALANCE = "balance";
     }
 
@@ -55,30 +55,33 @@ public class MyFirestoreReferences {
         public static final String MAKE = "make";
         public static final String MODEL = "model";
         public static final String PLATE_NUMBER = "plateNumber";
-    }
-
-    // Fields for the Messages collection
-    public static final class Messages {
-        public static final String ID = "messageID";
-        public static final String SENDER = "senger";
-        public static final String RECIPIENT = "recipient";
-        public static final String MESSAGE = "message";
-        public static final String DATE = "date";
+        public static final String SEATING_CAPACITY = "seatingCapacity";
     }
 
     // Fields for the Locations collection
     public static final class Locations {
         public static final String ID = "locationID";
         public static final String NAME = "name";
+        public static final String IS_UNIVERSITY = "isUniversity";
     }
 
     // Fields for the Reviews collection
     public static final class Reviews {
         public static final String ID = "reviewID";
-        public static final String REVIEWER = "reviewer";
-        public static final String RECIPIENT = "recipient";
+        public static final String REVIEWER_ID = "reviewerID";     // Changed from REVIEWER
+        public static final String RECIPIENT_ID = "recipientID";   // Changed from RECIPIENT
         public static final String RATING = "rating";
         public static final String COMMENT = "comment";
+        public static final String DATE = "date";
+    }
+
+    // Fields for the Messages collection
+    public static final class Messages {
+        public static final String ID = "messageID";
+        public static final String CHAT_ID = "chatID";
+        public static final String SENDER_ID = "senderID";         // Changed from SENDER
+        public static final String RECIPIENT_ID = "recipientID";   // Changed from RECIPIENT
+        public static final String MESSAGE = "message";
         public static final String DATE = "date";
     }
 }
