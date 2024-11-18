@@ -3,7 +3,10 @@ package com.example.uniride;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -195,23 +198,28 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     private void showWithdrawDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_withdrawal, null);
+        View dialogView = inflater.inflate(R.layout.dialog_withdraw, null);
         builder.setView(dialogView);
 
         AlertDialog dialog = builder.create();
 
         // Get references to dialog views
-
+        TextView currentBalanceText = dialogView.findViewById(R.id.currentBalanceText);
         TextInputEditText amountInput = dialogView.findViewById(R.id.amountInput);
         Button amount20Btn = dialogView.findViewById(R.id.amount20);
         Button amount50Btn = dialogView.findViewById(R.id.amount50);
         Button amount100Btn = dialogView.findViewById(R.id.amount100);
         Button cancelBtn = dialogView.findViewById(R.id.cancelButton);
-        Button depositBtn = dialogView.findViewById(R.id.withdrawButton);
+        Button withdrawBtn = dialogView.findViewById(R.id.withdrawButton);
 
-        depositBtn.setText("Withdraw");
+        // Set current balance
+        currentBalanceText.setText(String.format("Current Balance: ₱%.2f", userModel.getBalance()));
 
-        // Quick amount buttons
+        // Quick amount buttons - disable if balance is insufficient
+        amount20Btn.setEnabled(userModel.getBalance() >= 20);
+        amount50Btn.setEnabled(userModel.getBalance() >= 50);
+        amount100Btn.setEnabled(userModel.getBalance() >= 100);
+
         amount20Btn.setOnClickListener(v -> amountInput.setText("20"));
         amount50Btn.setOnClickListener(v -> amountInput.setText("50"));
         amount100Btn.setOnClickListener(v -> amountInput.setText("100"));
@@ -220,7 +228,7 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         cancelBtn.setOnClickListener(v -> dialog.dismiss());
 
         // Withdraw button
-        depositBtn.setOnClickListener(v -> {
+        withdrawBtn.setOnClickListener(v -> {
             String amountStr = amountInput.getText().toString();
             if (!amountStr.isEmpty()) {
                 try {
@@ -230,11 +238,19 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                         return;
                     }
                     if (amount > userModel.getBalance()) {
-                        amountInput.setError("Insufficient funds");
+                        amountInput.setError("Amount exceeds available balance");
                         return;
                     }
-                    processWithdraw(amount);
-                    dialog.dismiss();
+                    // Show confirmation dialog
+                    new AlertDialog.Builder(this)
+                            .setTitle("Confirm Withdrawal")
+                            .setMessage("Are you sure you want to withdraw ₱" + String.format("%.2f", amount) + "?")
+                            .setPositiveButton("Withdraw", (confirmDialog, which) -> {
+                                processWithdraw(amount);
+                                dialog.dismiss();
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .show();
                 } catch (NumberFormatException e) {
                     amountInput.setError("Please enter a valid number");
                 }
@@ -243,9 +259,36 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
             }
         });
 
+        // Add text change listener to validate amount in real time
+        amountInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    try {
+                        double amount = Double.parseDouble(s.toString());
+                        if (amount > userModel.getBalance()) {
+                            amountInput.setError("Amount exceeds available balance");
+                            withdrawBtn.setEnabled(false);
+                        } else {
+                            amountInput.setError(null);
+                            withdrawBtn.setEnabled(true);
+                        }
+                    } catch (NumberFormatException e) {
+                        amountInput.setError("Please enter a valid number");
+                        withdrawBtn.setEnabled(false);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         dialog.show();
     }
-
     private void processDeposit(double amount) {
         // Show loading state
         showLoadingDialog("Processing deposit...");
