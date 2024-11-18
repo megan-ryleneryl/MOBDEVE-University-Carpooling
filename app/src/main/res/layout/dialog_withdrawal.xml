@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    android:layout_margin="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Withdraw Funds"
+            android:textSize="24sp"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/raleway_extrabold"/>
+
+        <TextView
+            android:id="@+id/currentBalanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Current Balance: ₱0.00"
+            android:textSize="16sp"
+            android:textColor="@color/unselected_color"
+            android:fontFamily="@font/raleway"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Enter amount to withdraw:"
+            android:textSize="16sp"
+            android:fontFamily="@font/raleway"/>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Amount"
+            app:prefixText="₱"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amountInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:fontFamily="@font/raleway"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Quick amount buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/amount20"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:text="₱20"
+                android:textSize="12sp"
+                android:backgroundTint="@color/secondary"
+                android:textColor="@color/black"
+                style="?android:attr/buttonBarButtonStyle"
+                android:fontFamily="@font/raleway"/>
+
+            <Button
+                android:id="@+id/amount50"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginHorizontal="4dp"
+                android:text="₱50"
+                android:textSize="12sp"
+                android:backgroundTint="@color/secondary"
+                android:textColor="@color/black"
+                style="?android:attr/buttonBarButtonStyle"
+                android:fontFamily="@font/raleway"/>
+
+            <Button
+                android:id="@+id/amount100"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                android:text="₱100"
+                android:textSize="12sp"
+                android:backgroundTint="@color/secondary"
+                android:textColor="@color/black"
+                style="?android:attr/buttonBarButtonStyle"
+                android:fontFamily="@font/raleway"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <Button
+                android:id="@+id/cancelButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Cancel"
+                android:backgroundTint="@color/unselected_color"
+                android:fontFamily="@font/raleway"/>
+
+            <Button
+                android:id="@+id/withdrawButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Withdraw"
+                android:backgroundTint="@color/primary"
+                android:fontFamily="@font/raleway_extrabold"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

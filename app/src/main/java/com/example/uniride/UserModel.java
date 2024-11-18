@@ -12,10 +12,12 @@ public class UserModel implements Serializable {
     private String name;
     private String email;
     private String phoneNumber;
-    private int universityID;     // Changed from String university
+    private int universityID;
     private boolean isDriver;
-    private int carID;           // Changed from CarModel car
+    private int carID;
     private double balance;
+    private String licenseNumber;
+    private String licenseExpiry;
 
     // Transient fields for object references - not stored in Firebase
     private transient LocationModel universityObj;
@@ -38,10 +40,12 @@ public class UserModel implements Serializable {
 
     // Constructor for drivers
     public UserModel(int userID, int pfp, String name, String email, String phoneNumber,
-                     int universityID, int carID) {
+                     int universityID, int carID, String licenseNumber, String licenseExpiry) {
         this(userID, pfp, name, email, phoneNumber, universityID);
         this.isDriver = true;
         this.carID = carID;
+        this.licenseNumber = licenseNumber;
+        this.licenseExpiry = licenseExpiry;
     }
 
     // Method to populate related objects
@@ -99,6 +103,8 @@ public class UserModel implements Serializable {
     public boolean isDriver() { return isDriver; }
     public int getCarID() { return carID; }
     public double getBalance() { return balance; }
+    public String getLicenseNumber() { return licenseNumber; }
+    public String getLicenseExpiry() { return licenseExpiry; }
 
     // Object getters
     public LocationModel getUniversity() { return universityObj; }
@@ -119,6 +125,8 @@ public class UserModel implements Serializable {
         this.carObj = null;  // Clear cached object
     }
     public void setBalance(double balance) { this.balance = balance; }
+    public void setLicenseNumber(String licenseNumber) { this.licenseNumber = licenseNumber; }
+    public void setLicenseExpiry(String licenseExpiry) { this.licenseExpiry = licenseExpiry; }
 
     // Helper method to convert to Firebase document
     public Map<String, Object> toMap() {
@@ -135,7 +143,7 @@ public class UserModel implements Serializable {
         return map;
     }
 
-    // Static method to create from Firebase document
+
     public static UserModel fromMap(Map<String, Object> map) {
         UserModel user = new UserModel();
         user.userID = ((Long) map.get("userID")).intValue();
@@ -151,6 +159,9 @@ public class UserModel implements Serializable {
         if (map.get("balance") != null) {
             user.balance = (double) map.get("balance");
         }
+        // Add these lines to load license details
+        user.licenseNumber = (String) map.get("licenseNumber");
+        user.licenseExpiry = (String) map.get("licenseExpiry");
         return user;
     }
 }

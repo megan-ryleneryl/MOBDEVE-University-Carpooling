@@ -3,7 +3,9 @@ package com.example.uniride;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
     private TextInputEditText licenseExpiryInput;
     private CheckBox termsCheckbox;
     private Button submitButton;
+    private TextInputEditText seatingCapacityInput;
 
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
@@ -59,6 +62,7 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
         licenseExpiryInput = findViewById(R.id.licenseExpiryInput);
         termsCheckbox = findViewById(R.id.termsCheckbox);
         submitButton = findViewById(R.id.submitButton);
+        seatingCapacityInput = findViewById(R.id.seatingCapacityInput);
     }
 
     private void setupListeners() {
@@ -74,6 +78,28 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
             if (validateInputs()) {
                 submitRegistration();
             }
+        });
+
+        seatingCapacityInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (TextUtils.isEmpty(s.toString().trim())) {
+                    seatingCapacityInput.setError("Seating capacity is required");
+                } else {
+                    int capacity = Integer.parseInt(s.toString().trim());
+                    if (capacity < 1 || capacity > 8) {
+                        seatingCapacityInput.setError("Seating capacity must be between 1 and 6");
+                    } else {
+                        seatingCapacityInput.setError(null);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
     }
 
@@ -127,15 +153,27 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
             isValid = false;
         }
 
+        if (TextUtils.isEmpty(seatingCapacityInput.getText())) {
+            seatingCapacityInput.setError("Seating capacity is required");
+            isValid = false;
+        }
+
+        int capacity = Integer.parseInt(seatingCapacityInput.getText().toString().trim());
+        if (capacity < 1 || capacity > 8) {
+            seatingCapacityInput.setError("Seating capacity must be between 1 and 8");
+            isValid = false;
+        }
+
         return isValid;
     }
 
     private void submitRegistration() {
-        // First, create the car document
-        Map<String, Object> carData = new HashMap<>();
-        carData.put("make", carMakeInput.getText().toString().trim());
-        carData.put("model", carModelInput.getText().toString().trim());
-        carData.put("plateNumber", plateNumberInput.getText().toString().trim());
+        // Create the car document
+        CarModel car = new CarModel();
+        car.setMake(carMakeInput.getText().toString().trim());
+        car.setModel(carModelInput.getText().toString().trim());
+        car.setPlateNumber(plateNumberInput.getText().toString().trim());
+        car.setSeatingCapacity(Integer.parseInt(seatingCapacityInput.getText().toString().trim()));
 
         // Query to get the next available carID
         db.collection(MyFirestoreReferences.CARS_COLLECTION)
@@ -153,17 +191,17 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
                         }
                     }
 
-                    carData.put("carID", nextCarId);
-                    carData.put("carImage", R.drawable.sedan); // Default car image
+                    car.setCarID(nextCarId);
+                    car.setCarImage(R.drawable.sedan); // Default car image
 
-                    // Save car data and update user
+                    // Save the car data
                     db.collection(MyFirestoreReferences.CARS_COLLECTION)
-                            .add(carData)
+                            .add(car.toMap())
                             .addOnSuccessListener(documentReference -> {
                                 // Update the user document to mark as driver and add car reference
                                 Map<String, Object> updates = new HashMap<>();
                                 updates.put("isDriver", true);
-                                updates.put("car", carData);
+                                updates.put("carID", car.getCarID());
                                 updates.put("licenseNumber", licenseNumberInput.getText().toString().trim());
                                 updates.put("licenseExpiry", licenseExpiryInput.getText().toString().trim());
 

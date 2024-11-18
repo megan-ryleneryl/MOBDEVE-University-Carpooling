@@ -1,8 +1,11 @@
 package com.example.uniride;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -20,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +40,10 @@ public class AccountEditActivity extends AppCompatActivity {
     private LinearLayout carDetailsContainer;
     private Button saveChangesButton, cancelButton;
 
+    private TextInputEditText licenseNumberInput;
+    private TextInputEditText licenseExpiryInput;
+    private TextInputEditText seatingCapacityInput;
+
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
@@ -43,18 +51,19 @@ public class AccountEditActivity extends AppCompatActivity {
     private String currentUniversity;
     private int selectedAvatarResource;
 
+    private UserModel userModel;
+    private int carId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_edit);
 
-        // Initialize Firebase
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         if (currentUser == null) {
-            // User not logged in, redirect to login
             startActivity(new Intent(this, AccountLoginActivity.class));
             finish();
             return;
@@ -78,6 +87,9 @@ public class AccountEditActivity extends AppCompatActivity {
         carMakeInput = findViewById(R.id.car_make_input);
         carModelInput = findViewById(R.id.car_model_input);
         plateNumberInput = findViewById(R.id.plate_number_input);
+        licenseNumberInput = findViewById(R.id.license_number_input);
+        licenseExpiryInput = findViewById(R.id.license_expiry_input);
+        seatingCapacityInput = findViewById(R.id.seating_capacity_input);
 
         // Action buttons
         saveChangesButton = findViewById(R.id.save_changes_button);
@@ -109,30 +121,52 @@ public class AccountEditActivity extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // Set user data
-                        nameInput.setText(documentSnapshot.getString("name"));
-                        phoneInput.setText(documentSnapshot.getString("phoneNumber"));
-                        int currentUniversityID = documentSnapshot.getLong("universityID").intValue();
-                        LocationModel currentUniversity = getUniversityById(currentUniversityID);
-                        universityInput.setText(currentUniversity.getName(), false);
+                        userModel = UserModel.fromMap(documentSnapshot.getData());
+                        selectedAvatarResource = userModel.getPfp(); // Store current avatar
 
-                        // Set profile image
-                        selectedAvatarResource = documentSnapshot.getLong("pfp") != null ?
-                                documentSnapshot.getLong("pfp").intValue() : R.drawable.default_profile_image;
-                        profileImage.setImageResource(selectedAvatarResource);
+                        // Update basic info immediately
+                        nameInput.setText(userModel.getName());
+                        phoneInput.setText(userModel.getPhoneNumber());
+                        profileImage.setImageResource(userModel.getPfp());
+                        isDriver = userModel.isDriver();
+                        carId = userModel.getCarID();
 
-                        // Handle driver-specific data
-                        isDriver = documentSnapshot.getBoolean("isDriver") != null &&
-                                documentSnapshot.getBoolean("isDriver");
+                        // Load university data
+                        db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
+                                .whereEqualTo("locationID", userModel.getUniversityID())
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+                                    if (!querySnapshot.isEmpty()) {
+                                        LocationModel university = LocationModel.fromMap(
+                                                querySnapshot.getDocuments().get(0).getData());
+                                        universityInput.setText(university.getName(), false);
+                                    }
+                                });
 
+                        // Load driver-specific data
                         if (isDriver) {
                             carDetailsContainer.setVisibility(View.VISIBLE);
-                            Object carData = documentSnapshot.get("car");
-                            if (carData != null) {
-                                Map<String, Object> carMap = (Map<String, Object>) carData;
-                                carMakeInput.setText((String) carMap.get("make"));
-                                carModelInput.setText((String) carMap.get("model"));
-                                plateNumberInput.setText((String) carMap.get("plateNumber"));
+
+                            // Set license details
+                            licenseNumberInput.setText(userModel.getLicenseNumber());
+                            licenseExpiryInput.setText(userModel.getLicenseExpiry());
+
+                            // Load car data if available
+                            if (carId != 0) {
+                                db.collection(MyFirestoreReferences.CARS_COLLECTION)
+                                        .whereEqualTo("carID", carId)
+                                        .get()
+                                        .addOnSuccessListener(querySnapshot -> {
+                                            if (!querySnapshot.isEmpty()) {
+                                                CarModel car = CarModel.fromMap(
+                                                        querySnapshot.getDocuments().get(0).getData());
+                                                carMakeInput.setText(car.getMake());
+                                                carModelInput.setText(car.getModel());
+                                                plateNumberInput.setText(car.getPlateNumber());
+                                                seatingCapacityInput.setText(
+                                                        String.valueOf(car.getSeatingCapacity()));
+                                            }
+                                        });
                             }
                         } else {
                             carDetailsContainer.setVisibility(View.GONE);
@@ -145,6 +179,26 @@ public class AccountEditActivity extends AppCompatActivity {
                 });
     }
 
+    private void onUserPopulateComplete(UserModel user) {
+        nameInput.setText(user.getName());
+        phoneInput.setText(user.getPhoneNumber());
+        universityInput.setText(user.getUniversity().getName(), false);
+        profileImage.setImageResource(user.getPfp());
+
+        isDriver = user.isDriver();
+        if (isDriver) {
+            carDetailsContainer.setVisibility(View.VISIBLE);
+            carMakeInput.setText(user.getCar().getMake());
+            carModelInput.setText(user.getCar().getModel());
+            plateNumberInput.setText(user.getCar().getPlateNumber());
+            licenseNumberInput.setText(user.getLicenseNumber());
+            licenseExpiryInput.setText(user.getLicenseExpiry());
+            seatingCapacityInput.setText(String.valueOf(user.getCar().getSeatingCapacity()));
+        } else {
+            carDetailsContainer.setVisibility(View.GONE);
+        }
+    }
+
     private void saveChanges() {
         if (!validateInput()) {
             return;
@@ -154,15 +208,34 @@ public class AccountEditActivity extends AppCompatActivity {
         updates.put("name", nameInput.getText().toString().trim());
         updates.put("phoneNumber", phoneInput.getText().toString().trim());
         updates.put("universityID", getUniversityIdByName(universityInput.getText().toString().trim()));
-        updates.put("pfp", selectedAvatarResource);
 
-        // If user is a driver, update car details
+        // Only update pfp if it was changed
+        if (selectedAvatarResource != 0) {
+            updates.put("pfp", selectedAvatarResource);
+        }
+
         if (isDriver) {
-            Map<String, Object> carData = new HashMap<>();
-            carData.put("make", carMakeInput.getText().toString().trim());
-            carData.put("model", carModelInput.getText().toString().trim());
-            carData.put("plateNumber", plateNumberInput.getText().toString().trim());
-            updates.put("car", carData);
+            // Add license updates
+            updates.put("licenseNumber", licenseNumberInput.getText().toString().trim());
+            updates.put("licenseExpiry", licenseExpiryInput.getText().toString().trim());
+
+            // Update car data in its own collection
+            Map<String, Object> carUpdates = new HashMap<>();
+            carUpdates.put("make", carMakeInput.getText().toString().trim());
+            carUpdates.put("model", carModelInput.getText().toString().trim());
+            carUpdates.put("plateNumber", plateNumberInput.getText().toString().trim());
+            carUpdates.put("seatingCapacity",
+                    Integer.parseInt(seatingCapacityInput.getText().toString().trim()));
+
+            db.collection(MyFirestoreReferences.CARS_COLLECTION)
+                    .whereEqualTo("carID", carId)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            querySnapshot.getDocuments().get(0).getReference()
+                                    .update(carUpdates);
+                        }
+                    });
         }
 
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
@@ -170,9 +243,6 @@ public class AccountEditActivity extends AppCompatActivity {
                 .update(updates)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(this, AccountDetailsActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {
@@ -181,14 +251,6 @@ public class AccountEditActivity extends AppCompatActivity {
                 });
     }
 
-    private LocationModel getUniversityById(int id) {
-        for (LocationModel location : DataGenerator.loadLocationData()) {
-            if (location.getLocationID() == id) {
-                return location;
-            }
-        }
-        return null;
-    }
 
     private int getUniversityIdByName(String name) {
         for (LocationModel location : DataGenerator.loadLocationData()) {
@@ -203,6 +265,58 @@ public class AccountEditActivity extends AppCompatActivity {
         selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
         saveChangesButton.setOnClickListener(v -> saveChanges());
         cancelButton.setOnClickListener(v -> finish());
+
+        // Add date picker for license expiry
+        licenseExpiryInput.setOnClickListener(v -> showDatePicker());
+
+        // Add text watcher for seating capacity
+        seatingCapacityInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!TextUtils.isEmpty(s)) {
+                    try {
+                        int capacity = Integer.parseInt(s.toString());
+                        if (capacity < 1 || capacity > 6) {
+                            seatingCapacityInput.setError("Seating capacity must be between 1 and 6");
+                        } else {
+                            seatingCapacityInput.setError(null);
+                        }
+                    } catch (NumberFormatException e) {
+                        seatingCapacityInput.setError("Please enter a valid number");
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                R.style.CustomDatePickerDialog,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    // Format the date as needed
+                    String date = String.format("%02d/%02d/%d", selectedDay, selectedMonth + 1, selectedYear);
+                    licenseExpiryInput.setText(date);
+                },
+                year,
+                month,
+                day
+        );
+
+        // Set minimum date to today
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis());
+        datePickerDialog.show();
     }
 
     private void showAvatarDialog() {
@@ -271,6 +385,21 @@ public class AccountEditActivity extends AppCompatActivity {
             }
             if (TextUtils.isEmpty(plateNumberInput.getText())) {
                 plateNumberInput.setError("Plate number is required");
+                return false;
+            }
+            if (TextUtils.isEmpty(seatingCapacityInput.getText())) {
+                seatingCapacityInput.setError("Seating capacity is required");
+                return false;
+            }
+
+            try {
+                int capacity = Integer.parseInt(seatingCapacityInput.getText().toString().trim());
+                if (capacity < 1 || capacity > 6) {
+                    seatingCapacityInput.setError("Seating capacity must be between 1 and 6");
+                    return false;
+                }
+            } catch (NumberFormatException e) {
+                seatingCapacityInput.setError("Please enter a valid number");
                 return false;
             }
         }

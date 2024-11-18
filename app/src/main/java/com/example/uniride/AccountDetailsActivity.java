@@ -3,8 +3,11 @@ package com.example.uniride;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,6 +66,12 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserData(); // Reload data when returning to this activity
+    }
+
+    @Override
     protected int getSelectedItemId() {
         return R.id.account;
     }
@@ -93,7 +103,14 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        userModel = documentSnapshot.toObject(UserModel.class);
+                        userModel = UserModel.fromMap(documentSnapshot.getData());
+                        // This immediately updates basic info that doesn't need population
+                        nameText.setText(userModel.getName());
+                        emailText.setText(userModel.getEmail());
+                        phoneText.setText(userModel.getPhoneNumber());
+                        profileImage.setImageResource(userModel.getPfp());
+
+                        // Now populate related objects
                         userModel.populateObjects(db, this::onUserPopulateComplete);
                     }
                 })
@@ -103,53 +120,221 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     }
 
     private void onUserPopulateComplete(UserModel user) {
-        nameText.setText(user.getName());
-        emailText.setText(user.getEmail());
-        phoneText.setText(user.getPhoneNumber());
-
-        db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
-                .whereEqualTo("locationID", user.getUniversityID())
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
-                        LocationModel university = querySnapshot.getDocuments().get(0).toObject(LocationModel.class);
-                        universityText.setText(university.getName());
-                    } else {
-                        universityText.setText("");
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error loading university data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-
+        // Update UI elements that depend on populated objects
         accountStatusText.setText(user.isDriver() ? "Driver" : "Passenger");
-        profileImage.setImageResource(user.getPfp());
+
+        if (user.getUniversity() != null) {
+            universityText.setText(user.getUniversity().getName());
+        }
 
         if (user.isDriver()) {
             balanceCard.setVisibility(View.VISIBLE);
-            balanceText.setText(String.format("P %.2f", user.getBalance()));
+            balanceText.setText(String.format("₱ %.2f", user.getBalance()));
 
-            if (user.getCarID() != 0) {
+            if (user.getCar() != null) {
                 carDetailsCard.setVisibility(View.VISIBLE);
-                db.collection(MyFirestoreReferences.CARS_COLLECTION)
-                        .whereEqualTo("carID", user.getCarID())
-                        .get()
-                        .addOnSuccessListener(querySnapshot -> {
-                            if (!querySnapshot.isEmpty()) {
-                                CarModel car = querySnapshot.getDocuments().get(0).toObject(CarModel.class);
-                                String carDetails = String.format("%s %s\nPlate Number: %s", car.getMake(), car.getModel(), car.getPlateNumber());
-                                carDetailsText.setText(carDetails);
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Error loading car data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
+                String carDetails = String.format("%s %s\nPlate Number: %s",
+                        user.getCar().getMake(),
+                        user.getCar().getModel(),
+                        user.getCar().getPlateNumber());
+                carDetailsText.setText(carDetails);
             }
         } else {
             balanceCard.setVisibility(View.GONE);
             carDetailsCard.setVisibility(View.GONE);
         }
     }
+
+    private void showDepositDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_deposit, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        // Get references to dialog views
+        TextInputEditText amountInput = dialogView.findViewById(R.id.amountInput);
+        Button amount20Btn = dialogView.findViewById(R.id.amount20);
+        Button amount50Btn = dialogView.findViewById(R.id.amount50);
+        Button amount100Btn = dialogView.findViewById(R.id.amount100);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelButton);
+        Button depositBtn = dialogView.findViewById(R.id.depositButton);
+
+        // Quick amount buttons
+        amount20Btn.setOnClickListener(v -> amountInput.setText("20"));
+        amount50Btn.setOnClickListener(v -> amountInput.setText("50"));
+        amount100Btn.setOnClickListener(v -> amountInput.setText("100"));
+
+        // Cancel button
+        cancelBtn.setOnClickListener(v -> dialog.dismiss());
+
+        // Deposit button
+        depositBtn.setOnClickListener(v -> {
+            String amountStr = amountInput.getText().toString();
+            if (!amountStr.isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(amountStr);
+                    if (amount <= 0) {
+                        amountInput.setError("Please enter a valid amount");
+                        return;
+                    }
+                    processDeposit(amount);
+                    dialog.dismiss();
+                } catch (NumberFormatException e) {
+                    amountInput.setError("Please enter a valid number");
+                }
+            } else {
+                amountInput.setError("Amount is required");
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showWithdrawDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_withdrawal, null);
+        builder.setView(dialogView);
+
+        AlertDialog dialog = builder.create();
+
+        // Get references to dialog views
+
+        TextInputEditText amountInput = dialogView.findViewById(R.id.amountInput);
+        Button amount20Btn = dialogView.findViewById(R.id.amount20);
+        Button amount50Btn = dialogView.findViewById(R.id.amount50);
+        Button amount100Btn = dialogView.findViewById(R.id.amount100);
+        Button cancelBtn = dialogView.findViewById(R.id.cancelButton);
+        Button depositBtn = dialogView.findViewById(R.id.withdrawButton);
+
+        depositBtn.setText("Withdraw");
+
+        // Quick amount buttons
+        amount20Btn.setOnClickListener(v -> amountInput.setText("20"));
+        amount50Btn.setOnClickListener(v -> amountInput.setText("50"));
+        amount100Btn.setOnClickListener(v -> amountInput.setText("100"));
+
+        // Cancel button
+        cancelBtn.setOnClickListener(v -> dialog.dismiss());
+
+        // Withdraw button
+        depositBtn.setOnClickListener(v -> {
+            String amountStr = amountInput.getText().toString();
+            if (!amountStr.isEmpty()) {
+                try {
+                    double amount = Double.parseDouble(amountStr);
+                    if (amount <= 0) {
+                        amountInput.setError("Please enter a valid amount");
+                        return;
+                    }
+                    if (amount > userModel.getBalance()) {
+                        amountInput.setError("Insufficient funds");
+                        return;
+                    }
+                    processWithdraw(amount);
+                    dialog.dismiss();
+                } catch (NumberFormatException e) {
+                    amountInput.setError("Please enter a valid number");
+                }
+            } else {
+                amountInput.setError("Amount is required");
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void processDeposit(double amount) {
+        // Show loading state
+        showLoadingDialog("Processing deposit...");
+
+        // Update local model
+        double newBalance = userModel.getBalance() + amount;
+        userModel.setBalance(newBalance);
+
+        // Update Firestore
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .update("balance", newBalance)
+                .addOnSuccessListener(aVoid -> {
+                    hideLoadingDialog();
+                    // Update UI
+                    balanceText.setText(String.format("₱ %.2f", newBalance));
+                    showSuccessDialog("Successfully deposited ₱" + String.format("%.2f", amount));
+                })
+                .addOnFailureListener(e -> {
+                    hideLoadingDialog();
+                    // Revert local change on failure
+                    userModel.setBalance(userModel.getBalance() - amount);
+                    showErrorDialog("Failed to process deposit: " + e.getMessage());
+                });
+    }
+
+    private void processWithdraw(double amount) {
+        // Show loading state
+        showLoadingDialog("Processing withdrawal...");
+
+        // Update local model
+        double newBalance = userModel.getBalance() - amount;
+        userModel.setBalance(newBalance);
+
+        // Update Firestore
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .update("balance", newBalance)
+                .addOnSuccessListener(aVoid -> {
+                    hideLoadingDialog();
+                    // Update UI
+                    balanceText.setText(String.format("₱ %.2f", newBalance));
+                    showSuccessDialog("Successfully withdrew ₱" + String.format("%.2f", amount));
+                })
+                .addOnFailureListener(e -> {
+                    hideLoadingDialog();
+                    // Revert local change on failure
+                    userModel.setBalance(userModel.getBalance() + amount);
+                    showErrorDialog("Failed to process withdrawal: " + e.getMessage());
+                });
+    }
+
+    private AlertDialog loadingDialog;
+
+    private void showLoadingDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
+        TextView messageText = dialogView.findViewById(R.id.messageText);
+        messageText.setText(message);
+        builder.setView(dialogView);
+        builder.setCancelable(false);
+        loadingDialog = builder.create();
+        loadingDialog.show();
+    }
+
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
+    private void showSuccessDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Success")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .setIcon(R.drawable.ic_acceptedbookings)
+                .show();
+    }
+
+    private void showErrorDialog(String message) {
+        new AlertDialog.Builder(this)
+                .setTitle("Error")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+    }
+
     private void setListeners() {
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(AccountDetailsActivity.this, AccountEditActivity.class);
@@ -174,15 +359,8 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
             showDeleteAccountConfirmationDialog();
         });
 
-        withdrawButton.setOnClickListener(v -> {
-            // TODO: Implement withdraw functionality
-            Toast.makeText(this, "Withdraw functionality coming soon", Toast.LENGTH_SHORT).show();
-        });
-
-        depositButton.setOnClickListener(v -> {
-            // TODO: Implement deposit functionality
-            Toast.makeText(this, "Deposit functionality coming soon", Toast.LENGTH_SHORT).show();
-        });
+        withdrawButton.setOnClickListener(v -> showWithdrawDialog());
+        depositButton.setOnClickListener(v -> showDepositDialog());
     }
 
     private void showDeleteAccountConfirmationDialog() {
