@@ -220,23 +220,31 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                 .setTitle("Cancel Registration")
                 .setMessage("If you go back, your account will not be created. Are you sure?")
                 .setPositiveButton("Yes", (dialog, which) -> {
-                    // Delete the Firebase Auth account
-                    if (currentUser != null) {
-                        currentUser.delete().addOnCompleteListener(task -> {
-                            // Sign out from both Firebase and Google
-                            mAuth.signOut();
-                            GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
-                                    new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                            .requestIdToken(getString(R.string.default_web_client_id))
-                                            .requestEmail()
-                                            .build());
-                            googleSignInClient.signOut().addOnCompleteListener(signOutTask -> {
-                                startActivity(new Intent(AccountCompleteProfileActivity.this, AccountLoginActivity.class));
-                                finish();
-                                super.onBackPressed();
+                    String uid = currentUser.getUid(); // Store UID before deleting auth
+
+                    // First delete the Firestore document
+                    db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                            .document(uid)
+                            .delete()
+                            .addOnCompleteListener(task -> {
+                                // Then delete the Firebase Auth account
+                                if (currentUser != null) {
+                                    currentUser.delete().addOnCompleteListener(deleteTask -> {
+                                        // Sign out from both Firebase and Google
+                                        mAuth.signOut();
+                                        GoogleSignInClient googleSignInClient = GoogleSignIn.getClient(this,
+                                                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                                        .requestIdToken(getString(R.string.default_web_client_id))
+                                                        .requestEmail()
+                                                        .build());
+                                        googleSignInClient.signOut().addOnCompleteListener(signOutTask -> {
+                                            startActivity(new Intent(AccountCompleteProfileActivity.this, AccountLoginActivity.class));
+                                            finish();
+                                            super.onBackPressed(); // Call super after cleanup
+                                        });
+                                    });
+                                }
                             });
-                        });
-                    }
                 })
                 .setNegativeButton("No", null)
                 .show();
