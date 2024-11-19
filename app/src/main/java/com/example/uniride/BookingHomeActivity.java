@@ -28,55 +28,49 @@ import android.widget.Toast;
 //import androidx.annotation.NonNull;
 //import com.google.android.gms.tasks.Task;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class BookingHomeActivity extends BottomNavigationActivity {
 
     private ArrayList<BookingModel> myBookingData;
+    private BookingModel bookingModel;
     AutoCompleteTextView originInput;
     AutoCompleteTextView destinationInput;
+    MyBookingHomeAdapter myHomeAdapter;
     EditText dateInput;
     AutoCompleteTextView passengerInput;
     Button searchBtn;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
+    private FirebaseUser currentUser;
+    private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.booking_home);
 
-        // Connect the recyclerview
-        RecyclerView recyclerView = findViewById(R.id.myBookingsRecyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        myBookingData = new ArrayList<>();
+
+        if (currentUser == null) {
+            startActivity(new Intent(this, AccountLoginActivity.class));
+            finish();
+            return;
+        }
 
         // Load data
-        ArrayList<BookingModel> myBookingData = DataGenerator.loadBookingData();
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
         Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
-
-        // Connecting Firestore
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        CollectionReference bookingsRef = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION);
-
-        // Test Firestore connection by retrieving all documents in the "Bookings" collection
-//        bookingsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    // Connection successful, log the number of documents in the collection
-//                    int documentCount = task.getResult().size();
-//                    Log.d("FirestoreTest", "Successfully connected to Firestore. Document count: " + documentCount);
-//                } else {
-//                    // Connection failed, log the error
-//                    Log.w("FirestoreTest", "Error connecting to Firestore: ", task.getException());
-//                }
-//            }
-//        });
-
-        // Set Adapter
-        MyBookingHomeAdapter myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
-        recyclerView.setAdapter(myHomeAdapter);
+        loadUserModel(db, mAuth);
 
         // Declarations
         originInput = findViewById(R.id.originInput);
@@ -158,6 +152,71 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                 }
             }
         });
+    }
+
+    private void loadUserModel(FirebaseFirestore db, FirebaseAuth auth) {
+        String uid = auth.getCurrentUser().getUid();
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(uid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        UserModel userModel = UserModel.fromMap(documentSnapshot.getData());
+                        userModel.populateObjects(db, populatedUser -> {
+                            loadBookingData(db, populatedUser);
+                        });
+                    } else {
+                        Toast.makeText(this, "User document not found.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Failed to load user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadBookingData(FirebaseFirestore db, UserModel userModel) {
+        int userID = userModel.getUserID();
+        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                .whereEqualTo(MyFirestoreReferences.Bookings.PASSENGER_ID, userID)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    myBookingData.clear();
+                    final int[] completedBookings = {0};
+
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        BookingModel booking = BookingModel.fromMap(document.getData());
+
+                        // Populate this booking's objects
+                        booking.populateObjects(db, populatedBooking -> {
+                            completedBookings[0]++;
+
+                            // When all bookings are populated, set the adapter
+                            if (completedBookings[0] == queryDocumentSnapshots.size()) {
+                                RecyclerView recyclerView = findViewById(R.id.myBookingsRecyclerView);
+                                recyclerView.setHasFixedSize(true);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(this));
+                                myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
+                                recyclerView.setAdapter(myHomeAdapter);
+                                myHomeAdapter.notifyDataSetChanged();
+                            }
+                        });
+
+                        myBookingData.add(booking);
+                    }
+
+                    Log.e("Booking data", myBookingData.toString());
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(BookingHomeActivity.this,
+                            "Error loading bookings: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserModel(db, mAuth); // Reload data when returning to this activity
     }
 
     // Helper to create a ride

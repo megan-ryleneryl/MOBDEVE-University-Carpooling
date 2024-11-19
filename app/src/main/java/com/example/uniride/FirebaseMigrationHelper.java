@@ -51,19 +51,19 @@ public class FirebaseMigrationHelper {
         latch.countDown();
 
         // Migrate bookings
-        ArrayList<BookingModel> bookings = DataGenerator.loadBookingData();
-        for (BookingModel booking : bookings) {
-            db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
-                    .add(booking.toMap())
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            System.out.println("Booking added: " + booking.getBookingID());
-                        } else {
-                            System.err.println("Error adding booking: " + booking.getBookingID());
-                        }
-                    });
-        }
-        latch.countDown();
+//        ArrayList<BookingModel> bookings = DataGenerator.loadBookingData();
+//        for (BookingModel booking : bookings) {
+//            db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+//                    .add(booking.toMap())
+//                    .addOnCompleteListener(task -> {
+//                        if (task.isSuccessful()) {
+//                            System.out.println("Booking added: " + booking.getBookingID());
+//                        } else {
+//                            System.err.println("Error adding booking: " + booking.getBookingID());
+//                        }
+//                    });
+//        }
+//        latch.countDown();
 
         // Wait for all operations to complete
         try {

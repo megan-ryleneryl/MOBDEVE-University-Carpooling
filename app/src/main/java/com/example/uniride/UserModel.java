@@ -143,7 +143,6 @@ public class UserModel implements Serializable {
         return map;
     }
 
-
     public static UserModel fromMap(Map<String, Object> map) {
         UserModel user = new UserModel();
         user.userID = ((Long) map.get("userID")).intValue();

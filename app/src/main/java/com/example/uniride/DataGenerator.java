@@ -60,14 +60,6 @@ public class DataGenerator {
             "fromUniversity", "04:30 PM", "05:30 PM",
             6, 6, 220.0, true);
 
-    // Sample bookings (userID 30001 and 30002 are passengers)
-    public static final BookingModel booking1 = new BookingModel(50001, 40001, 30001, // passenger books ride to DLSU
-            getDate(2024, 11, 18, 7, 30, 0));
-
-    public static final BookingModel booking2 = new BookingModel(50002, 40003, 30002, // passenger books ride to ADMU
-            getDate(2024, 11, 18, 6, 45, 0));
-
-
 
     ////FRONTEND DEMO ONLY DONT USE FOR FIREBASE
     // Car Data
@@ -97,6 +89,7 @@ public class DataGenerator {
             "Hello there.", getDate(2024, 10, 12, 8, 2, 0));
     public static final MessageModel message5 = new MessageModel(70002, 30001, 30003, // Alice to Cherry
             "Oh hi Cherry! I'll be your driver later!", new Date());
+
     // Data-loading functions
     public static ArrayList<LocationModel> loadLocationData() {
         ArrayList<LocationModel> data = new ArrayList<LocationModel>();
@@ -136,21 +129,12 @@ public class DataGenerator {
         return data;
     }
 
-
-
     public static ArrayList<RideModel> loadRideData() {
         ArrayList<RideModel> data = new ArrayList<>();
         data.add(ride1);
         data.add(ride2);
         data.add(ride3);
         data.add(ride4);
-        return data;
-    }
-
-    public static ArrayList<BookingModel> loadBookingData() {
-        ArrayList<BookingModel> data = new ArrayList<>();
-        data.add(booking1);
-        data.add(booking2);
         return data;
     }
 

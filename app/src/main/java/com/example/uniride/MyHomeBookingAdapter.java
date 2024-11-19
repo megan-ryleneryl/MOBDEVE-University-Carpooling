@@ -94,7 +94,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
             holder.dateText.setText(dateFormat.format(booking.getDate()));
         }
         if (!bookingType.equals("requests")) {
-            if (booking.getPaymentComplete()) {
+            if (booking.isPaymentComplete()) {
                 holder.statusText.setText("Finished");
             } else {
                 holder.statusText.setText("Pending");

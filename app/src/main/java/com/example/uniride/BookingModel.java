@@ -3,16 +3,15 @@ package com.example.uniride;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class BookingModel implements Serializable {
     private int bookingID;
-    private int rideID;          // Changed from RideModel ride
-    private int passengerID;     // Changed from UserModel passenger
-    private Date date;
+    private int rideID;
+    private int passengerID;
+    private String date;
     private boolean isPaymentComplete = false;
     private boolean isBookingDone = false;
 
@@ -23,11 +22,13 @@ public class BookingModel implements Serializable {
     // Default constructor for Firebase
     public BookingModel() {}
 
-    public BookingModel(int bookingID, int rideID, int passengerID, Date date) {
+    public BookingModel(int bookingID, int rideID, int passengerID, String date, boolean isPaymentComplete, boolean isBookingDone) {
         this.bookingID = bookingID;
         this.rideID = rideID;
         this.passengerID = passengerID;
         this.date = date;
+        this.isPaymentComplete = isPaymentComplete;
+        this.isBookingDone = isBookingDone;
     }
 
     // Method to populate related objects
@@ -42,18 +43,8 @@ public class BookingModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.rideObj = RideModel.fromMap(doc.getData());
-                        // Populate ride's related objects
-                        this.rideObj.populateObjects(db, ride -> {
-                            completedQueries[0]++;
-                            checkCompletion(completedQueries[0], totalQueries, listener);
-                        });
-                    } else {
-                        completedQueries[0]++;
-                        checkCompletion(completedQueries[0], totalQueries, listener);
+                        this.rideObj = doc.toObject(RideModel.class);
                     }
-                })
-                .addOnFailureListener(e -> {
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);
                 });
@@ -65,18 +56,8 @@ public class BookingModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.passengerObj = UserModel.fromMap(doc.getData());
-                        // Populate passenger's related objects
-                        this.passengerObj.populateObjects(db, user -> {
-                            completedQueries[0]++;
-                            checkCompletion(completedQueries[0], totalQueries, listener);
-                        });
-                    } else {
-                        completedQueries[0]++;
-                        checkCompletion(completedQueries[0], totalQueries, listener);
+                        this.passengerObj = doc.toObject(UserModel.class);
                     }
-                })
-                .addOnFailureListener(e -> {
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);
                 });
@@ -92,33 +73,23 @@ public class BookingModel implements Serializable {
         void onPopulateComplete(BookingModel booking);
     }
 
-    // Getters for IDs
+    // Getters
     public int getBookingID() { return bookingID; }
     public int getRideID() { return rideID; }
     public int getPassengerID() { return passengerID; }
-
-    // Getters for objects
-    public RideModel getRide() {
-        return rideObj;
-    }
-
-    public UserModel getPassenger() {
-        return passengerObj;
-    }
-
-    // Other getters
-    public Date getDate() { return date; }
-    public boolean getPaymentComplete() { return isPaymentComplete; }
-    public boolean getBookingDone() { return isBookingDone; }
+    public String getDate() { return date; }
+    public boolean isPaymentComplete() { return isPaymentComplete; }
+    public boolean isBookingDone() { return isBookingDone; }
+    public RideModel getRide() { return rideObj; }
+    public UserModel getPassenger() { return passengerObj; }
 
     // Setters
-    public void setPaymentComplete(boolean paymentComplete) {
-        isPaymentComplete = paymentComplete;
-    }
-
-    public void setBookingDone(boolean bookingDone) {
-        isBookingDone = bookingDone;
-    }
+    public void setBookingID(int bookingID) { this.bookingID = bookingID; }
+    public void setRideID(int rideID) { this.rideID = rideID; }
+    public void setPassengerID(int passengerID) { this.passengerID = passengerID; }
+    public void setDate(String date) { this.date = date; }
+    public void setPaymentComplete(boolean paymentComplete) { this.isPaymentComplete = paymentComplete; }
+    public void setBookingDone(boolean bookingDone) { this.isBookingDone = bookingDone; }
 
     // Helper method to convert to Firebase document
     public Map<String, Object> toMap() {
@@ -138,24 +109,34 @@ public class BookingModel implements Serializable {
         booking.bookingID = ((Long) map.get("bookingID")).intValue();
         booking.rideID = ((Long) map.get("rideID")).intValue();
         booking.passengerID = ((Long) map.get("passengerID")).intValue();
-        booking.date = (Date) map.get("date");
+        booking.date = (String) map.get("date");
         booking.isPaymentComplete = (boolean) map.get("isPaymentComplete");
         booking.isBookingDone = (boolean) map.get("isBookingDone");
         return booking;
     }
 
-    // Helper method for comparing BookingModels
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-
         BookingModel that = (BookingModel) obj;
-        return bookingID == that.bookingID;
+        return Objects.equals(bookingID, that.bookingID);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(bookingID);
+    }
+
+    @Override
+    public String toString() {
+        return "BookingModel{" +
+                "bookingID=" + bookingID +
+                ", rideID=" + rideID +
+                ", passengerID=" + passengerID +
+                ", date='" + date + '\'' +
+                ", isPaymentComplete=" + isPaymentComplete +
+                ", isBookingDone=" + isBookingDone +
+                '}';
     }
 }

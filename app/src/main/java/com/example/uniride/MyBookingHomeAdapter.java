@@ -57,21 +57,20 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String pattern = "MMMM dd yyyy";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-
         final BookingModel myBookingDataList = myBookingData.get(position);
+        Log.e("booking at index ", myBookingDataList.toString());
+        Log.d("Ride", "Ride Object: " + myBookingDataList.getRide());
+        Log.d("Driver", "Driver Object: " + myBookingDataList.getRide().getDriver());
         holder.carImage.setImageResource(myBookingDataList.getRide().getDriver().getCar().getCarImage());
         holder.locationTv.setText(myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
         holder.timeTv.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
-        holder.dateTv.setText(simpleDateFormat.format(myBookingDataList.getDate()));
+        holder.dateTv.setText(myBookingDataList.getDate());
         holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
 
         holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, BookingHomeDetailsActivity.class);
-                i.putExtra("myBookingData", myBookingData);
                 i.putExtra("selectedBooking", myBookingDataList);
                 context.startActivity(i);
             }

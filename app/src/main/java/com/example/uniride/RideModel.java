@@ -50,12 +50,12 @@ public class RideModel implements Serializable {
 
         // Get driver data
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
-                .whereEqualTo("userID", driverID)
+                .whereEqualTo(MyFirestoreReferences.Users.ID, driverID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.driverObj = doc.toObject(UserModel.class);
+                        this.driverObj = UserModel.fromMap(doc.getData());
                     }
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);

@@ -51,8 +51,6 @@ public class HomeBookingActivity extends BottomNavigationActivity {
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        bookingData = DataGenerator.loadBookingData();
-
         adapter = new MyHomeBookingAdapter(bookingData, bookingType, this);
         recyclerView.setAdapter(adapter);
     }
