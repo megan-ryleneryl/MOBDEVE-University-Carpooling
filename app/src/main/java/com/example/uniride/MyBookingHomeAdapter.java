@@ -57,24 +57,37 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final BookingModel myBookingDataList = myBookingData.get(position);
-        Log.e("booking at index ", myBookingDataList.toString());
-        Log.d("Ride", "Ride Object: " + myBookingDataList.getRide());
-        Log.d("Driver", "Driver Object: " + myBookingDataList.getRide().getDriver());
-        holder.carImage.setImageResource(myBookingDataList.getRide().getDriver().getCar().getCarImage());
-        holder.locationTv.setText(myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
-        holder.timeTv.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
-        holder.dateTv.setText(myBookingDataList.getDate());
-        holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
+        final BookingModel booking = myBookingData.get(position);
 
-        holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, BookingHomeDetailsActivity.class);
-                i.putExtra("selectedBooking", myBookingDataList);
-                context.startActivity(i);
+        if (booking != null && booking.getRide() != null) {
+            RideModel ride = booking.getRide();
+
+            // Set car image
+            if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
+                holder.carImage.setImageResource(ride.getDriver().getCar().getCarImage());
             }
-        });
+
+            // Set locations
+            String fromLocation = ride.getFrom() != null ? ride.getFrom().getName() : "";
+            String toLocation = ride.getTo() != null ? ride.getTo().getName() : "";
+            holder.locationTv.setText(fromLocation + " to " + toLocation);
+
+            // Set time
+            holder.timeTv.setText(ride.getDepartureTime() + " to " + ride.getArrivalTime());
+
+            // Set date
+            holder.dateTv.setText(booking.getDate());
+
+            // Set price
+            holder.priceTv.setText("P" + ride.getPrice());
+
+            holder.detailsBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(context, BookingHomeDetailsActivity.class);
+                intent.putExtra("selectedBooking", booking);
+                intent.putExtra("myBookingData", myBookingData);
+                context.startActivity(intent);
+            });
+        }
     }
 
     @Override

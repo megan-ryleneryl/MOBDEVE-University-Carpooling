@@ -43,22 +43,26 @@ public class RideModel implements Serializable {
         this.isActive = isActive;
     }
 
-    // Method to populate related objects
     public void populateObjects(FirebaseFirestore db, OnPopulateCompleteListener listener) {
         final int[] completedQueries = {0};
         final int totalQueries = 3;
 
         // Get driver data
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
-                .whereEqualTo(MyFirestoreReferences.Users.ID, driverID)
+                .whereEqualTo("userID", driverID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
                         this.driverObj = UserModel.fromMap(doc.getData());
+                        // Populate driver's car data
+                        if (this.driverObj != null) {
+                            this.driverObj.populateObjects(db, user -> {
+                                completedQueries[0]++;
+                                checkCompletion(completedQueries[0], totalQueries, listener);
+                            });
+                        }
                     }
-                    completedQueries[0]++;
-                    checkCompletion(completedQueries[0], totalQueries, listener);
                 });
 
         // Get from location data
@@ -68,7 +72,7 @@ public class RideModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.fromLocationObj = doc.toObject(LocationModel.class);
+                        this.fromLocationObj = LocationModel.fromMap(doc.getData());
                     }
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);
@@ -81,7 +85,7 @@ public class RideModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.toLocationObj = doc.toObject(LocationModel.class);
+                        this.toLocationObj = LocationModel.fromMap(doc.getData());
                     }
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);

@@ -179,25 +179,6 @@ public class AccountEditActivity extends AppCompatActivity {
                 });
     }
 
-    private void onUserPopulateComplete(UserModel user) {
-        nameInput.setText(user.getName());
-        phoneInput.setText(user.getPhoneNumber());
-        universityInput.setText(user.getUniversity().getName(), false);
-        profileImage.setImageResource(user.getPfp());
-
-        isDriver = user.isDriver();
-        if (isDriver) {
-            carDetailsContainer.setVisibility(View.VISIBLE);
-            carMakeInput.setText(user.getCar().getMake());
-            carModelInput.setText(user.getCar().getModel());
-            plateNumberInput.setText(user.getCar().getPlateNumber());
-            licenseNumberInput.setText(user.getLicenseNumber());
-            licenseExpiryInput.setText(user.getLicenseExpiry());
-            seatingCapacityInput.setText(String.valueOf(user.getCar().getSeatingCapacity()));
-        } else {
-            carDetailsContainer.setVisibility(View.GONE);
-        }
-    }
 
     private void saveChanges() {
         if (!validateInput()) {

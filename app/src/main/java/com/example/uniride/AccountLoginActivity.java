@@ -315,7 +315,7 @@ public class AccountLoginActivity extends AppCompatActivity {
     }
 
     private void navigateToHome() {
-        Intent intent = new Intent(AccountLoginActivity.this, AccountDetailsActivity.class);
+        Intent intent = new Intent(AccountLoginActivity.this, BookingHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

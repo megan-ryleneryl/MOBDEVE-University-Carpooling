@@ -31,7 +31,6 @@ public class BookingModel implements Serializable {
         this.isBookingDone = isBookingDone;
     }
 
-    // Method to populate related objects
     public void populateObjects(FirebaseFirestore db, OnPopulateCompleteListener listener) {
         final int[] completedQueries = {0};
         final int totalQueries = 2;
@@ -43,10 +42,15 @@ public class BookingModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.rideObj = doc.toObject(RideModel.class);
+                        this.rideObj = RideModel.fromMap(doc.getData());
+                        // Populate ride's related objects
+                        if (this.rideObj != null) {
+                            this.rideObj.populateObjects(db, ride -> {
+                                completedQueries[0]++;
+                                checkCompletion(completedQueries[0], totalQueries, listener);
+                            });
+                        }
                     }
-                    completedQueries[0]++;
-                    checkCompletion(completedQueries[0], totalQueries, listener);
                 });
 
         // Get passenger data
@@ -56,7 +60,7 @@ public class BookingModel implements Serializable {
                 .addOnSuccessListener(querySnapshot -> {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
-                        this.passengerObj = doc.toObject(UserModel.class);
+                        this.passengerObj = UserModel.fromMap(doc.getData());
                     }
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);
