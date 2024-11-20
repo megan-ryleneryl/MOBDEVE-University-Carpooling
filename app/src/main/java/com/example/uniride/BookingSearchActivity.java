@@ -1,8 +1,9 @@
 package com.example.uniride;
 
 import android.app.DatePickerDialog;
-import android.content.Intent;
+import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -11,47 +12,71 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 
 public class BookingSearchActivity extends BottomNavigationActivity {
     private ArrayList<BookingModel> myBookingData;
-    AutoCompleteTextView originInput2;
-    AutoCompleteTextView destinationInput2;
-    EditText dateInput2;
-    AutoCompleteTextView passengerInput2;
-    Button searchBtn2;
+    private ArrayList<BookingModel> searchResults;
+    private MyBookingSearchAdapter mySearchAdapter;
+    private RecyclerView recyclerView;
+    private FirebaseFirestore db;
+    private ProgressDialog progressDialog;
+    private ArrayList<LocationModel> locations;
+    private AutoCompleteTextView originInput2;
+    private AutoCompleteTextView destinationInput2;
+    private EditText dateInput2;
+    private AutoCompleteTextView passengerInput2;
+    private Button searchBtn2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.booking_search);
 
-        // Receive the data from home
+        db = FirebaseFirestore.getInstance();
+        setupProgressDialog();
+
+        // Initialize data
+        myBookingData = (ArrayList<BookingModel>) getIntent().getSerializableExtra("myBookingData");
+        locations = (ArrayList<LocationModel>) getIntent().getSerializableExtra("locations");
+        locations.sort(Comparator.comparing(LocationModel::getName));
         String origin = getIntent().getStringExtra("originInput");
         String destination = getIntent().getStringExtra("destinationInput");
         String date = getIntent().getStringExtra("dateInput");
         int passengers = getIntent().getIntExtra("passengerInput", 1);
-        ArrayList<BookingModel> myBookingData = (ArrayList<BookingModel>) getIntent().getSerializableExtra("myBookingData");
-        ArrayList<LocationModel> locations = (ArrayList<LocationModel>) getIntent().getSerializableExtra("locations");
         Integer[] numPassengers = { 1, 2, 3, 4, 5, 6 };
+        searchResults = new ArrayList<>();
 
-        // Connect the recyclerview
-        RecyclerView recyclerView = findViewById(R.id.searchResultsRecyclerView);
+        // Setup RecyclerView
+        recyclerView = findViewById(R.id.searchResultsRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Set Adapter
-        MyBookingSearchAdapter mySearchAdapter = new MyBookingSearchAdapter(myBookingData, BookingSearchActivity.this);
+        // Initialize adapter with empty results
+        mySearchAdapter = new MyBookingSearchAdapter(searchResults, this);
         recyclerView.setAdapter(mySearchAdapter);
+
+        initViews();
+        searchForBookings(origin, destination, date, passengers);
+    }
+
+    private void setupProgressDialog() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Searching for rides...");
+        progressDialog.setCancelable(false);
+    }
+
+    private void initViews() {
+        Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
 
         // Declarations
         originInput2 = findViewById(R.id.originInput2);
@@ -116,35 +141,121 @@ public class BookingSearchActivity extends BottomNavigationActivity {
             }
         });
 
-        searchBtn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isAnyFieldEmpty()) {
-                    Toast.makeText(BookingSearchActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(BookingSearchActivity.this, "Searching database...", Toast.LENGTH_SHORT).show();
+        searchBtn2.setOnClickListener(view -> {
+            if(isAnyFieldEmpty()) {
+                Toast.makeText(BookingSearchActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            } else {
+                String originInput = originInput2.getText().toString();
+                String destinationInput = destinationInput2.getText().toString();
+                String dateInput = dateInput2.getText().toString();
+                int passengerInput = Integer.parseInt(passengerInput2.getText().toString());
 
-                    String originInput = originInput2.getText().toString();
-                    String destinationInput = destinationInput2.getText().toString();
-                    String dateInput = dateInput2.getText().toString();
-                    int passengerInput = Integer.parseInt(passengerInput2.getText().toString());
-
-                    searchForBookings(originInput, destinationInput, dateInput, passengerInput);
-
-                    originInput2.setText("");
-                    destinationInput2.setText("");
-                    dateInput2.setText("");
-                    passengerInput2.setText("");
-
-                    // TODO: Refresh page and load new search results
-                }
+                searchForBookings(originInput, destinationInput, dateInput, passengerInput);
             }
         });
     }
 
-    private ArrayList<BookingModel> searchForBookings(String origin, String destination, String date, int passengers) {
-        // TODO: Implement db search
+    private void searchForBookings(String originName, String destinationName, String date, int passengers) {
+        progressDialog.show();
+        searchResults.clear();
 
+        LocationModel originLocation = findLocationByName(originName);
+        LocationModel destinationLocation = findLocationByName(destinationName);
+
+//        Log.d("SearchDebug", "Origin ID: " + (originLocation != null ? originLocation.getLocationID() : "null"));
+//        Log.d("SearchDebug", "Destination ID: " + (destinationLocation != null ? destinationLocation.getLocationID() : "null"));
+//        Log.d("SearchDebug", "Date: " + date);
+//        Log.d("SearchDebug", "Passengers: " + passengers);
+
+        if (originLocation == null || destinationLocation == null) {
+            progressDialog.dismiss();
+            Toast.makeText(this, "Invalid location selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Add timeout handler
+        new android.os.Handler().postDelayed(() -> {
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+//                Log.d("SearchDebug", "Search timed out");
+                Toast.makeText(BookingSearchActivity.this, "Search timed out. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        }, 15000); // 15 second timeout
+
+        db.collection("rides")
+                .whereEqualTo("fromLocationID", originLocation.getLocationID())
+                .whereEqualTo("toLocationID", destinationLocation.getLocationID())
+                .whereGreaterThanOrEqualTo("availableSeats", passengers)
+                .whereEqualTo("isActive", true)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+//                    Log.d("SearchDebug", "Query successful. Found " + queryDocumentSnapshots.size() + " documents");
+
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        progressDialog.dismiss();
+                        Toast.makeText(this, "No rides found matching your criteria", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    int totalDocuments = queryDocumentSnapshots.size();
+                    final int[] processedDocuments = {0};
+
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+//                        Log.d("SearchDebug", "Processing document: " + document.getId());
+                        RideModel ride = RideModel.fromMap(document.getData());
+
+                        // Check if already booked
+                        boolean isAlreadyBooked = myBookingData.stream()
+                                .anyMatch(booking -> booking.getRideID() == ride.getRideID());
+
+                        if (!isAlreadyBooked) {
+                            BookingModel searchResult = new BookingModel();
+                            searchResult.setRideID(ride.getRideID());
+                            searchResult.setDate(date);
+                            searchResults.add(searchResult);
+
+                            searchResult.populateObjects(db, populatedBooking -> {
+                                processedDocuments[0]++;
+//                                Log.d("SearchDebug", "Processed " + processedDocuments[0] + " of " + totalDocuments);
+
+                                if (processedDocuments[0] == totalDocuments) {
+                                    progressDialog.dismiss();
+                                    if (!searchResults.isEmpty()) {
+                                        mySearchAdapter.notifyDataSetChanged();
+                                    } else {
+                                        Toast.makeText(BookingSearchActivity.this,
+                                                "No available rides found",
+                                                Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                        } else {
+                            processedDocuments[0]++;
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("SearchDebug", "Search failed", e);
+                    progressDialog.dismiss();
+                    Toast.makeText(BookingSearchActivity.this,
+                            "Error searching for rides: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                })
+                .addOnCompleteListener(task -> {
+                    Log.d("SearchDebug", "Search completed. Success: " + task.isSuccessful());
+                    // Ensure progress dialog is dismissed
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
+    private LocationModel findLocationByName(String locationName) {
+        for (LocationModel location : locations) {
+            if (location.getName().equals(locationName)) {
+                return location;
+            }
+        }
         return null;
     }
 

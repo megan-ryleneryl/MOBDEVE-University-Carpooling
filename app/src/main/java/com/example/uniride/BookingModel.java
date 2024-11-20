@@ -138,7 +138,7 @@ public class BookingModel implements Serializable {
                 "bookingID=" + bookingID +
                 ", rideID=" + rideID +
                 ", passengerID=" + passengerID +
-                ", date='" + date + '\'' +
+                ", date=" + date +
                 ", isPaymentComplete=" + isPaymentComplete +
                 ", isBookingDone=" + isBookingDone +
                 '}';

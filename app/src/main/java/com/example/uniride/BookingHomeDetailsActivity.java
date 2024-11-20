@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class BookingHomeDetailsActivity extends BottomNavigationActivity {
@@ -31,11 +33,15 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
     Button previousBtn;
     Button nextBtn;
     int currentIndex = 0;
+    private FirebaseFirestore db;
+    private ArrayList<BookingModel> populatedBookings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.booking_home_details);
+
+        db = FirebaseFirestore.getInstance();
 
         // Retrieve Intent data
         ArrayList<BookingModel> myBookingData = (ArrayList<BookingModel>) getIntent().getSerializableExtra("myBookingData");
@@ -43,25 +49,62 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
 
         if (myBookingData != null && selectedBooking != null) {
             currentIndex = myBookingData.indexOf(selectedBooking);
+            populatedBookings = new ArrayList<>(myBookingData.size());
+
+            // Initialize the populated bookings array with nulls
+            for (int i = 0; i < myBookingData.size(); i++) {
+                populatedBookings.add(null);
+            }
+
             initializeViews();
-            displayBookingData(myBookingData.get(currentIndex));
+            populateAllBookings(myBookingData);
 
             previousBtn.setOnClickListener(v -> {
                 if (currentIndex > 0) {
                     currentIndex--;
-                    displayBookingData(myBookingData.get(currentIndex));
+                    BookingModel booking = populatedBookings.get(currentIndex);
+                    if (booking != null) {
+                        displayBookingData(booking);
+                    } else {
+                        Toast.makeText(BookingHomeDetailsActivity.this, "Loading booking data...", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(BookingHomeDetailsActivity.this, "No previous booking", Toast.LENGTH_SHORT).show();
                 }
             });
 
             nextBtn.setOnClickListener(v -> {
-                if (currentIndex < myBookingData.size() - 1) {
+                if (currentIndex < populatedBookings.size() - 1) {
                     currentIndex++;
-                    displayBookingData(myBookingData.get(currentIndex));
+                    BookingModel booking = populatedBookings.get(currentIndex);
+                    if (booking != null) {
+                        displayBookingData(booking);
+                    } else {
+                        Toast.makeText(BookingHomeDetailsActivity.this, "Loading booking data...", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(BookingHomeDetailsActivity.this, "No more bookings", Toast.LENGTH_SHORT).show();
                 }
+            });
+        }
+    }
+
+    private void populateAllBookings(ArrayList<BookingModel> bookings) {
+        for (int i = 0; i < bookings.size(); i++) {
+            final int index = i;
+            BookingModel booking = bookings.get(i);
+
+            booking.populateObjects(db, populatedBooking -> {
+                runOnUiThread(() -> {
+                    populatedBookings.set(index, populatedBooking);
+
+                    // If this is the current booking, display it
+                    if (index == currentIndex) {
+                        displayBookingData(populatedBooking);
+                    }
+
+                    Log.d("Booking Population", "Populated booking " + index + ": " + populatedBooking.toString());
+                });
             });
         }
     }
@@ -85,17 +128,35 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
 
     // Helper method to display booking data for the current booking
     private void displayBookingData(BookingModel booking) {
-        priceTv.setText("P" + booking.getRide().getPrice());
-        departureTimeTv.setText(booking.getRide().getDepartureTime());
-        arrivalTimeTv.setText(booking.getRide().getArrivalTime());
-        departureLocTv.setText(booking.getRide().getFrom().getName());
-        arrivalLocTv.setText(booking.getRide().getTo().getName());
-        carImage.setImageResource(booking.getRide().getDriver().getCar().getCarImage());
-        capacityTv.setText(booking.getRide().getAvailableSeats() + " seats available");
-        carModelTv.setText(booking.getRide().getDriver().getCar().getModel() + " " + booking.getRide().getDriver().getCar().getMake());
-        userImage.setImageResource(booking.getPassenger().getPfp());
-        userNameTv.setText(booking.getRide().getDriver().getName());
-        //ratingTv.setText("★ " + booking.getRide().getDriver().getRating());
+        RideModel ride = booking.getRide();
+
+        if (ride == null) {
+            Log.e("BookingHomeDetails", "Ride is null for booking: " + booking.toString());
+            return;
+        }
+
+        String fromLocation = ride.getFrom() != null ? ride.getFrom().getName() : "";
+        String toLocation = ride.getTo() != null ? ride.getTo().getName() : "";
+
+        priceTv.setText("P" + ride.getPrice());
+        departureTimeTv.setText(ride.getDepartureTime());
+        arrivalTimeTv.setText(ride.getArrivalTime());
+        departureLocTv.setText(fromLocation);
+        arrivalLocTv.setText(toLocation);
+        capacityTv.setText(ride.getAvailableSeats() + " seats available");
+
+        if (ride.getDriver() != null) {
+            if (ride.getDriver().getCar() != null) {
+                carImage.setImageResource(ride.getDriver().getCar().getCarImage());
+                carModelTv.setText(ride.getDriver().getCar().getModel() + " " + ride.getDriver().getCar().getMake());
+            }
+            userNameTv.setText(ride.getDriver().getName());
+            // ratingTv.setText("★ " + ride.getDriver().getRating());
+        }
+
+        if (booking.getPassenger() != null) {
+            userImage.setImageResource(booking.getPassenger().getPfp());
+        }
     }
 
     @Override

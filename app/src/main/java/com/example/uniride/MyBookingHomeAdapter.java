@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -55,6 +56,7 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         return viewHolder;
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         final BookingModel booking = myBookingData.get(position);
@@ -62,9 +64,12 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         if (booking != null && booking.getRide() != null) {
             RideModel ride = booking.getRide();
 
+            Log.d("Car image", context.getResources().getResourceName(2131231040));
+
             // Set car image
             if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
                 holder.carImage.setImageResource(ride.getDriver().getCar().getCarImage());
+                Log.d("Car image", String.valueOf(ride.getDriver().getCar().getCarImage()));
             }
 
             // Set locations
@@ -76,7 +81,7 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
             holder.timeTv.setText(ride.getDepartureTime() + " to " + ride.getArrivalTime());
 
             // Set date
-            holder.dateTv.setText(booking.getDate());
+            holder.dateTv.setText(booking.getDate().replace("\"", ""));
 
             // Set price
             holder.priceTv.setText("P" + ride.getPrice());

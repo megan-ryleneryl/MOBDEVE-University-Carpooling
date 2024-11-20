@@ -19,6 +19,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 
 public class BookingHomeActivity extends BottomNavigationActivity {
     private ArrayList<BookingModel> myBookingData;
@@ -77,6 +78,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
 
     private void setupAutocompleteFields() {
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
+        locations.sort(Comparator.comparing(LocationModel::getName));
         Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
 
         ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, locations);
@@ -118,7 +120,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                 BookingHomeActivity.this,
                 R.style.CustomDatePickerDialog,
                 (view, year, month, dayOfMonth) -> {
-                    String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                    String selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth;
                     dateInput.setText(selectedDate);
                 },
                 calendar.get(Calendar.YEAR),
@@ -182,8 +184,6 @@ public class BookingHomeActivity extends BottomNavigationActivity {
 
                         myBookingData.add(booking);
                     }
-
-                    Log.d("Booking data", myBookingData.toString());
                 })
                 .addOnFailureListener(e -> {
                     progressDialog.dismiss();

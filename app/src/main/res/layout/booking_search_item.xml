@@ -93,11 +93,12 @@
         android:layout_marginEnd="20dp"
         android:backgroundTint="@color/primary"
         android:fontFamily="@font/raleway"
-        android:onClick="btnClicked"
         android:text="Book Now!"
         android:textColor="#FFFFFF"
         android:textSize="12sp"
         android:textStyle="bold"
+        android:clickable="true"
+        android:enabled="true"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

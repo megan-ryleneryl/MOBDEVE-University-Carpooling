@@ -97,7 +97,7 @@
                                     android:ems="10"
                                     android:focusable="false"
                                     android:fontFamily="@font/raleway"
-                                    android:hint="MM-DD-YYYY"
+                                    android:hint="YYYY-MM-DD"
                                     android:inputType="datetime|date"
                                     android:singleLine="false" />
                             </LinearLayout>
