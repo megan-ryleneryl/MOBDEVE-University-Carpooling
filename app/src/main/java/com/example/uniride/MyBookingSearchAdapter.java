@@ -19,8 +19,8 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
     Context context;
     private ArrayList<BookingModel> searchResults;
 
-    public MyBookingSearchAdapter(ArrayList<BookingModel> myBookingData, BookingSearchActivity activity) {
-        this.myBookingData = myBookingData;
+    public MyBookingSearchAdapter(ArrayList<BookingModel> searchResults, BookingSearchActivity activity) {
+        this.searchResults = searchResults;
         this.context = activity;
     }
 
@@ -54,15 +54,9 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Log.d("ButtonDebug", String.valueOf(searchResults != null));
-
         if(searchResults != null) {
             final BookingModel searchResult = searchResults.get(position);
             RideModel ride = searchResult.getRide();
-
-//            Log.d("AdapterDebug", searchResult.toString());
-
-            Log.d("ButtonDebug", String.valueOf(ride != null));
 
             if (ride != null) {
                 if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
@@ -78,7 +72,6 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
                 holder.priceTv2.setText("P" + ride.getPrice());
 
                 holder.bookBtn2.setOnClickListener(v -> {
-                    Log.d("ButtonDebug", "Book btn clicked");
                     Intent i = new Intent(context, BookingSearchDetailsActivity.class);
                     i.putExtra("selectedBooking", searchResult);
                     context.startActivity(i);
@@ -89,6 +82,6 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
 
     @Override
     public int getItemCount() {
-        return myBookingData.size();
+        return searchResults != null ? searchResults.size() : 0;
     }
 }

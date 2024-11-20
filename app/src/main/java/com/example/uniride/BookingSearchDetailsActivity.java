@@ -46,11 +46,12 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         BookingModel selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
 
         if (selectedBooking != null) {
-            initViews(selectedBooking);
+            selectedBooking.populateObjects(db, populatedBooking -> {
+                runOnUiThread(() -> {
+                    initViews(populatedBooking);
+                });
+            });
         }
-
-        Log.d("AdapterDebug", "BookingSearchDetailsActivity entered");
-        Log.d("AdapterDebug", selectedBooking.toString());
     }
 
     private void initViews(BookingModel selectedBooking) {
@@ -68,27 +69,54 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         cancelBtn = findViewById(R.id.cancelBtn);
         confirmBtn = findViewById(R.id.confirmBtn);
 
+        Log.d("CodeDebug", selectedBooking.toString());
+        RideModel ride = selectedBooking.getRide();
+        Log.d("CodeDebug", String.valueOf(ride != null));
+
         // get the needed data from within selectedBooking
-//        priceTv.setText("P" + selectedBooking.getRide().getPrice());
-//        departureTimeTv.setText(selectedBooking.getRide().getDepartureTime());
-//        arrivalTimeTv.setText(selectedBooking.getRide().getArrivalTime());
-//        departureLocTv.setText(selectedBooking.getRide().getFrom().getName());
-//        arrivalLocTv.setText(selectedBooking.getRide().getTo().getName());
-//        carImage.setImageResource(selectedBooking.getRide().getDriver().getCar().getCarImage());
-//        capacityTv.setText(selectedBooking.getRide().getAvailableSeats() + " seats available");
-//        carModelTv.setText(selectedBooking.getRide().getDriver().getCar().getModel() + " " + selectedBooking.getRide().getDriver().getCar().getMake());
-//        userImage.setImageResource(selectedBooking.getPassenger().getPfp());
-//        userNameTv.setText(selectedBooking.getRide().getDriver().getName());
+        priceTv.setText("P" + ride.getPrice());
+        departureTimeTv.setText(ride.getDepartureTime());
+        arrivalTimeTv.setText(ride.getArrivalTime());
+        departureLocTv.setText(ride.getFrom().getName());
+        arrivalLocTv.setText(ride.getTo().getName());
+        carImage.setImageResource(ride.getDriver().getCar().getCarImage());
+        capacityTv.setText(ride.getAvailableSeats() + " seats available");
+        carModelTv.setText(ride.getDriver().getCar().getModel() + " " + ride.getDriver().getCar().getMake());
+        userImage.setImageResource(ride.getDriver().getPfp());
+        userNameTv.setText(ride.getDriver().getName());
         //ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
 
         cancelBtn.setOnClickListener(v -> {
             finish();
         });
 
-        confirmBtn.setOnClickListener(v -> {
-            Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
-            i.putExtra("selectedBooking", selectedBooking);
-            startActivity(i);
-        });
+//        confirmBtn.setOnClickListener(v -> {
+//            // 1. Prepare booking data
+//            String bookingId = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION).document().getId();
+//
+//            // Create a booking document
+//            BookingModel bookingToSave = new BookingModel(
+//                    bookingId,
+//                    selectedBooking.getRide().getId(), // rideID
+//                    getCurrentUserId(), // passengerID (need to implement method to get current user's ID)
+//                    getCurrentDate(), // date
+//                    false, // isPaymentComplete
+//                    false  // isBookingDone
+//            );
+//
+//            // 2. Save to Firestore
+//            db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+//                    .document(bookingId)
+//                    .set(bookingToSave)
+//                    .addOnSuccessListener(documentReference -> {
+//                        // 3. Pass data to confirmation screen
+//                        Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
+//                        i.putExtra("selectedBooking", selectedBooking);
+//                        startActivity(i);
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        Toast.makeText(this, "Booking failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    });
+//        });
     }
 }
