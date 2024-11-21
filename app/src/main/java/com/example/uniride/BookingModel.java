@@ -2,6 +2,8 @@ package com.example.uniride;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,10 @@ public class BookingModel implements Serializable {
     private int rideID;
     private int passengerID;
     private String date;
+
+    @PropertyName("isPaymentComplete")
     private boolean isPaymentComplete = false;
+    @PropertyName("isBookingDone")
     private boolean isBookingDone = false;
 
     // Transient fields - not stored in Firebase
@@ -92,8 +97,8 @@ public class BookingModel implements Serializable {
     public void setRideID(int rideID) { this.rideID = rideID; }
     public void setPassengerID(int passengerID) { this.passengerID = passengerID; }
     public void setDate(String date) { this.date = date; }
-    public void setPaymentComplete(boolean paymentComplete) { this.isPaymentComplete = paymentComplete; }
-    public void setBookingDone(boolean bookingDone) { this.isBookingDone = bookingDone; }
+    public void setPaymentComplete(boolean isPaymentComplete) { this.isPaymentComplete = isPaymentComplete; }
+    public void setBookingDone(boolean isBookingDone) { this.isBookingDone = isBookingDone; }
 
     // Helper method to convert to Firebase document
     public Map<String, Object> toMap() {

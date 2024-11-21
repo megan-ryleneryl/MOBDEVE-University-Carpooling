@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
                     android:fontFamily="@font/raleway_extrabold"
-                    android:text="P200"
+                    android:text=""
                     android:textAlignment="center"
                     android:textColor="@color/primary"
                     android:textSize="24sp" />
@@ -70,7 +70,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/raleway_extrabold"
-                        android:text="06:00"
+                        android:text=""
                         android:textAlignment="viewStart"
                         android:textStyle="bold" />
 
@@ -81,7 +81,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/raleway_extrabold"
-                        android:text="06:50"
+                        android:text=""
                         android:textAlignment="viewEnd"
                         android:textStyle="bold" />
 
@@ -99,7 +99,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/raleway"
-                        android:text="Lucky Chinatown"
+                        android:text=""
                         android:textAlignment="viewStart"
                         android:textStyle="bold" />
 
@@ -110,7 +110,7 @@
                         android:layout_margin="5dp"
                         android:layout_weight="1"
                         android:fontFamily="@font/raleway"
-                        android:text="DLSU Taft"
+                        android:text=""
                         android:textAlignment="viewEnd"
                         android:textStyle="bold" />
 
@@ -128,7 +128,7 @@
                         android:layout_width="100dp"
                         android:layout_height="100dp"
                         android:layout_marginRight="10dp"
-                        app:srcCompat="@drawable/hatchback" />
+                        tools:srcCompat="?attr/listChoiceBackgroundIndicator" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -142,7 +142,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="5dp"
                             android:fontFamily="@font/raleway"
-                            android:text="3 seats available" />
+                            android:text="" />
 
                         <TextView
                             android:id="@+id/carModelTv"
@@ -150,7 +150,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/raleway"
                             android:gravity="center_vertical"
-                            android:text="Honda Civic" />
+                            android:text="" />
                     </LinearLayout>
 
                 </LinearLayout>
@@ -166,7 +166,7 @@
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_marginRight="10dp"
-                        tools:srcCompat="@tools:sample/avatars" />
+                        tools:srcCompat="?attr/listChoiceBackgroundIndicator" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -182,15 +182,8 @@
                             android:layout_marginBottom="5dp"
                             android:fontFamily="@font/raleway"
                             android:gravity="center_vertical"
-                            android:text="Steven" />
+                            android:text="" />
 
-                        <TextView
-                            android:id="@+id/ratingTv"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/raleway"
-                            android:gravity="center_vertical"
-                            android:text="★ 5.0" />
                     </LinearLayout>
                 </LinearLayout>
 

@@ -1,5 +1,7 @@
 package com.example.uniride;
 
+import static android.content.Intent.getIntent;
+
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -18,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,7 +38,7 @@ public class BookingSearchActivity extends BottomNavigationActivity {
     private AutoCompleteTextView originInput2;
     private AutoCompleteTextView destinationInput2;
     private EditText dateInput2;
-    private AutoCompleteTextView passengerInput2;
+    private Spinner priceInput2;
     private Button searchBtn2;
 
     @Override
@@ -52,8 +56,8 @@ public class BookingSearchActivity extends BottomNavigationActivity {
         String origin = getIntent().getStringExtra("originInput");
         String destination = getIntent().getStringExtra("destinationInput");
         String date = getIntent().getStringExtra("dateInput");
-        int passengers = getIntent().getIntExtra("passengerInput", 1);
-        Integer[] numPassengers = { 1, 2, 3, 4, 5, 6 };
+        String priceInput = getIntent().getStringExtra("priceInput");
+        String currentUserID = getIntent().getStringExtra("currentUserID");
         searchResults = new ArrayList<>();
 
         // Setup RecyclerView
@@ -62,11 +66,11 @@ public class BookingSearchActivity extends BottomNavigationActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Initialize adapter with empty results
-        mySearchAdapter = new MyBookingSearchAdapter(searchResults, this);
+        mySearchAdapter = new MyBookingSearchAdapter(searchResults, currentUserID, this);
         recyclerView.setAdapter(mySearchAdapter);
 
         initViews();
-        searchForBookings(origin, destination, date, passengers);
+        searchForBookings(origin, destination, date, priceInput);
     }
 
     private void setupProgressDialog() {
@@ -76,13 +80,11 @@ public class BookingSearchActivity extends BottomNavigationActivity {
     }
 
     private void initViews() {
-        Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
-
         // Declarations
         originInput2 = findViewById(R.id.originInput2);
         destinationInput2 = findViewById(R.id.destinationInput2);
         dateInput2 = findViewById(R.id.dateInput2);
-        passengerInput2 = findViewById(R.id.passengerInput2);
+        priceInput2 = findViewById(R.id.priceInput2);
         searchBtn2 = findViewById(R.id.searchBtn2);
 
         // Declare autocomplete fields
@@ -91,9 +93,11 @@ public class BookingSearchActivity extends BottomNavigationActivity {
         originInput2.setAdapter(adapter);
         destinationInput2.setThreshold(1);
         destinationInput2.setAdapter(adapter);
-        ArrayAdapter<Integer> passengerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, numPassengers);
-        passengerInput2.setThreshold(0);
-        passengerInput2.setAdapter(passengerAdapter);
+
+        String[] priceRanges = {"Less than 250", "Less than 500", "Less than 1000", "Any"};
+        ArrayAdapter<String> priceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, priceRanges);
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priceInput2.setAdapter(priceAdapter);
 
         // Open date selector when clicked
         dateInput2.setOnClickListener(new View.OnClickListener() {
@@ -134,13 +138,6 @@ public class BookingSearchActivity extends BottomNavigationActivity {
             }
         });
 
-        passengerInput2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                passengerInput2.showDropDown();
-            }
-        });
-
         searchBtn2.setOnClickListener(view -> {
             if(isAnyFieldEmpty()) {
                 Toast.makeText(BookingSearchActivity.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
@@ -148,14 +145,14 @@ public class BookingSearchActivity extends BottomNavigationActivity {
                 String originInput = originInput2.getText().toString();
                 String destinationInput = destinationInput2.getText().toString();
                 String dateInput = dateInput2.getText().toString();
-                int passengerInput = Integer.parseInt(passengerInput2.getText().toString());
+                String priceInput = priceInput2.getSelectedItem().toString();
 
-                searchForBookings(originInput, destinationInput, dateInput, passengerInput);
+                searchForBookings(originInput, destinationInput, dateInput, priceInput);
             }
         });
     }
 
-    private void searchForBookings(String originName, String destinationName, String date, int passengers) {
+    private void searchForBookings(String originName, String destinationName, String date, String priceInput) {
         progressDialog.show();
         searchResults.clear();
 
@@ -165,7 +162,6 @@ public class BookingSearchActivity extends BottomNavigationActivity {
 //        Log.d("SearchDebug", "Origin ID: " + (originLocation != null ? originLocation.getLocationID() : "null"));
 //        Log.d("SearchDebug", "Destination ID: " + (destinationLocation != null ? destinationLocation.getLocationID() : "null"));
 //        Log.d("SearchDebug", "Date: " + date);
-//        Log.d("SearchDebug", "Passengers: " + passengers);
 
         if (originLocation == null || destinationLocation == null) {
             progressDialog.dismiss();
@@ -182,72 +178,85 @@ public class BookingSearchActivity extends BottomNavigationActivity {
             }
         }, 15000); // 15 second timeout
 
-        db.collection("rides")
+        Query query = db.collection("rides")
                 .whereEqualTo("fromLocationID", originLocation.getLocationID())
                 .whereEqualTo("toLocationID", destinationLocation.getLocationID())
-                .whereGreaterThanOrEqualTo("availableSeats", passengers)
-                .whereEqualTo("isActive", true)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+                .whereEqualTo("isActive", true);
+
+        // Add price range filtering
+        switch(priceInput) {
+            case "Less than 250":
+                query = query.whereLessThan("price", 250);
+                break;
+            case "Less than 500":
+                query = query.whereLessThan("price", 500);
+                break;
+            case "Less than 1000":
+                query = query.whereLessThan("price", 1000);
+                break;
+            // "Any" means no additional price filtering
+        }
+
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
 //                    Log.d("SearchDebug", "Query successful. Found " + queryDocumentSnapshots.size() + " documents");
 
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        progressDialog.dismiss();
-                        Toast.makeText(this, "No rides found matching your criteria", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+            if (queryDocumentSnapshots.isEmpty()) {
+                progressDialog.dismiss();
+                Toast.makeText(this, "No rides found matching your criteria", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                    int totalDocuments = queryDocumentSnapshots.size();
-                    final int[] processedDocuments = {0};
+            int totalDocuments = queryDocumentSnapshots.size();
+            final int[] processedDocuments = {0};
 
-                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+            for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
 //                        Log.d("SearchDebug", "Processing document: " + document.getId());
-                        RideModel ride = RideModel.fromMap(document.getData());
+                RideModel ride = RideModel.fromMap(document.getData());
 
-                        // Check if already booked
-                        boolean isAlreadyBooked = myBookingData.stream()
-                                .anyMatch(booking -> booking.getRideID() == ride.getRideID());
+                // Check if already booked
+                boolean isAlreadyBooked = myBookingData.stream()
+                        .anyMatch(booking -> booking.getRideID() == ride.getRideID());
 
-                        if (!isAlreadyBooked) {
-                            BookingModel searchResult = new BookingModel();
-                            searchResult.setRideID(ride.getRideID());
-                            searchResult.setDate(date);
-                            searchResults.add(searchResult);
+                if (!isAlreadyBooked) {
+                    BookingModel searchResult = new BookingModel();
+                    searchResult.setRideID(ride.getRideID());
+                    searchResult.setDate(date);
+                    searchResults.add(searchResult);
 
-                            searchResult.populateObjects(db, populatedBooking -> {
-                                processedDocuments[0]++;
+                    searchResult.populateObjects(db, populatedBooking -> {
+                        processedDocuments[0]++;
 //                                Log.d("SearchDebug", "Processed " + processedDocuments[0] + " of " + totalDocuments);
 
-                                if (processedDocuments[0] == totalDocuments) {
-                                    progressDialog.dismiss();
-                                    if (!searchResults.isEmpty()) {
-                                        mySearchAdapter.notifyDataSetChanged();
-                                    } else {
-                                        Toast.makeText(BookingSearchActivity.this,
-                                                "No available rides found",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            });
-                        } else {
-                            processedDocuments[0]++;
+                        if (processedDocuments[0] == totalDocuments) {
+                            progressDialog.dismiss();
+                            if (!searchResults.isEmpty()) {
+                                mySearchAdapter.notifyDataSetChanged();
+                            } else {
+                                Toast.makeText(BookingSearchActivity.this,
+                                        "No available rides found",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("SearchDebug", "Search failed", e);
-                    progressDialog.dismiss();
-                    Toast.makeText(BookingSearchActivity.this,
-                            "Error searching for rides: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                })
-                .addOnCompleteListener(task -> {
-                    Log.d("SearchDebug", "Search completed. Success: " + task.isSuccessful());
-                    // Ensure progress dialog is dismissed
-                    if (progressDialog.isShowing()) {
-                        progressDialog.dismiss();
-                    }
-                });
+                    });
+                } else {
+                    processedDocuments[0]++;
+                }
+            }
+        })
+        .addOnFailureListener(e -> {
+            Log.e("SearchDebug", "Search failed", e);
+            progressDialog.dismiss();
+            Toast.makeText(BookingSearchActivity.this,
+                    "Error searching for rides: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        })
+        .addOnCompleteListener(task -> {
+            Log.d("SearchDebug", "Search completed. Success: " + task.isSuccessful());
+            // Ensure progress dialog is dismissed
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+        });
     }
 
     private LocationModel findLocationByName(String locationName) {
@@ -264,7 +273,7 @@ public class BookingSearchActivity extends BottomNavigationActivity {
         return originInput2.getText().toString().trim().isEmpty() ||
                 destinationInput2.getText().toString().trim().isEmpty() ||
                 dateInput2.getText().toString().trim().isEmpty() ||
-                passengerInput2.getText().toString().trim().isEmpty();
+                priceInput2.getSelectedItem().toString().trim().isEmpty();
     }
 
     @Override

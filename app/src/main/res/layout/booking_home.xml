@@ -118,15 +118,12 @@
                                     android:fontFamily="@font/raleway"
                                     android:hint="To..." />
 
-                                <AutoCompleteTextView
-                                    android:id="@+id/passengerInput"
-                                    style="@style/CustomAutoCompleteTextView"
+                                <Spinner
+                                    android:id="@+id/priceInput"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
-                                    android:focusable="false"
-                                    android:fontFamily="@font/raleway"
-                                    android:hint="Passenger/s" />
+                                    android:fontFamily="@font/raleway" />
 
                             </LinearLayout>
 

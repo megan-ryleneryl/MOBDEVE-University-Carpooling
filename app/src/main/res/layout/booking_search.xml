@@ -95,15 +95,12 @@
                             android:hint="To..."
                             android:textSize="16sp" />
 
-                        <AutoCompleteTextView
-                            android:id="@+id/passengerInput2"
-                            style="@style/CustomAutoCompleteTextView"
+                        <Spinner
+                            android:id="@+id/priceInput2"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:focusable="false"
-                            android:fontFamily="@font/raleway"
-                            android:hint="Passenger/s" />
+                            android:fontFamily="@font/raleway" />
 
                     </LinearLayout>
 

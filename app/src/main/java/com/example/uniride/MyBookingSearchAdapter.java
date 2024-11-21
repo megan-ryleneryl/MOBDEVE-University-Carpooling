@@ -1,5 +1,7 @@
 package com.example.uniride;
 
+import static android.content.Intent.getIntent;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -17,10 +19,12 @@ import java.util.ArrayList;
 public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearchAdapter.ViewHolder> {
     ArrayList<BookingModel> myBookingData;
     Context context;
+    private String currentUserID;
     private ArrayList<BookingModel> searchResults;
 
-    public MyBookingSearchAdapter(ArrayList<BookingModel> searchResults, BookingSearchActivity activity) {
+    public MyBookingSearchAdapter(ArrayList<BookingModel> searchResults, String currentUserID, BookingSearchActivity activity) {
         this.searchResults = searchResults;
+        this.currentUserID = currentUserID;
         this.context = activity;
     }
 
@@ -74,6 +78,7 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
                 holder.bookBtn2.setOnClickListener(v -> {
                     Intent i = new Intent(context, BookingSearchDetailsActivity.class);
                     i.putExtra("selectedBooking", searchResult);
+                    i.putExtra("currentUserID", currentUserID);
                     context.startActivity(i);
                 });
             }

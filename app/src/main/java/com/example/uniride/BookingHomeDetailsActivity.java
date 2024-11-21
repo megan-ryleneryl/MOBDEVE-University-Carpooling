@@ -29,7 +29,6 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
     TextView carModelTv;
     ImageView userImage;
     TextView userNameTv;
-    TextView ratingTv;
     Button previousBtn;
     Button nextBtn;
     int currentIndex = 0;
@@ -121,7 +120,6 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
         carModelTv = findViewById(R.id.carModelTv);
         userImage = findViewById(R.id.userImage);
         userNameTv = findViewById(R.id.userNameTv);
-        ratingTv = findViewById(R.id.ratingTv);
         previousBtn = findViewById(R.id.previousBtn);
         nextBtn = findViewById(R.id.nextBtn);
     }

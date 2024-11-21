@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,9 +16,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BookingSearchDetailsActivity extends AppCompatActivity {
     TextView priceTv;
@@ -30,10 +38,11 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
     TextView carModelTv;
     ImageView userImage;
     TextView userNameTv;
-    TextView ratingTv;
     Button cancelBtn;
     Button confirmBtn;
     private FirebaseFirestore db;
+    private BookingModel selectedBooking;
+    private String currentUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +52,8 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Retrieve Intent data
-        BookingModel selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
+        selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
+        currentUserID = getIntent().getStringExtra("currentUserID");
 
         if (selectedBooking != null) {
             selectedBooking.populateObjects(db, populatedBooking -> {
@@ -65,13 +75,10 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         carModelTv = findViewById(R.id.carModelTv);
         userImage = findViewById(R.id.userImage);
         userNameTv = findViewById(R.id.userNameTv);
-        ratingTv = findViewById(R.id.ratingTv);
         cancelBtn = findViewById(R.id.cancelBtn);
         confirmBtn = findViewById(R.id.confirmBtn);
 
-        Log.d("CodeDebug", selectedBooking.toString());
         RideModel ride = selectedBooking.getRide();
-        Log.d("CodeDebug", String.valueOf(ride != null));
 
         // get the needed data from within selectedBooking
         priceTv.setText("P" + ride.getPrice());
@@ -90,33 +97,78 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
             finish();
         });
 
-//        confirmBtn.setOnClickListener(v -> {
-//            // 1. Prepare booking data
-//            String bookingId = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION).document().getId();
-//
-//            // Create a booking document
-//            BookingModel bookingToSave = new BookingModel(
-//                    bookingId,
-//                    selectedBooking.getRide().getId(), // rideID
-//                    getCurrentUserId(), // passengerID (need to implement method to get current user's ID)
-//                    getCurrentDate(), // date
-//                    false, // isPaymentComplete
-//                    false  // isBookingDone
-//            );
-//
-//            // 2. Save to Firestore
-//            db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
-//                    .document(bookingId)
-//                    .set(bookingToSave)
-//                    .addOnSuccessListener(documentReference -> {
-//                        // 3. Pass data to confirmation screen
-//                        Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
-//                        i.putExtra("selectedBooking", selectedBooking);
-//                        startActivity(i);
-//                    })
-//                    .addOnFailureListener(e -> {
-//                        Toast.makeText(this, "Booking failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                    });
-//        });
+        confirmBtn.setOnClickListener(v -> {
+            // Find the next available bookingID
+            db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                    .orderBy("bookingID", Query.Direction.DESCENDING)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        int nextBookingID;
+                        if (!querySnapshot.isEmpty()) {
+                            DocumentSnapshot lastDoc = querySnapshot.getDocuments().get(0);
+                            int lastBookingID = ((Long) lastDoc.get("bookingID")).intValue();
+                            nextBookingID = lastBookingID + 1;
+                        } else {
+                            nextBookingID = 50001; // Starting bookingID if no bookings exist
+                        }
+
+                        // Find the current user's userID
+                        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                                .whereEqualTo("email", FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                                .get()
+                                .addOnSuccessListener(userSnapshot -> {
+                                    if (!userSnapshot.isEmpty()) {
+                                        DocumentSnapshot userDoc = userSnapshot.getDocuments().get(0);
+                                        int userID = ((Long) userDoc.get("userID")).intValue();
+
+                                        // Create and save the booking
+                                        BookingModel bookingToSave = new BookingModel(
+                                                nextBookingID,
+                                                selectedBooking.getRide().getRideID(),
+                                                userID,
+                                                selectedBooking.getDate(),
+                                                false,
+                                                false
+                                        );
+
+                                        // Generate a unique document ID
+                                        String documentId = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION).document().getId();
+
+                                        // Save the booking
+                                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                                .document(documentId)
+                                                .set(bookingToSave.toMap())
+                                                .addOnSuccessListener(documentReference -> {
+                                                    // Reduce available seats
+                                                    RideModel selectedRide = selectedBooking.getRide();
+                                                    selectedRide.setAvailableSeats(1);
+
+                                                    // Update the ride in Firestore
+                                                    db.collection(MyFirestoreReferences.RIDES_COLLECTION)
+                                                            .whereEqualTo("rideID", selectedRide.getRideID())
+                                                            .get()
+                                                            .addOnSuccessListener(rideSnapshot -> {
+                                                                if (!rideSnapshot.isEmpty()) {
+                                                                    DocumentSnapshot rideDoc = rideSnapshot.getDocuments().get(0);
+                                                                    rideDoc.getReference().update("availableSeats", selectedRide.getAvailableSeats());
+                                                                }
+
+                                                                // Navigate to confirmation
+                                                                Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
+                                                                i.putExtra("bookingToSave", bookingToSave);
+//                                                                Log.d("CodeDebug", bookingToSave.toString());
+                                                                startActivity(i);
+                                                            });
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(BookingSearchDetailsActivity.this,
+                                                            "Booking failed: " + e.getMessage(),
+                                                            Toast.LENGTH_SHORT).show();
+                                                });
+                                    }
+                                });
+                    });
+        });
     }
 }
