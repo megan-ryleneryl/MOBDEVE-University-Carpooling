@@ -29,6 +29,7 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
     TextView carModelTv;
     ImageView userImage;
     TextView userNameTv;
+    TextView isAcceptedTv;
     Button previousBtn;
     Button nextBtn;
     int currentIndex = 0;
@@ -120,6 +121,7 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
         carModelTv = findViewById(R.id.carModelTv);
         userImage = findViewById(R.id.userImage);
         userNameTv = findViewById(R.id.userNameTv);
+        isAcceptedTv = findViewById(R.id.isAcceptedTv);
         previousBtn = findViewById(R.id.previousBtn);
         nextBtn = findViewById(R.id.nextBtn);
     }
@@ -150,10 +152,13 @@ public class BookingHomeDetailsActivity extends BottomNavigationActivity {
             }
             userNameTv.setText(ride.getDriver().getName());
             // ratingTv.setText("★ " + ride.getDriver().getRating());
+            userImage.setImageResource(ride.getDriver().getPfp());
         }
 
-        if (booking.getPassenger() != null) {
-            userImage.setImageResource(booking.getPassenger().getPfp());
+        if (booking.isAccepted() == false) {
+            isAcceptedTv.setText("Status: Not Yet Accepted");
+        } else if (booking.isAccepted() == true ) {
+            isAcceptedTv.setText("Status: Accepted by Rider");
         }
     }
 

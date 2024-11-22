@@ -89,9 +89,9 @@
         <activity
             android:name=".AccountRegisterActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".AccountLoginActivity"-->
-<!--            android:exported="false" />-->
+        <activity
+            android:name=".ztest"
+            android:exported="false" />
         <activity
             android:name=".AccountLoginActivity"
             android:exported="true">

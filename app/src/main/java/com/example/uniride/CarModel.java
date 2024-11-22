@@ -12,6 +12,12 @@ public class CarModel implements Serializable {
     private String plateNumber;
     private int seatingCapacity;  // Added field for seating capacity
 
+    // int hatchbackResourceId = 2131230920;
+    // int sedanResourceId = 2131231041;
+    // int suvResourceId = 2131231043;
+    // int vanResourceId = 2131231052;
+    // int mpvResourceId = 2131230989;
+
     // Default constructor needed for Firebase
     public CarModel() {}
 

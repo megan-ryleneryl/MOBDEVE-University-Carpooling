@@ -127,9 +127,7 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
                                                 nextBookingID,
                                                 selectedBooking.getRide().getRideID(),
                                                 userID,
-                                                selectedBooking.getDate(),
-                                                false,
-                                                false
+                                                selectedBooking.getDate()
                                         );
 
                                         // Generate a unique document ID
@@ -139,33 +137,36 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
                                         db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
                                                 .document(documentId)
                                                 .set(bookingToSave.toMap())
-                                                .addOnSuccessListener(documentReference -> {
-                                                    // Reduce available seats
-                                                    RideModel selectedRide = selectedBooking.getRide();
-                                                    selectedRide.setAvailableSeats(1);
-
-                                                    // Update the ride in Firestore
-                                                    db.collection(MyFirestoreReferences.RIDES_COLLECTION)
-                                                            .whereEqualTo("rideID", selectedRide.getRideID())
-                                                            .get()
-                                                            .addOnSuccessListener(rideSnapshot -> {
-                                                                if (!rideSnapshot.isEmpty()) {
-                                                                    DocumentSnapshot rideDoc = rideSnapshot.getDocuments().get(0);
-                                                                    rideDoc.getReference().update("availableSeats", selectedRide.getAvailableSeats());
-                                                                }
-
-                                                                // Navigate to confirmation
-                                                                Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
-                                                                i.putExtra("bookingToSave", bookingToSave);
-//                                                                Log.d("CodeDebug", bookingToSave.toString());
-                                                                startActivity(i);
-                                                            });
-                                                })
                                                 .addOnFailureListener(e -> {
                                                     Toast.makeText(BookingSearchDetailsActivity.this,
                                                             "Booking failed: " + e.getMessage(),
                                                             Toast.LENGTH_SHORT).show();
                                                 });
+
+                                        // Navigate to confirmation
+                                        Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);
+                                        i.putExtra("bookingToSave", bookingToSave);
+//                                      Log.d("CodeDebug", bookingToSave.toString());
+                                        startActivity(i);
+
+//                                                // TODO: @Ken, this is the nested lambda function to reduce the available seats
+//                                                .addOnSuccessListener(documentReference -> {
+//                                                    // Reduce available seats
+//                                                    RideModel selectedRide = selectedBooking.getRide();
+//                                                    selectedRide.setAvailableSeats(1);
+//
+//                                                    // Update the ride in Firestore
+//                                                    db.collection(MyFirestoreReferences.RIDES_COLLECTION)
+//                                                            .whereEqualTo("rideID", selectedRide.getRideID())
+//                                                            .get()
+//                                                            .addOnSuccessListener(rideSnapshot -> {
+//                                                                if (!rideSnapshot.isEmpty()) {
+//                                                                    DocumentSnapshot rideDoc = rideSnapshot.getDocuments().get(0);
+//                                                                    rideDoc.getReference().update("availableSeats", selectedRide.getAvailableSeats());
+//                                                                }
+//                                                            });
+//                                                })
+//
                                     }
                                 });
                     });

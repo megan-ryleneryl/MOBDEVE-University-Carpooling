@@ -64,7 +64,7 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         if (booking != null && booking.getRide() != null) {
             RideModel ride = booking.getRide();
 
-            Log.d("Car image", context.getResources().getResourceName(2131231040));
+            Log.d("Car image", context.getResources().getResourceName(2131231041));
 
             // Set car image
             if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
