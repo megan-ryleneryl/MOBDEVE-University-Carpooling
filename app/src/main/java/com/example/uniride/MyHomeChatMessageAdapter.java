@@ -1,40 +1,35 @@
 package com.example.uniride;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.List;
 
 public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMessageAdapter.ViewHolder> {
 
-    ArrayList<MessageModel> myChatData;
-    Context context;
-    int chatID;
+    private Context context;
+    private List<MessageModel> messageList;
 
-    public MyHomeChatMessageAdapter(ArrayList<MessageModel> rawChatData, int chatID, HomeChatMessageActivity activity) {
-        this.chatID = chatID;
-        updateData(rawChatData);
-
-        this.context = activity;
+    public MyHomeChatMessageAdapter(Context context, List<MessageModel> messageList) {
+        this.context = context;
+        this.messageList = messageList;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView timestampText;
-        TextView messageText;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView messageText, timestampText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -43,44 +38,42 @@ public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMes
         }
     }
 
-    public void updateData(ArrayList<MessageModel> newData) {
-        myChatData = newData;
-        notifyDataSetChanged();
-    }
-
     @NonNull
     @Override
     public MyHomeChatMessageAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        LayoutInflater inflater = LayoutInflater.from(context);
 
+        // Inflate outgoing or incoming message layout based on viewType
         if (viewType == 1) {
-            view = layoutInflater.inflate(R.layout.home_message_outgoing_item, parent, false);
+            view = inflater.inflate(R.layout.home_message_outgoing_item, parent, false);
         } else {
-            view = layoutInflater.inflate(R.layout.home_message_incoming_item, parent, false);
+            view = inflater.inflate(R.layout.home_message_incoming_item, parent, false);
         }
-        MyHomeChatMessageAdapter.ViewHolder viewHolder = new MyHomeChatMessageAdapter.ViewHolder(view);
-        return viewHolder;
+
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyHomeChatMessageAdapter.ViewHolder holder, int position) {
-        final MessageModel chat = myChatData.get(position);
+        MessageModel message = messageList.get(position);
 
-        holder.messageText.setText(chat.getMessage());
+        // Populate message content and timestamp
+        holder.messageText.setText(message.getMessage());
 
-        // Format timestamp
-        Date chatDate = chat.getDate();
-        SimpleDateFormat timeFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
-        holder.timestampText.setText(timeFormat.format(chatDate));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
+        holder.timestampText.setText(dateFormat.format(message.getDate()));
     }
 
     @Override
     public int getItemViewType(int position) {
-        UserModel currentUser = DataGenerator.loadUserData().get(0);
-        MessageModel message = myChatData.get(position);
 
-        if (message.getSender().equals(currentUser)) {
+        MessageModel message = messageList.get(position);
+        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String senderID = String.valueOf(message.getSenderID());
+
+        // Compare senderID with currentUserID
+        if (senderID.equals(currentUserID)) {
             return 1; // Outgoing message
         } else {
             return 2; // Incoming message
@@ -88,5 +81,7 @@ public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMes
     }
 
     @Override
-    public int getItemCount() { return myChatData.size(); }
+    public int getItemCount() {
+        return messageList.size();
+    }
 }
