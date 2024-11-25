@@ -14,9 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,13 +29,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdapter.ViewHolder> {
 
-    ArrayList<BookingModel> myBookingData;
+    List<BookingModel> bookingList;
     String bookingType; // scheduled/requests/accepted
     HomeBookingActivity activity;
 
-
-    public MyHomeBookingAdapter(ArrayList<BookingModel> myBookingData, String bookingType, HomeBookingActivity activity) {
-        this.myBookingData = myBookingData;
+    public MyHomeBookingAdapter(List<BookingModel> bookingList, String bookingType, HomeBookingActivity activity) {
+        this.bookingList = bookingList;
         this.bookingType = bookingType;
 
         this.activity = activity;
@@ -83,7 +85,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
-        final BookingModel booking = myBookingData.get(position);
+        BookingModel booking = bookingList.get(position);
 
         holder.pfpImage.setImageResource(booking.getPassenger().getPfp());
         holder.passengerText.setText(booking.getPassenger().getName());
@@ -104,7 +106,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     }
 
     @Override
-    public int getItemCount() { return myBookingData.size(); }
+    public int getItemCount() { return bookingList.size(); }
 
     private void setListeners(@NonNull MyHomeBookingAdapter.ViewHolder holder) {
         if (bookingType.equals("requests")) {
