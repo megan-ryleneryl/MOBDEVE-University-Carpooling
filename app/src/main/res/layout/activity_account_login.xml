@@ -7,20 +7,51 @@
     android:layout_height="match_parent"
     tools:context=".AccountLoginActivity">
 
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="293dp"
+        android:layout_height="119dp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/uniride" />
 
     <TextView
         android:id="@+id/logo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
         android:text="Login"
         android:textColor="@color/primary"
-        android:textSize="36sp"
+        android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.13" />
+        app:layout_constraintTop_toBottomOf="@+id/logoImage" />
+
+    <EditText
+        android:id="@+id/inputEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_email"
+        android:drawablePadding="10dp"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:paddingLeft="20dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/primary"
+        android:textColorHint="@color/secondary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <EditText
         android:id="@+id/inputPassword"
@@ -31,8 +62,8 @@
         android:drawableLeft="@drawable/ic_person"
         android:drawablePadding="10dp"
         android:ems="10"
-        android:hint="Username"
-        android:inputType="textPersonName"
+        android:hint="Password"
+        android:inputType="textPassword"
         android:paddingLeft="20dp"
         android:paddingTop="10dp"
         android:paddingRight="10dp"
@@ -40,33 +71,8 @@
         android:textColor="@color/primary"
         android:textColorHint="@color/secondary"
         app:layout_constraintEnd_toEndOf="@+id/inputEmail"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/inputEmail"
         app:layout_constraintTop_toBottomOf="@+id/inputEmail" />
-
-    <EditText
-        android:id="@+id/inputEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="32dp"
-        android:background="@drawable/input_bg"
-        android:drawableLeft="@drawable/ic_email"
-        android:drawablePadding="10dp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textPersonName"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
-        android:textColor="@color/primary"
-        android:textColorHint="@color/secondary"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo" />
 
     <TextView
         android:id="@+id/forgotPassword"
@@ -87,7 +93,6 @@
         android:layout_marginTop="24dp"
         android:backgroundTint="@color/primary"
         android:text="Login"
-        android:onClick="login"
         app:layout_constraintEnd_toEndOf="@+id/inputPassword"
         app:layout_constraintStart_toStartOf="@+id/inputPassword"
         app:layout_constraintTop_toBottomOf="@+id/forgotPassword" />
@@ -101,7 +106,6 @@
         android:orientation="horizontal"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="@+id/btnlogin"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/btnlogin"
         app:layout_constraintTop_toBottomOf="@+id/btnlogin">
 
@@ -115,9 +119,9 @@
             android:id="@+id/textViewSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign Up"
-            android:onClick="signup"
             android:layout_marginStart="5dp"
+            android:onClick="signup"
+            android:text="Sign Up"
             android:textColor="@color/primary" />
 
     </LinearLayout>
@@ -133,9 +137,9 @@
         android:drawablePadding="10dp"
         android:paddingLeft="20dp"
         android:text="Google"
-        android:textColor="@color/black"
         android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btnFacebook"
         app:layout_constraintHorizontal_bias="0.5"
@@ -154,14 +158,13 @@
         android:drawablePadding="10dp"
         android:paddingLeft="20dp"
         android:text="Facebook"
-        android:textColor="@color/black"
         android:textAlignment="textStart"
         android:textAllCaps="false"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/btnGoogle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnGoogle"
         app:layout_constraintTop_toTopOf="@+id/btnGoogle" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

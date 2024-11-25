@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -55,27 +56,43 @@ public class MyBookingHomeAdapter extends RecyclerView.Adapter<MyBookingHomeAdap
         return viewHolder;
     }
 
+    @SuppressLint("ResourceType")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String pattern = "MMMM dd yyyy";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        final BookingModel booking = myBookingData.get(position);
 
-        final BookingModel myBookingDataList = myBookingData.get(position);
-        holder.carImage.setImageResource(myBookingDataList.getRide().getDriver().getCar().getCarImage());
-        holder.locationTv.setText(myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
-        holder.timeTv.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
-        holder.dateTv.setText(simpleDateFormat.format(myBookingDataList.getDate()));
-        holder.priceTv.setText("P" + myBookingDataList.getRide().getPrice());
+        if (booking != null && booking.getRide() != null) {
+            RideModel ride = booking.getRide();
 
-        holder.detailsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, BookingHomeDetailsActivity.class);
-                i.putExtra("myBookingData", myBookingData);
-                i.putExtra("selectedBooking", myBookingDataList);
-                context.startActivity(i);
+            Log.d("Car image", context.getResources().getResourceName(2131231041));
+
+            // Set car image
+            if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
+                holder.carImage.setImageResource(ride.getDriver().getCar().getCarImage());
+                Log.d("Car image", String.valueOf(ride.getDriver().getCar().getCarImage()));
             }
-        });
+
+            // Set locations
+            String fromLocation = ride.getFrom() != null ? ride.getFrom().getName() : "";
+            String toLocation = ride.getTo() != null ? ride.getTo().getName() : "";
+            holder.locationTv.setText(fromLocation + " to " + toLocation);
+
+            // Set time
+            holder.timeTv.setText(ride.getDepartureTime() + " to " + ride.getArrivalTime());
+
+            // Set date
+            holder.dateTv.setText(booking.getDate().replace("\"", ""));
+
+            // Set price
+            holder.priceTv.setText("P" + ride.getPrice());
+
+            holder.detailsBtn.setOnClickListener(v -> {
+                Intent intent = new Intent(context, BookingHomeDetailsActivity.class);
+                intent.putExtra("selectedBooking", booking);
+                intent.putExtra("myBookingData", myBookingData);
+                context.startActivity(intent);
+            });
+        }
     }
 
     @Override

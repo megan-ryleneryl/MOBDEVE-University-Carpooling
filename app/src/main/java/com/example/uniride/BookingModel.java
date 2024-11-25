@@ -1,68 +1,159 @@
 package com.example.uniride;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.PropertyName;
+
 import java.io.Serializable;
-import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class BookingModel implements Serializable {
     private int bookingID;
-    private RideModel ride; // TODO: Change to rideID for mco3, same for passenger
-    private UserModel passenger;
-    private Date date;
+    private int rideID;
+    private int passengerID;
+    private String date;
+
+    @PropertyName("isAccepted")
+    private boolean isAccepted = false;
+    @PropertyName("isPaymentComplete")
     private boolean isPaymentComplete = false;
+    @PropertyName("isBookingDone")
     private boolean isBookingDone = false;
 
-    public BookingModel() {
+    // Transient fields - not stored in Firebase
+    private transient RideModel rideObj;
+    private transient UserModel passengerObj;
 
+    // Default constructor for Firebase
+    public BookingModel() {}
+
+    public BookingModel(int bookingID, int rideID, int passengerID, String date) {
+        this.bookingID = bookingID;
+        this.rideID = rideID;
+        this.passengerID = passengerID;
+        this.date = date;
+        this.isAccepted = false;
+        this.isPaymentComplete = false;
+        this.isBookingDone = false;
     }
 
-    public BookingModel (int bookingID, RideModel ride, UserModel passenger, Date date) {
-        this.bookingID = bookingID;
-        this.ride = ride;
-        this.passenger = passenger;
-        this.date = date;
+    public void populateObjects(FirebaseFirestore db, OnPopulateCompleteListener listener) {
+        final int[] completedQueries = {0};
+        final int totalQueries = 2;
+
+        // Get ride data
+        db.collection(MyFirestoreReferences.RIDES_COLLECTION)
+                .whereEqualTo("rideID", rideID)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                        this.rideObj = RideModel.fromMap(doc.getData());
+                        // Populate ride's related objects
+                        if (this.rideObj != null) {
+                            this.rideObj.populateObjects(db, ride -> {
+                                completedQueries[0]++;
+                                checkCompletion(completedQueries[0], totalQueries, listener);
+                            });
+                        }
+                    }
+                });
+
+        // Get passenger data
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .whereEqualTo("userID", passengerID)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
+                        this.passengerObj = UserModel.fromMap(doc.getData());
+                    }
+                    completedQueries[0]++;
+                    checkCompletion(completedQueries[0], totalQueries, listener);
+                });
+    }
+
+    private void checkCompletion(int completed, int total, OnPopulateCompleteListener listener) {
+        if (completed == total && listener != null) {
+            listener.onPopulateComplete(this);
+        }
+    }
+
+    public interface OnPopulateCompleteListener {
+        void onPopulateComplete(BookingModel booking);
     }
 
     // Getters
-    public int getBookingID() {
-        return bookingID;
-    }
-    public RideModel getRide() {
-        return ride;
-    }
-    public UserModel getPassenger() {
-        return passenger;
-    }
-    public Date getDate() {
-        return date;
-    }
-    public boolean getPaymentComplete() {
-        return isPaymentComplete;
-    }
-    public boolean getBookingDone() {
-        return isBookingDone;
-    }
-    
+    public int getBookingID() { return bookingID; }
+    public int getRideID() { return rideID; }
+    public int getPassengerID() { return passengerID; }
+    public String getDate() { return date; }
+    public boolean isAccepted() { return isAccepted; }
+    public boolean isPaymentComplete() { return isPaymentComplete; }
+    public boolean isBookingDone() { return isBookingDone; }
+    public RideModel getRide() { return rideObj; }
+    public UserModel getPassenger() { return passengerObj; }
+
     // Setters
-    public void getPaymentComplete(boolean paymentComplete) {
-        isPaymentComplete = paymentComplete;
-    }
-    public void setBookingDone(boolean bookingDone) {
-        isBookingDone = bookingDone;
+    public void setBookingID(int bookingID) { this.bookingID = bookingID; }
+    public void setRideID(int rideID) { this.rideID = rideID; }
+    public void setPassengerID(int passengerID) { this.passengerID = passengerID; }
+    public void setDate(String date) { this.date = date; }
+    public void setAccepted(boolean isAccepted) { this.isAccepted = isAccepted; }
+    public void setPaymentComplete(boolean isPaymentComplete) { this.isPaymentComplete = isPaymentComplete; }
+    public void setBookingDone(boolean isBookingDone) { this.isBookingDone = isBookingDone; }
+
+    // Helper method to convert to Firebase document
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("bookingID", bookingID);
+        map.put("rideID", rideID);
+        map.put("passengerID", passengerID);
+        map.put("date", date);
+        map.put("isAccepted", isAccepted);
+        map.put("isPaymentComplete", isPaymentComplete);
+        map.put("isBookingDone", isBookingDone);
+        return map;
     }
 
-    // Helper method for comparing BookingModels to one another
+    // Static method to create from Firebase document
+    public static BookingModel fromMap(Map<String, Object> map) {
+        BookingModel booking = new BookingModel();
+        booking.bookingID = ((Long) map.get("bookingID")).intValue();
+        booking.rideID = ((Long) map.get("rideID")).intValue();
+        booking.passengerID = ((Long) map.get("passengerID")).intValue();
+        booking.date = (String) map.get("date");
+        booking.isAccepted = (boolean) map.get("isAccepted");
+        booking.isPaymentComplete = (boolean) map.get("isPaymentComplete");
+        booking.isBookingDone = (boolean) map.get("isBookingDone");
+        return booking;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-
         BookingModel that = (BookingModel) obj;
-        return bookingID == that.bookingID;
+        return Objects.equals(bookingID, that.bookingID);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(bookingID); // Ensure you use a unique field like `id`
+        return Objects.hash(bookingID);
+    }
+
+    @Override
+    public String toString() {
+        return "BookingModel{" +
+                "bookingID=" + bookingID +
+                ", rideID=" + rideID +
+                ", passengerID=" + passengerID +
+                ", date=" + date +
+                ", isAccepted=" + isAccepted +
+                ", isPaymentComplete=" + isPaymentComplete +
+                ", isBookingDone=" + isBookingDone +
+                '}';
     }
 }

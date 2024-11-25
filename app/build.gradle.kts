@@ -44,7 +44,19 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
-    implementation (("com.google.firebase:firebase-firestore:24.7.1"))
+    // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.5.1"))
+    implementation("com.google.firebase:firebase-firestore:24.7.1")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth:22.3.0")
+
+    // Google Sign In
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // Facebook Sign In
+    implementation("com.facebook.android:facebook-android-sdk:16.3.0")
+
+    // Base Google Services
+    implementation("com.google.android.gms:play-services-base:18.2.0")
+    implementation("com.google.android.gms:play-services-tasks:18.0.2")
 }

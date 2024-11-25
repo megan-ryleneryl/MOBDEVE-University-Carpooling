@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="3"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/avatar1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/a_icon"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/avatar2"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/b_icon"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/avatar3"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/c_icon"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/avatar4"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/d_icon"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/avatar5"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/e_icon"
+        android:layout_margin="8dp"/>
+
+    <ImageView
+        android:id="@+id/avatar6"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/f_icon"
+        android:layout_margin="8dp"/>
+</GridLayout>
