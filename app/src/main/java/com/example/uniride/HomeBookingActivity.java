@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -90,7 +91,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                         .whereEqualTo("driverID", userId)
                         .get()
                         .addOnSuccessListener(ridesSnapshot -> {
-                            Log.d("HomeBookingActivity", "Number of rids for driver ID " + userId + ": " + ridesSnapshot.size());
+                            Log.d("HomeBookingActivity", "Number of rides for driver ID " + userId + ": " + ridesSnapshot.size());
 
                             final int[] completedRides = {0};
                             int totalRides = ridesSnapshot.size();
@@ -124,7 +125,8 @@ public class HomeBookingActivity extends BottomNavigationActivity {
     private void fetchBookingsForRideIds(int rideID, final int[] completedRides, int totalRides) {
         // Query bookings where the ride_id is of type Long
         db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
-            .whereEqualTo("ride_id", rideID) // Use Long for the comparison
+            .orderBy("date", Query.Direction.DESCENDING)
+            .whereEqualTo("rideID", rideID) // Use Long for the comparison
             .get()
             .addOnSuccessListener(bookingsSnapshot -> {
                 Log.d("HomeBookingActivity", "Number of bookings for ride ID " + rideID + ": " + bookingsSnapshot.size());
@@ -154,15 +156,19 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                     }
                 }
 
-                // After fetching all bookings, notify the adapter
                 if (completedRides[0] == totalRides) {
-                    adapter.notifyDataSetChanged();
+                    for (BookingModel booking : bookingList) {
+                        booking.populateObjects(db, populatedBooking -> {
+                            adapter.notifyDataSetChanged();
+                        });
+                    }
                 }
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(HomeBookingActivity.this,
                         "Error fetching bookings: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show();
+                Log.d("HomeBookingActivity", "Error fetching bookings: " + e.getMessage());
             });
     }
 

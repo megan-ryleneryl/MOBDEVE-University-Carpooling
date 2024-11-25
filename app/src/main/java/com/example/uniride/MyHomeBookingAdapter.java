@@ -17,8 +17,9 @@ import androidx.core.content.ContextCompat;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,22 +88,23 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     public void onBindViewHolder(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
         BookingModel booking = bookingList.get(position);
 
-        holder.pfpImage.setImageResource(booking.getPassenger().getPfp());
-        holder.passengerText.setText(booking.getPassenger().getName());
-        holder.bookingIDText.setText(String.valueOf(booking.getBookingID()));
+        if (booking.getPassenger() != null) {
+            holder.pfpImage.setImageResource(booking.getPassenger().getPfp());
+            holder.passengerText.setText(booking.getPassenger().getName());
+            holder.bookingIDText.setText(String.valueOf(booking.getBookingID()));
 
-        if (!bookingType.equals("scheduled")) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-            holder.dateText.setText(dateFormat.format(booking.getDate()));
-        }
-        if (!bookingType.equals("requests")) {
-            if (booking.isPaymentComplete()) {
-                holder.statusText.setText("Finished");
-            } else {
-                holder.statusText.setText("Pending");
+            if (!bookingType.equals("scheduled")) {
+                holder.dateText.setText(formatDate(booking.getDate()));
             }
+            if (!bookingType.equals("requests")) {
+                if (booking.isPaymentComplete()) {
+                    holder.statusText.setText("Finished");
+                } else {
+                    holder.statusText.setText("Pending");
+                }
+            }
+            setListeners(holder);
         }
-        setListeners(holder);
     }
 
     @Override
@@ -190,5 +192,17 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
 
 // Change the text color of the PositiveButton (optional)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(activity, R.color.unselected_color));
+    }
+
+    public static String formatDate(String inputDate) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-M-d");
+            Date date = inputFormat.parse(inputDate);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("M/d/yyyy");
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
