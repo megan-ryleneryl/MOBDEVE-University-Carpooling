@@ -191,8 +191,38 @@ public class BookingHomeActivity extends BottomNavigationActivity {
     }
 
     public void createRide(View view) {
-        Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
-        startActivity(i);
+        db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                    .document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            boolean isDriver = documentSnapshot.getBoolean("isDriver") != null &&
+                                    documentSnapshot.getBoolean("isDriver");
+                            if (!isDriver) {
+                                Intent intent = new Intent(this, DriverRegistrationPromptActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
+                            Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
+                        startActivity(i);
+
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error checking driver status", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        } else {
+            Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
+            startActivity(i);
+            finish();
+        }
+
     }
 
     private boolean isAnyFieldEmpty() {

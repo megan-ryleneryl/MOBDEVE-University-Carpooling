@@ -86,6 +86,13 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
             Intent intent = new Intent(context, RideEdit.class);
             // Add ride details to intent
             intent.putExtra("rideID", currentRide.getRideID());
+            intent.putExtra("driverID", currentRide.getDriver());
+            intent.putExtra("fromLocation", currentRide.getFromLocationID());
+            intent.putExtra("toLocation", currentRide.getToLocationID());
+            intent.putExtra("departureTime", currentRide.getDepartureTime());
+            intent.putExtra("arrivalTime", currentRide.getArrivalTime());
+            intent.putExtra("totalSeats", currentRide.getTotalSeats());
+            intent.putExtra("price", currentRide.getPrice());
             context.startActivity(intent);
         });
 
