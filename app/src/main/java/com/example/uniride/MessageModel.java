@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
@@ -96,14 +97,38 @@ public class MessageModel implements Serializable {
         return map;
     }
 
-    // Static method to create from Firebase document
     public static MessageModel fromMap(Map<String, Object> map) {
+        // Fetch senderID and recipientID safely by checking their actual type in Firestore
+        Object senderIDObj = map.get("senderID");
+        Object recipientIDObj = map.get("recipientID");
+
+        int senderID = 0;
+        int recipientID = 0;
+
+        // Check if senderID is of type Long and convert it to int
+        if (senderIDObj instanceof Long) {
+            senderID = ((Long) senderIDObj).intValue(); // Convert Long to int
+        } else if (senderIDObj instanceof String) {
+            senderID = Integer.parseInt((String) senderIDObj); // If it's a String, convert to int
+        }
+
+        // Check if recipientID is of type Long and convert it to int
+        if (recipientIDObj instanceof Long) {
+            recipientID = ((Long) recipientIDObj).intValue(); // Convert Long to int
+        } else if (recipientIDObj instanceof String) {
+            recipientID = Integer.parseInt((String) recipientIDObj); // If it's a String, convert to int
+        }
+
+        Timestamp timestamp = (Timestamp) map.get("date");
+        Date date = timestamp.toDate();
+
+        // Now create and return the MessageModel object
         return new MessageModel(
-                ((Long) map.get("chatID")).intValue(),
-                ((Long) map.get("senderID")).intValue(),
-                ((Long) map.get("recipientID")).intValue(),
-                (String) map.get("message"),
-                (Date) map.get("date")
+            ((Long) map.get("chatID")).intValue(),  // Assuming chatID is stored as Long, convert it to int
+            senderID,
+            recipientID,
+            (String) map.get("message"),
+            date
         );
     }
 }
