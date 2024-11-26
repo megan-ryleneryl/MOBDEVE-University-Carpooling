@@ -9,13 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,6 +40,8 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     List<BookingModel> bookingList;
     String bookingType; // scheduled/requests/accepted
     HomeBookingActivity activity;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();;
 
     public MyHomeBookingAdapter(List<BookingModel> bookingList, String bookingType, HomeBookingActivity activity) {
         this.bookingList = bookingList;
@@ -88,7 +96,6 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     @Override
     public void onBindViewHolder(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
         BookingModel booking = bookingList.get(position);
-        int size = bookingList.size();
         Log.d("BookingListSize", "Adapter: The size of bookingList is: " + bookingList.size());
 
         if (booking.getPassenger() != null) {
@@ -106,46 +113,76 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                     holder.statusText.setText("Pending");
                 }
             }
-            setListeners(holder);
+            setListeners(holder, position);
         }
     }
 
     @Override
     public int getItemCount() { return bookingList.size(); }
 
-    private void setListeners(@NonNull MyHomeBookingAdapter.ViewHolder holder) {
+    private void setListeners(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
         if (bookingType.equals("requests")) {
             holder.acceptButton.setOnClickListener(v -> {
-                showConfirmationDialog("accept");
+                showConfirmationDialog("accept", position);
             });
             holder.rejectButton.setOnClickListener(v -> {
-                showConfirmationDialog("reject");
+                showConfirmationDialog("reject", position);
             });
         } else if (bookingType.equals("accepted")) {
             holder.cancelBookingButton.setOnClickListener(v -> {
-                showConfirmationDialog("cancelBooking");
+                showConfirmationDialog("cancelBooking", position);
             });
         } else if (bookingType.equals("scheduled")) {
             holder.onTheWayButton.setOnClickListener(v -> {
-                showConfirmationDialog("onTheWay");
+                showConfirmationDialog("onTheWay", position);
             });
             holder.cancelButton.setOnClickListener(v -> {
-                showConfirmationDialog("cancel");
+                showConfirmationDialog("cancel", position);
             });
         }
     }
 
-    private void showConfirmationDialog(String code) {
+    private void showConfirmationDialog(String code, int position) {
         Drawable icon = activity.getResources().getDrawable(android.R.drawable.ic_dialog_alert, null);
         icon.setTint(ContextCompat.getColor(activity, R.color.primary));
         AlertDialog dialog = null;
+
+        BookingModel booking = bookingList.get(position); // Retrieve the booking object at this position
+        int bookingID = booking.getBookingID();
+
         if (code.equals("accept")) {
             dialog = new AlertDialog.Builder(activity)
                 .setTitle("Accept Booking Request")
                 .setMessage("Are you sure you want to ACCEPT the booking request?")
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Log.d("BookingListSize", "Booking ID: " + bookingID);
+                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                            .whereEqualTo("bookingID", bookingID)
+                            .get()
+                            .addOnSuccessListener(querySnapshot -> {
+                                if (!querySnapshot.isEmpty()) {
+                                    // Assuming bookingID is unique, we should have only one document
+                                    DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                                    String documentID = documentSnapshot.getId(); // Get the document ID
 
+                                    db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                            .document(documentID)
+                                            .update("isAccepted", true)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(activity, "Booking accepted!", Toast.LENGTH_SHORT).show();
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(activity, "Failed to accept booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            });
+                                } else {
+                                    // No document found with the given bookingID
+                                    Toast.makeText(activity, "Booking not found", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(activity, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -180,16 +217,16 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .show();
         } else if (code.equals("cancelBooking") || code.equals("cancel")) {
             dialog = new AlertDialog.Builder(activity)
-                    .setTitle("Cancel Booking")
-                    .setMessage("Are you sure you want to CANCEL the booking?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+                .setTitle("Cancel Booking")
+                .setMessage("Are you sure you want to CANCEL the booking?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                    })
-                    .setNegativeButton("No", null)
-                    .setIcon(icon)
-                    .show();
+                    }
+                })
+                .setNegativeButton("No", null)
+                .setIcon(icon)
+                .show();
         }
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(activity, R.color.unselected_color));
 

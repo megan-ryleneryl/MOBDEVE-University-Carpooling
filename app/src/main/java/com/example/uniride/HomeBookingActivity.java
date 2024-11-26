@@ -147,7 +147,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                     BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
 
                     if (bookingType.equals("scheduled")) {
-                        if (isSameDateAsToday(booking.getDate())) {
+                        if (booking.isAccepted() && isSameDateAsToday(booking.getDate())) {
                             bookingList.add(booking);
                             Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
@@ -159,7 +159,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                             completedRides[0]++;
                         }
                     } else if (bookingType.equals("accepted")) {
-                        if (booking.isAccepted()) {
+                        if (booking.isAccepted() && !isSameDateAsToday(booking.getDate())) {
                             bookingList.add(booking);
                             Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
