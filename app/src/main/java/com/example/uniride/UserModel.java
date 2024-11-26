@@ -156,7 +156,11 @@ public class UserModel implements Serializable {
             user.carID = ((Long) map.get("carID")).intValue();
         }
         if (map.get("balance") != null) {
-            user.balance = ((Long) map.get("balance")).doubleValue();
+            if (map.get("balance") instanceof Long) {
+                user.balance = ((Long) map.get("balance")).doubleValue();
+            } else {
+                user.balance = (Double) map.get("balance");
+            }
         }
         // Add these lines to load license details
         user.licenseNumber = (String) map.get("licenseNumber");
