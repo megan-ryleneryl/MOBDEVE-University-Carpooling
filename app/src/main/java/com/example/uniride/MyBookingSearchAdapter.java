@@ -1,5 +1,7 @@
 package com.example.uniride;
 
+import static android.content.Intent.getIntent;
+
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -15,12 +17,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearchAdapter.ViewHolder> {
-
     ArrayList<BookingModel> myBookingData;
     Context context;
+    private String currentUserID;
+    private ArrayList<BookingModel> searchResults;
 
-    public MyBookingSearchAdapter(ArrayList<BookingModel> myBookingData, BookingSearchActivity activity) {
-        this.myBookingData = myBookingData;
+    public MyBookingSearchAdapter(ArrayList<BookingModel> searchResults, String currentUserID, BookingSearchActivity activity) {
+        this.searchResults = searchResults;
+        this.currentUserID = currentUserID;
         this.context = activity;
     }
 
@@ -54,28 +58,35 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        final BookingModel myBookingDataList = myBookingData.get(position);
-        holder.carImage2.setImageResource(myBookingDataList.getRide().getDriver().getCar().getCarImage());
-        holder.locationTv2.setText(myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
-        holder.timeTv2.setText(myBookingDataList.getRide().getDepartureTime() + " to " + myBookingDataList.getRide().getArrivalTime());
-        holder.capacityTv2.setText(myBookingDataList.getRide().getAvailableSeats() + " seats available");
-        holder.priceTv2.setText("P" + myBookingDataList.getRide().getPrice());
+        if(searchResults != null) {
+            final BookingModel searchResult = searchResults.get(position);
+            RideModel ride = searchResult.getRide();
 
-        Log.d("BookingData", "Booking: " + myBookingDataList.getRide().getFrom() + " to " + myBookingDataList.getRide().getTo());
+            if (ride != null) {
+                if (ride.getDriver() != null && ride.getDriver().getCar() != null) {
+                    holder.carImage2.setImageResource(ride.getDriver().getCar().getCarImage());
+                }
 
-        holder.bookBtn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, BookingSearchDetailsActivity.class);
-                i.putExtra("myBookingData", myBookingData);
-                i.putExtra("selectedBooking", myBookingDataList);
-                context.startActivity(i);
+                if (ride.getFrom() != null && ride.getTo() != null) {
+                    holder.locationTv2.setText(ride.getFrom().getName() + " to " + ride.getTo().getName());
+                }
+
+                holder.timeTv2.setText(ride.getDepartureTime() + " to " + ride.getArrivalTime());
+                holder.capacityTv2.setText(ride.getAvailableSeats() + " seats available");
+                holder.priceTv2.setText("P" + ride.getPrice());
+
+                holder.bookBtn2.setOnClickListener(v -> {
+                    Intent i = new Intent(context, BookingSearchDetailsActivity.class);
+                    i.putExtra("selectedBooking", searchResult);
+                    i.putExtra("currentUserID", currentUserID);
+                    context.startActivity(i);
+                });
             }
-        });
+        }
     }
 
     @Override
     public int getItemCount() {
-        return myBookingData.size();
+        return searchResults != null ? searchResults.size() : 0;
     }
 }

@@ -6,8 +6,13 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
@@ -52,6 +57,7 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
 
         initializeViews();
         setupListeners();
+        setupCarTypeSpinner();
     }
 
     private void initializeViews() {
@@ -125,6 +131,30 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
         datePickerDialog.show();
     }
 
+    private void setupCarTypeSpinner() {
+        Spinner carTypeSpinner = findViewById(R.id.carTypeSpinner);
+        ImageView carPreviewImage = findViewById(R.id.carPreviewImage);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                CarTypeUtils.getCarTypes()
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        carTypeSpinner.setAdapter(adapter);
+
+        carTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedType = parent.getItemAtPosition(position).toString();
+                carPreviewImage.setImageResource(CarTypeUtils.getCarImageResource(selectedType));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
     private boolean validateInputs() {
         boolean isValid = true;
 
@@ -192,7 +222,11 @@ public class DriverRegistrationActivity extends BottomNavigationActivity {
                     }
 
                     car.setCarID(nextCarId);
-                    car.setCarImage(R.drawable.sedan); // Default car image
+
+                    String selectedCarType = ((Spinner)findViewById(R.id.carTypeSpinner))
+                            .getSelectedItem().toString();
+                    int carImageResource = CarTypeUtils.getCarImageResource(selectedCarType);
+                    car.setCarImage(carImageResource);
 
                     // Save the car data
                     db.collection(MyFirestoreReferences.CARS_COLLECTION)

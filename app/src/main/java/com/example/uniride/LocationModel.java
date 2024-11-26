@@ -22,11 +22,9 @@ public class LocationModel implements Serializable {
     public int getLocationID() {
         return locationID;
     }
-
     public String getName() {
         return name;
     }
-
     public boolean getIsUniversity() {
         return isUniversity;
     }
@@ -35,7 +33,6 @@ public class LocationModel implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
     public void setUniversity(boolean university) {
         isUniversity = university;
     }

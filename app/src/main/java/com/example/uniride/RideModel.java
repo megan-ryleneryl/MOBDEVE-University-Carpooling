@@ -158,7 +158,8 @@ public class RideModel implements Serializable {
                 (String) map.get("arrivalTime"),
                 ((Long) map.get("availableSeats")).intValue(),
                 ((Long) map.get("totalSeats")).intValue(),
-                (double) map.get("price"),
+                //(double) map.get("price"),
+                ((Long) map.get("price")).doubleValue(),
                 (boolean) map.get("isActive")
         );
     }

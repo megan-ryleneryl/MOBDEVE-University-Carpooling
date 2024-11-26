@@ -4,7 +4,6 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.util.Log;
 import android.content.Intent;
 import android.view.View;
@@ -12,13 +11,17 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 
 public class BookingHomeActivity extends BottomNavigationActivity {
     private ArrayList<BookingModel> myBookingData;
@@ -27,12 +30,11 @@ public class BookingHomeActivity extends BottomNavigationActivity {
     AutoCompleteTextView originInput;
     AutoCompleteTextView destinationInput;
     EditText dateInput;
-    AutoCompleteTextView passengerInput;
+    Spinner priceInput;
     Button searchBtn;
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
-    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,6 @@ public class BookingHomeActivity extends BottomNavigationActivity {
         }
 
         initViews();
-        setupProgressDialog();
         setupAutocompleteFields();
         setupClickListeners();
         loadUserModel(db, mAuth);
@@ -62,37 +63,31 @@ public class BookingHomeActivity extends BottomNavigationActivity {
         originInput = findViewById(R.id.originInput);
         destinationInput = findViewById(R.id.destinationInput);
         dateInput = findViewById(R.id.dateInput);
-        passengerInput = findViewById(R.id.passengerInput);
+        priceInput = findViewById(R.id.priceInput);
         searchBtn = findViewById(R.id.searchBtn);
         recyclerView = findViewById(R.id.myBookingsRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private void setupProgressDialog() {
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading bookings...");
-        progressDialog.setCancelable(false);
-    }
-
     private void setupAutocompleteFields() {
         ArrayList<LocationModel> locations = DataGenerator.loadLocationData();
-        Integer[] numPassengers = {1, 2, 3, 4, 5, 6};
-
+        locations.sort(Comparator.comparing(LocationModel::getName));
         ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, locations);
-        ArrayAdapter<Integer> passengerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, numPassengers);
 
         originInput.setThreshold(0);
         originInput.setAdapter(adapter);
         destinationInput.setThreshold(0);
         destinationInput.setAdapter(adapter);
-        passengerInput.setThreshold(0);
-        passengerInput.setAdapter(passengerAdapter);
 
         dateInput.setOnClickListener(v -> showDatePicker());
         originInput.setOnClickListener(v -> originInput.showDropDown());
         destinationInput.setOnClickListener(v -> destinationInput.showDropDown());
-        passengerInput.setOnClickListener(v -> passengerInput.showDropDown());
+
+        String[] priceRanges = {"Less than 250", "Less than 500", "Less than 1000", "Any"};
+        ArrayAdapter<String> priceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, priceRanges);
+        priceAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        priceInput.setAdapter(priceAdapter);
     }
 
     private void setupClickListeners() {
@@ -104,9 +99,10 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                 i.putExtra("originInput", originInput.getText().toString());
                 i.putExtra("destinationInput", destinationInput.getText().toString());
                 i.putExtra("dateInput", dateInput.getText().toString());
-                i.putExtra("passengerInput", Integer.parseInt(passengerInput.getText().toString()));
+                i.putExtra("priceInput", priceInput.getSelectedItem().toString());
                 i.putExtra("myBookingData", myBookingData);
                 i.putExtra("locations", DataGenerator.loadLocationData());
+                i.putExtra("currentUserID", currentUser.getUid());
                 startActivity(i);
             }
         });
@@ -118,7 +114,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                 BookingHomeActivity.this,
                 R.style.CustomDatePickerDialog,
                 (view, year, month, dayOfMonth) -> {
-                    String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                    String selectedDate = year + "-" + (month + 1) + "-" + dayOfMonth;
                     dateInput.setText(selectedDate);
                 },
                 calendar.get(Calendar.YEAR),
@@ -129,7 +125,6 @@ public class BookingHomeActivity extends BottomNavigationActivity {
     }
 
     private void loadUserModel(FirebaseFirestore db, FirebaseAuth auth) {
-        progressDialog.show();
         String uid = auth.getCurrentUser().getUid();
 
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
@@ -142,12 +137,10 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                             loadBookingData(db, populatedUser);
                         });
                     } else {
-                        progressDialog.dismiss();
                         Toast.makeText(this, "User document not found.", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
                     Toast.makeText(this, "Failed to load user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
@@ -155,6 +148,7 @@ public class BookingHomeActivity extends BottomNavigationActivity {
     private void loadBookingData(FirebaseFirestore db, UserModel userModel) {
         int userID = userModel.getUserID();
         db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                .orderBy("date", Query.Direction.DESCENDING)
                 .whereEqualTo(MyFirestoreReferences.Bookings.PASSENGER_ID, userID)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -162,7 +156,6 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                     final int[] completedBookings = {0};
 
                     if (queryDocumentSnapshots.isEmpty()) {
-                        progressDialog.dismiss();
                         return;
                     }
 
@@ -173,7 +166,6 @@ public class BookingHomeActivity extends BottomNavigationActivity {
                             completedBookings[0]++;
 
                             if (completedBookings[0] == queryDocumentSnapshots.size()) {
-                                progressDialog.dismiss();
                                 myHomeAdapter = new MyBookingHomeAdapter(myBookingData, BookingHomeActivity.this);
                                 recyclerView.setAdapter(myHomeAdapter);
                                 myHomeAdapter.notifyDataSetChanged();
@@ -182,11 +174,8 @@ public class BookingHomeActivity extends BottomNavigationActivity {
 
                         myBookingData.add(booking);
                     }
-
-                    Log.d("Booking data", myBookingData.toString());
                 })
                 .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
                     Toast.makeText(BookingHomeActivity.this,
                             "Error loading bookings: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
@@ -202,15 +191,45 @@ public class BookingHomeActivity extends BottomNavigationActivity {
     }
 
     public void createRide(View view) {
-        Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
-        startActivity(i);
+        db = FirebaseFirestore.getInstance();
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+            db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                    .document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            boolean isDriver = documentSnapshot.getBoolean("isDriver") != null &&
+                                    documentSnapshot.getBoolean("isDriver");
+                            if (!isDriver) {
+                                Intent intent = new Intent(this, DriverRegistrationPromptActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
+                            Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
+                        startActivity(i);
+
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error checking driver status", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        } else {
+            Intent i = new Intent(BookingHomeActivity.this, RideCreate.class);
+            startActivity(i);
+            finish();
+        }
+
     }
 
     private boolean isAnyFieldEmpty() {
         return originInput.getText().toString().trim().isEmpty() ||
                 destinationInput.getText().toString().trim().isEmpty() ||
                 dateInput.getText().toString().trim().isEmpty() ||
-                passengerInput.getText().toString().trim().isEmpty();
+                priceInput.getSelectedItem().toString().trim().isEmpty();
     }
 
     @Override

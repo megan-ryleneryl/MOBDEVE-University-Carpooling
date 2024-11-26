@@ -7,11 +7,13 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -71,6 +73,7 @@ public class AccountEditActivity extends AppCompatActivity {
 
         initViews();
         setupUniversityDropdown();
+        setupCarTypeSpinnerForEdit();
         loadUserData();
         setListeners();
     }
@@ -115,6 +118,33 @@ public class AccountEditActivity extends AppCompatActivity {
         universityInput.setOnClickListener(v -> universityInput.showDropDown());
     }
 
+    private void setupCarTypeSpinnerForEdit() {
+        Spinner carTypeSpinner = findViewById(R.id.carTypeSpinner);
+        ImageView carPreviewImage = findViewById(R.id.carPreviewImage);
+
+        // Setup adapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                CarTypeUtils.getCarTypes()
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        carTypeSpinner.setAdapter(adapter);
+
+        // Handle spinner selection changes
+        carTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedType = parent.getItemAtPosition(position).toString();
+                carPreviewImage.setImageResource(CarTypeUtils.getCarImageResource(selectedType));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    // Update loadUserData() to include car type loading
     private void loadUserData() {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .document(currentUser.getUid())
@@ -122,16 +152,15 @@ public class AccountEditActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         userModel = UserModel.fromMap(documentSnapshot.getData());
-                        selectedAvatarResource = userModel.getPfp(); // Store current avatar
 
-                        // Update basic info immediately
+                        // Basic info
                         nameInput.setText(userModel.getName());
                         phoneInput.setText(userModel.getPhoneNumber());
                         profileImage.setImageResource(userModel.getPfp());
                         isDriver = userModel.isDriver();
                         carId = userModel.getCarID();
 
-                        // Load university data
+                        // Setup university data
                         db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
                                 .whereEqualTo("locationID", userModel.getUniversityID())
                                 .get()
@@ -146,8 +175,6 @@ public class AccountEditActivity extends AppCompatActivity {
                         // Load driver-specific data
                         if (isDriver) {
                             carDetailsContainer.setVisibility(View.VISIBLE);
-
-                            // Set license details
                             licenseNumberInput.setText(userModel.getLicenseNumber());
                             licenseExpiryInput.setText(userModel.getLicenseExpiry());
 
@@ -160,11 +187,29 @@ public class AccountEditActivity extends AppCompatActivity {
                                             if (!querySnapshot.isEmpty()) {
                                                 CarModel car = CarModel.fromMap(
                                                         querySnapshot.getDocuments().get(0).getData());
+
                                                 carMakeInput.setText(car.getMake());
                                                 carModelInput.setText(car.getModel());
                                                 plateNumberInput.setText(car.getPlateNumber());
                                                 seatingCapacityInput.setText(
                                                         String.valueOf(car.getSeatingCapacity()));
+
+                                                // Set car type spinner and preview image
+                                                Spinner carTypeSpinner = findViewById(R.id.carTypeSpinner);
+                                                ImageView carPreviewImage = findViewById(R.id.carPreviewImage);
+
+                                                String carType = CarTypeUtils.getTypeFromResource(
+                                                        car.getCarImage());
+                                                String[] carTypes = CarTypeUtils.getCarTypes();
+                                                for (int i = 0; i < carTypes.length; i++) {
+                                                    if (carTypes[i].equals(carType)) {
+                                                        carTypeSpinner.setSelection(i);
+                                                        break;
+                                                    }
+                                                }
+
+                                                // Set preview image
+                                                carPreviewImage.setImageResource(car.getCarImage());
                                             }
                                         });
                             }
@@ -207,6 +252,10 @@ public class AccountEditActivity extends AppCompatActivity {
             carUpdates.put("plateNumber", plateNumberInput.getText().toString().trim());
             carUpdates.put("seatingCapacity",
                     Integer.parseInt(seatingCapacityInput.getText().toString().trim()));
+            String selectedCarType = ((Spinner)findViewById(R.id.carTypeSpinner))
+                    .getSelectedItem().toString();
+            int carImageResource = CarTypeUtils.getCarImageResource(selectedCarType);
+            carUpdates.put("carImage", carImageResource);
 
             db.collection(MyFirestoreReferences.CARS_COLLECTION)
                     .whereEqualTo("carID", carId)
