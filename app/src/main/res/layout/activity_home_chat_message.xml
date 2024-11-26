@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/raleway_extrabold"
             android:layout_marginStart="12dp"
-            android:text="nameTitle"
+            android:text=""
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />

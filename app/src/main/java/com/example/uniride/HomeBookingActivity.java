@@ -84,7 +84,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
     private boolean isLoadingData = false;
     private void loadDriverBookings() {
         if (isLoadingData) {
-            return; // Prevent multiple calls while data is being loaded
+            return;
         }
         isLoadingData = true;
         bookingList.clear();

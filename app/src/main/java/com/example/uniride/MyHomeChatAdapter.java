@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -26,25 +27,15 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.ViewHolder> {
 
     private List<MessageModel> chatList;
+    private List<MessageModel> messageList;
+    private int userID;
     private Context context;
 
-    public MyHomeChatAdapter(Context context, List<MessageModel> chatList) {
+    public MyHomeChatAdapter(Context context, List<MessageModel> chatList, List<MessageModel> messageList, int userID) {
         this.context = context;
         this.chatList = chatList;
-    }
-
-    public static List<MessageModel> getUniqueChats(List<MessageModel> messages) {
-        List<MessageModel> uniqueChats = new ArrayList<>();
-        HashSet<Integer> chatIds = new HashSet<>();
-
-        for (MessageModel message : messages) {
-            if (!chatIds.contains(message.getChatID())) {
-                chatIds.add(message.getChatID());
-                uniqueChats.add(message);
-            }
-        }
-
-        return uniqueChats;
+        this.messageList = messageList;
+        this.userID = userID;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,7 +54,9 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
     @NonNull
     @Override
     public MyHomeChatAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Log.d("MyHomeChatAdapter", "onCreateViewHolder called?????");
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_chat_item, parent, false);
+        Log.d("MyHomeChatAdapter", "onCreateViewHolder called");
         return new ViewHolder(view);
     }
 
@@ -71,27 +64,47 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
     public void onBindViewHolder(@NonNull MyHomeChatAdapter.ViewHolder holder, int position) {
         MessageModel chat = chatList.get(position);
 
-        chat.populateObjects(FirebaseFirestore.getInstance(), populatedMessage -> {
-            UserModel otherUser = populatedMessage.getRecipient();
-            holder.pfpImage.setImageResource(otherUser.getPfp());
-            holder.nameText.setText(otherUser.getName());
-        });
+        if (chat != null) {
+            Log.d("MyHomeChatAdapter", "Received chatList : " + chatList.size());
+            UserModel otherUser = null;
+            Log.d("MyHomeChatAdapter", "Check userID: " + userID);
+            Log.d("MyHomeChatAdapter", "Check senderID: " + chat.getSenderID());
+            if (userID == chat.getSenderID()) {
+                otherUser = chat.getRecipient();
+            } else if (userID == chat.getRecipientID()) {
+                otherUser = chat.getSender();
+            }
 
-        holder.lastMessageText.setText(chat.getMessage());
+            if (otherUser != null) {
+                holder.pfpImage.setImageResource(otherUser.getPfp());
+                holder.nameText.setText(otherUser.getName());
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
-        holder.timestampText.setText(dateFormat.format(chat.getDate()));
+                holder.lastMessageText.setText(chat.getMessage());
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, HomeChatMessageActivity.class);
-            intent.putExtra("chatID", chat.getChatID());
-            intent.putExtra("chatmate", holder.nameText.getText().toString());
-            context.startActivity(intent);
-        });
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
+                holder.timestampText.setText(dateFormat.format(chat.getDate()));
+
+                int otherUserID = otherUser.getUserID();
+
+                holder.itemView.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, HomeChatMessageActivity.class);
+                    intent.putExtra("chatID", chat.getChatID());
+                    intent.putExtra("otherUserID", otherUserID);
+                    ((HomeChatActivity) context).startActivityForResult(intent, 1);
+                });
+            }
+        }
     }
 
     @Override
     public int getItemCount() {
+        Log.d("MyHomeChatAdapter", "Adapter chatList: " + chatList.size());
+        Log.d("MyHomeChatAdapter", "Adapter messageList: " + messageList.size());
+        Log.d("MyHomeChatAdapter", "Adapter userID: " + userID);
         return chatList.size();
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 }
