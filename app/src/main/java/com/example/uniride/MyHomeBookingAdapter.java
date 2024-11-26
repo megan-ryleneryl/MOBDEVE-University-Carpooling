@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import android.util.Log;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -87,6 +88,8 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     @Override
     public void onBindViewHolder(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
         BookingModel booking = bookingList.get(position);
+        int size = bookingList.size();
+        Log.d("BookingListSize", "Adapter: The size of bookingList is: " + bookingList.size());
 
         if (booking.getPassenger() != null) {
             holder.pfpImage.setImageResource(booking.getPassenger().getPfp());

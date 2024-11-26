@@ -3,6 +3,7 @@ package com.example.uniride;
 import android.util.Log;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 public class HomeBookingActivity extends BottomNavigationActivity {
 
     TextView titleText;
+    TextView noBookingsText;
     String bookingType;
 
     private RecyclerView recyclerView;
@@ -47,6 +49,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
         setContentView(R.layout.activity_home_booking);
 
         titleText = findViewById(R.id.titleText);
+        noBookingsText = findViewById(R.id.noBookingsText);
 
         Intent i = getIntent();
         bookingType = i.getStringExtra("bookingTypePassed");
@@ -78,7 +81,13 @@ public class HomeBookingActivity extends BottomNavigationActivity {
         loadDriverBookings();
     }
 
+    private boolean isLoadingData = false;
     private void loadDriverBookings() {
+        if (isLoadingData) {
+            return; // Prevent multiple calls while data is being loaded
+        }
+        isLoadingData = true;
+        bookingList.clear();
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
             .document(currentUser.getUid())
             .get()
@@ -99,6 +108,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                             if (totalRides == 0) {
                                 bookingList.clear();
                                 adapter.notifyDataSetChanged();
+                                updateUI();
                                 return;
                             }
 
@@ -114,11 +124,13 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                                 Toast.LENGTH_SHORT).show();
                         });
                 }
+                isLoadingData = false;
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(HomeBookingActivity.this,
                     "Error fetching user data: " + e.getMessage(),
                     Toast.LENGTH_SHORT).show();
+                isLoadingData = false;
             });
     }
 
@@ -133,24 +145,23 @@ public class HomeBookingActivity extends BottomNavigationActivity {
 
                 for (QueryDocumentSnapshot bookingDoc : bookingsSnapshot) {
                     BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
-                    bookingList.add(booking);
 
                     if (bookingType.equals("scheduled")) {
                         if (isSameDateAsToday(booking.getDate())) {
                             bookingList.add(booking);
-                            adapter.notifyDataSetChanged();
+                            Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
                         }
                     } else if (bookingType.equals("requests")) {
                         if (!booking.isAccepted()) {
                             bookingList.add(booking);
-                            adapter.notifyDataSetChanged();
+                            Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
                         }
                     } else if (bookingType.equals("accepted")) {
                         if (booking.isAccepted()) {
                             bookingList.add(booking);
-                            adapter.notifyDataSetChanged();
+                            Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
                         }
                     }
@@ -163,6 +174,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                         });
                     }
                 }
+                updateUI();
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(HomeBookingActivity.this,
@@ -170,6 +182,25 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                         Toast.LENGTH_SHORT).show();
                 Log.d("HomeBookingActivity", "Error fetching bookings: " + e.getMessage());
             });
+    }
+
+    private void updateUI() {
+        if (bookingList.isEmpty()) {
+            Log.d("HomeBookingActivity", "Size: " + bookingList.size());
+            recyclerView.setVisibility(View.GONE);
+            noBookingsText.setVisibility(View.VISIBLE);
+            if (bookingType.equals("scheduled")) {
+                noBookingsText.setText("No bookings scheduled today.");
+            } else if (bookingType.equals("requests")) {
+                noBookingsText.setText("No booking requests for now.");
+            } else if (bookingType.equals("accepted")) {
+                noBookingsText.setText("No accepted bookings.");
+            }
+        } else {
+            Log.d("HomeBookingActivity", "Size: " + bookingList.size());
+            recyclerView.setVisibility(View.VISIBLE);
+            noBookingsText.setVisibility(View.GONE);
+        }
     }
 
     public boolean isSameDateAsToday(String bookingDate) {
@@ -198,7 +229,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (currentUser != null) {
+        if (currentUser != null && !isLoadingData) {
             loadDriverBookings();
         }
     }
