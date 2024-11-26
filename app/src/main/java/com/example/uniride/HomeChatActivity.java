@@ -9,9 +9,11 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.List;
+import java.util.Arrays;
 import java.util.ArrayList;
 
 public class HomeChatActivity extends BottomNavigationActivity {
@@ -54,26 +56,49 @@ public class HomeChatActivity extends BottomNavigationActivity {
     }
 
     private void loadChats() {
-        db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    chatList.clear();
-                    List<MessageModel> allMessages = new ArrayList<>();
+        chatList.clear();
 
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        MessageModel message = MessageModel.fromMap(document.getData());
-                        allMessages.add(message);
-                    }
+        // Get userId
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+            .document(currentUser.getUid())
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    int userId = ((Long) documentSnapshot.get("userID")).intValue();
 
-                    // Filter for distinct chats and notify adapter
-                    chatList.addAll(MyHomeChatAdapter.getUniqueChats(allMessages));
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(HomeChatActivity.this,
-                            "Error loading chats: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
-                });
+                    /////////////////////////////////////////////////////////////
+                    // Get messages whose senderID or recipientID is equal to userId
+                    db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
+                        .whereIn("senderID", Arrays.asList(userId))
+                        .whereIn("recipientID", Arrays.asList(userId))
+                        .orderBy("date", Query.Direction.DESCENDING)
+                        .get()
+                        .addOnSuccessListener(querySnapshot -> {
+
+                            List<MessageModel> allMessages = new ArrayList<>();
+
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+                                MessageModel message = MessageModel.fromMap(document.getData());
+                                allMessages.add(message);
+                            }
+
+                            // Filter for distinct chats and notify adapter
+                            chatList.addAll(MyHomeChatAdapter.getUniqueChats(allMessages));
+                            adapter.notifyDataSetChanged();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(HomeChatActivity.this,
+                                    "Error loading chats: " + e.getMessage(),
+                                    Toast.LENGTH_SHORT).show();
+                        });
+                    ///////////////////////////////////////////////////////////
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(HomeChatActivity.this,
+                    "Error fetching user data: " + e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+            });
     }
 
     @Override
