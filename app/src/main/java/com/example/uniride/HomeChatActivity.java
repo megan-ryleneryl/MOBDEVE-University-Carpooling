@@ -124,10 +124,16 @@ public class HomeChatActivity extends BottomNavigationActivity {
                             Log.d("HomeChatActivity", "Number of unique chats: " + chatList.size());
                             Log.d("HomeChatActivity", "ChatList: " + chatList);
 
+                            int[] populatedCount = {0};
                             // Update adapter
                             for (MessageModel message : messageList) {
                                 message.populateObjects(db, populatedMessage -> {
-                                    adapter.notifyDataSetChanged();
+                                    populatedCount[0]++;  // Increment the counter when each message is populated
+
+                                    // Check if all population tasks are complete
+                                    if (populatedCount[0] == messageList.size()) {
+                                        adapter.notifyDataSetChanged();  // Notify the adapter after all messages are populated
+                                    }
                                 });
                             }
                         })

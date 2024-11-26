@@ -31,8 +31,6 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
     private int userID;
     private Context context;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();;
-
     public MyHomeChatAdapter(Context context, List<MessageModel> chatList, List<MessageModel> messageList, int userID) {
         this.context = context;
         this.chatList = chatList;
