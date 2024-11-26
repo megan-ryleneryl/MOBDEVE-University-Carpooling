@@ -1,28 +1,39 @@
 package com.example.uniride;
 
+import android.util.Log;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class HomeChatMessageActivity extends AppCompatActivity {
 
+
+    CircleImageView pfpImage;
+    TextView nameTitleText;
+
     private int chatID;
+    private int otherUserID;
     private RecyclerView recyclerView;
     private MyHomeChatMessageAdapter adapter;
     private List<MessageModel> messageList;
@@ -41,13 +52,19 @@ public class HomeChatMessageActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         chatID = i.getIntExtra("chatID", 0);
+        otherUserID = i.getIntExtra("otherUserID", 0);
 
+        pfpImage = findViewById(R.id.pfpImage);
+        nameTitleText = findViewById(R.id.nameTitleText);
         inputText = findViewById(R.id.inputText);
         recyclerView = findViewById(R.id.recyclerView);
 
+        // Loads username and pfpImage of otherUser
+        loadOtherUserData();
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageList = new ArrayList<>();
-        adapter = new MyHomeChatMessageAdapter(this, messageList);
+        adapter = new MyHomeChatMessageAdapter(this, messageList, otherUserID);
         recyclerView.setAdapter(adapter);
 
         loadMessages();
@@ -55,81 +72,89 @@ public class HomeChatMessageActivity extends AppCompatActivity {
 
     private void loadMessages() {
         db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
-                .whereEqualTo("chatID", chatID)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    messageList.clear();
+            .orderBy("date", Query.Direction.ASCENDING)
+            .whereEqualTo("chatID", chatID)
+            .get()
+            .addOnSuccessListener(messagesSnapshot -> {
+                Log.d("HomeChatMessageActivity", "Messages from " + chatID + " : " + messagesSnapshot.size());
+                messageList.clear();
 
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        MessageModel message = MessageModel.fromMap(document.getData());
-                        messageList.add(message);
-                    }
+                for (QueryDocumentSnapshot messageDoc : messagesSnapshot) {
+                    MessageModel message = MessageModel.fromMap(messageDoc.getData());
+                    messageList.add(message);
+                }
 
-                    Collections.sort(messageList, (m1, m2) -> m1.getDate().compareTo(m2.getDate()));
-                    adapter.notifyDataSetChanged();
-                });
+                //Collections.sort(messageList, (m1, m2) -> m1.getDate().compareTo(m2.getDate()));
+                adapter.notifyDataSetChanged();
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(HomeChatMessageActivity.this,
+                        "Error fetching messages: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("HomeChatMessagectivity", "Error fetching messages: " + e.getMessage());
+            });
+    }
+
+    private void loadOtherUserData() {
+        // Fetch the other user data based on otherUserID
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+            .whereEqualTo("userID", otherUserID) // Adjust the query if needed
+            .get()
+            .addOnSuccessListener(usersSnapshot -> {
+                for (QueryDocumentSnapshot userDoc : usersSnapshot) {
+                    UserModel otherUser = UserModel.fromMap(userDoc.getData());
+                    nameTitleText.setText(otherUser.getName());
+                    pfpImage.setImageResource(otherUser.getPfp());
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(HomeChatMessageActivity.this,
+                    "Error fetching otherUserData: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.d("HomeChatMessageActivity", "Error fetching otherUserData: " + e.getMessage());
+            });
+    }
+
+    public void backBtnPressed(View view) {
+        finish();
     }
 
     public void sendBtnPressed(View view) {
         String messageText = inputText.getText().toString().trim();
 
         if (!messageText.isEmpty()) {
-            // Get the senderID
+            // Get the userID
             db.collection(MyFirestoreReferences.USERS_COLLECTION)
-                    .document(mAuth.getUid())  // Get the current user's UID
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            // Fetch the userID
-                            int senderID = ((Long) documentSnapshot.get("userID")).intValue(); // Assuming userID is stored as Long in Firestore
+                .document(mAuth.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        int userID = ((Long) documentSnapshot.get("userID")).intValue();
+                        MessageModel newMessage = new MessageModel(chatID, userID, otherUserID, messageText, new Date());
 
-                            // Create and send the message
-                            MessageModel newMessage = new MessageModel(chatID, senderID, 0, messageText, new Date());
-
-                            // Add the new message to the Firestore collection
-                            db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
-                                    .add(newMessage.toMap())
-                                    .addOnSuccessListener(documentReference -> {
-                                        inputText.setText("");
-                                        loadMessages();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Handle the failure
-                                        Log.e("sendBtnPressed", "Error sending message", e);
-                                    });
-                        } else {
-                            Log.e("sendBtnPressed", "User data not found in Firestore");
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle error fetching user data
-                        Log.e("sendBtnPressed", "Error fetching user data", e);
-                    });
+                        // Add the new message to the Firestore collection
+                        db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
+                            .add(newMessage.toMap())
+                            .addOnSuccessListener(documentReference -> {
+                                inputText.setText("");
+                                loadMessages();
+                            })
+                            .addOnFailureListener(e -> {
+                                // Handle the failure
+                                Log.e("sendBtnPressed", "Error sending message", e);
+                            });
+                    } else {
+                        Log.e("sendBtnPressed", "User data not found in Firestore");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle error fetching user data
+                    Log.e("sendBtnPressed", "Error fetching user data", e);
+                });
         }
     }
 
-    // Fetch the last chatID (find the highest chatID)
-    private void getLastChatID(OnLastChatIDFetchedListener listener) {
-        db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
-                .orderBy("chatID", com.google.firebase.firestore.Query.Direction.DESCENDING) // Sort by chatID in descending order
-                .limit(1) // Only get the first (latest) chat document
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    int lastChatID = 0;
-                    // Use a for loop to access the first document
-                    for (QueryDocumentSnapshot document : querySnapshot) {
-                        lastChatID = document.getLong("chatID").intValue(); // Extract chatID
-                    }
-                    listener.onLastChatIDFetched(lastChatID);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("getLastChatID", "Error fetching last chatID", e);
-                    listener.onLastChatIDFetched(0); // Default to 0 if there's an error
-                });
-    }
-
-    // Listener interface to handle chatID fetch completion
-    public interface OnLastChatIDFetchedListener {
-        void onLastChatIDFetched(int lastChatID);
+    @Override
+    public void finish() {
+        super.finish();
+        setResult(RESULT_OK);
     }
 }

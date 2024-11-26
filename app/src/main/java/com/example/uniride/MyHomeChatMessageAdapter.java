@@ -1,10 +1,12 @@
 package com.example.uniride;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,12 +22,17 @@ import java.util.List;
 
 public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMessageAdapter.ViewHolder> {
 
+    private int otherUserID;
     private Context context;
     private List<MessageModel> messageList;
 
-    public MyHomeChatMessageAdapter(Context context, List<MessageModel> messageList) {
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseAuth  mAuth = FirebaseAuth.getInstance();
+
+    public MyHomeChatMessageAdapter(Context context, List<MessageModel> messageList, int otherUserID) {
         this.context = context;
         this.messageList = messageList;
+        this.otherUserID = otherUserID;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -44,10 +51,10 @@ public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMes
         View view;
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        // Inflate outgoing or incoming message layout based on viewType
-        if (viewType == 1) {
+        // Inflate based on viewType
+        if (viewType == 1) { // Outgoing message
             view = inflater.inflate(R.layout.home_message_outgoing_item, parent, false);
-        } else {
+        } else { // Incoming message
             view = inflater.inflate(R.layout.home_message_incoming_item, parent, false);
         }
 
@@ -69,14 +76,13 @@ public class MyHomeChatMessageAdapter extends RecyclerView.Adapter<MyHomeChatMes
     public int getItemViewType(int position) {
 
         MessageModel message = messageList.get(position);
-        String currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String senderID = String.valueOf(message.getSenderID());
+        int senderID = message.getSenderID();
 
         // Compare senderID with currentUserID
-        if (senderID.equals(currentUserID)) {
-            return 1; // Outgoing message
-        } else {
+        if (senderID == otherUserID) {
             return 2; // Incoming message
+        } else {
+            return 1; // Outgoing message
         }
     }
 

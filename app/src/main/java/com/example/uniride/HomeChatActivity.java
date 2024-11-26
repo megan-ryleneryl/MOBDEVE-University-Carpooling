@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.content.Intent;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -20,6 +23,8 @@ import java.util.Collections;
 
 public class HomeChatActivity extends BottomNavigationActivity {
 
+    TextView noChatsText;
+
     private RecyclerView recyclerView;
     private MyHomeChatAdapter adapter;
     private List<MessageModel> chatList;
@@ -29,7 +34,6 @@ public class HomeChatActivity extends BottomNavigationActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,11 +52,13 @@ public class HomeChatActivity extends BottomNavigationActivity {
         }
 
         // Initialize RecyclerView
+        noChatsText = findViewById(R.id.noChatsText);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatList = new ArrayList<>();
         messageList = new ArrayList<>();
         chatMap = new HashMap<>();
+        Log.d("HomeChatActivity", "Sanity check");
         adapter = new MyHomeChatAdapter(this, chatList, messageList, userID);
         recyclerView.setAdapter(adapter);
 
@@ -63,7 +69,12 @@ public class HomeChatActivity extends BottomNavigationActivity {
         loadChats();
     }
 
+    private boolean isLoadingData = false;
     private void loadChats() {
+        if (isLoadingData) {
+            return;
+        }
+        isLoadingData = true;
         chatList.clear();
         messageList.clear();
 
@@ -75,7 +86,8 @@ public class HomeChatActivity extends BottomNavigationActivity {
                 if (documentSnapshot.exists()) {
                     int userID = ((Long) documentSnapshot.get("userID")).intValue();
                     this.userID = userID;
-                    Log.d("HomeChatActivity", "userID: " + userID);
+                    adapter.setUserID(this.userID);
+                    Log.d("HomeChatActivity", "userID: " + this.userID);
 
                     // Get all messages
                     db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
@@ -119,8 +131,11 @@ public class HomeChatActivity extends BottomNavigationActivity {
                                 }
                             }
 
-                            // Convert HashMap to a List of latest messages for the chat list
-                            chatList = new ArrayList<>(chatMap.values());
+                            // Add values from chatMap to chatList using add() method
+                            for (MessageModel message : chatMap.values()) {
+                                chatList.add(message);  // Add each latest message to chatList
+                            }
+
                             Log.d("HomeChatActivity", "Number of unique chats: " + chatList.size());
                             Log.d("HomeChatActivity", "ChatList: " + chatList);
 
@@ -132,16 +147,23 @@ public class HomeChatActivity extends BottomNavigationActivity {
 
                                     // Check if all population tasks are complete
                                     if (populatedCount[0] == messageList.size()) {
-                                        adapter.notifyDataSetChanged();  // Notify the adapter after all messages are populated
+                                        Log.d("HomeChatActivity", "Before populating and notifying (chatlist size): " + chatList.size());
+                                        if (chatList.size() > 0) {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                        Log.d("HomeChatActivity", "After populating and notifying (chatlist size): " + chatList.size());
                                     }
                                 });
                             }
+                            updateUI();
+                            isLoadingData = false;
                         })
                         .addOnFailureListener(e -> {
                             Toast.makeText(HomeChatActivity.this,
                                     "Error loading chats: " + e.getMessage(),
                                     Toast.LENGTH_SHORT).show();
                             Log.d("HomeBookingActivity", "Error loading chats: " + e.getMessage());
+                            isLoadingData = false;
                         });
                 }
             })
@@ -153,10 +175,23 @@ public class HomeChatActivity extends BottomNavigationActivity {
             });
     }
 
+    public void updateUI() {
+        if (chatList.isEmpty()) {
+            Log.d("HomeChatActivity", "Size: " + chatList.size());
+            recyclerView.setVisibility(View.GONE);
+            noChatsText.setVisibility(View.VISIBLE);
+            noChatsText.setText("You haven't started any chats yet.");
+        } else {
+            Log.d("HomeChatActivity", "Size: " + chatList.size());
+            recyclerView.setVisibility(View.VISIBLE);
+            noChatsText.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        if (currentUser != null) {
+        if (currentUser != null && !isLoadingData) {
             loadChats();
         }
     }
@@ -164,5 +199,14 @@ public class HomeChatActivity extends BottomNavigationActivity {
     @Override
     protected int getSelectedItemId() {
         return R.id.passenger;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            loadChats();
+        }
     }
 }

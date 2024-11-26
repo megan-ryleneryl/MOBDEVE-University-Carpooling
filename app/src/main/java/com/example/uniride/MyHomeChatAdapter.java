@@ -67,6 +67,8 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
         if (chat != null) {
             Log.d("MyHomeChatAdapter", "Received chatList : " + chatList.size());
             UserModel otherUser = null;
+            Log.d("MyHomeChatAdapter", "Check userID: " + userID);
+            Log.d("MyHomeChatAdapter", "Check senderID: " + chat.getSenderID());
             if (userID == chat.getSenderID()) {
                 otherUser = chat.getRecipient();
             } else if (userID == chat.getRecipientID()) {
@@ -82,11 +84,13 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
                 SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
                 holder.timestampText.setText(dateFormat.format(chat.getDate()));
 
+                int otherUserID = otherUser.getUserID();
+
                 holder.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(context, HomeChatMessageActivity.class);
                     intent.putExtra("chatID", chat.getChatID());
-                    intent.putExtra("chatmate", holder.nameText.getText().toString());
-                    context.startActivity(intent);
+                    intent.putExtra("otherUserID", otherUserID);
+                    ((HomeChatActivity) context).startActivityForResult(intent, 1);
                 });
             }
         }
@@ -94,6 +98,13 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
 
     @Override
     public int getItemCount() {
+        Log.d("MyHomeChatAdapter", "Adapter chatList: " + chatList.size());
+        Log.d("MyHomeChatAdapter", "Adapter messageList: " + messageList.size());
+        Log.d("MyHomeChatAdapter", "Adapter userID: " + userID);
         return chatList.size();
+    }
+
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 }

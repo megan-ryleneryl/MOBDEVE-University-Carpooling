@@ -1,5 +1,6 @@
 package com.example.uniride;
 
+import com.google.firebase.firestore.PropertyName;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import java.io.Serializable;
@@ -100,6 +101,7 @@ public class UserModel implements Serializable {
     public String getEmail() { return email; }
     public String getPhoneNumber() { return phoneNumber; }
     public int getUniversityID() { return universityID; }
+    @PropertyName("isDriver")
     public boolean isDriver() { return isDriver; }
     public int getCarID() { return carID; }
     public double getBalance() { return balance; }
@@ -119,6 +121,7 @@ public class UserModel implements Serializable {
         this.universityID = universityID;
         this.universityObj = null;  // Clear cached object
     }
+    @PropertyName("isDriver")
     public void setDriver(boolean driver) { isDriver = driver; }
     public void setCarID(int carID) {
         this.carID = carID;
