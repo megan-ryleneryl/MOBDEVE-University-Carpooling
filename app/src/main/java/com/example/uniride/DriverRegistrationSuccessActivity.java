@@ -16,6 +16,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
 
+/**
+ * Activity to display if the Driver Registration was successful, prompting next steps to user
+ */
 public class DriverRegistrationSuccessActivity extends BottomNavigationActivity {
     private TextView balanceText;
     private Button depositButton;

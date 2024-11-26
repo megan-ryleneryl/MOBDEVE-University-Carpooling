@@ -6,6 +6,9 @@ import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Activity to prompt the user to register as a driver
+ */
 public class DriverRegistrationPromptActivity extends BottomNavigationActivity {
     private Button registerAsDriverButton;
 

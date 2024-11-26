@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Activity to display a list of user's rides.
+ */
 public class AccountMyRidesActivity extends BottomNavigationActivity {
     private RecyclerView recyclerView;
     private MyRidesAdapter adapter;

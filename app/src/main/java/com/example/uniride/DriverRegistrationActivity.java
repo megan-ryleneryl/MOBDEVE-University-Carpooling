@@ -25,6 +25,9 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Activity to display a list of user's rides.
+ */
 public class DriverRegistrationActivity extends BottomNavigationActivity {
     private TextInputEditText carMakeInput;
     private TextInputEditText carModelInput;

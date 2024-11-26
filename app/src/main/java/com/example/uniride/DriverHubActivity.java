@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Activity to display the driver hub
+ */
 public class DriverHubActivity extends BottomNavigationActivity {
     private TextView newRequestsCount;
     private TextView todayBookingsCount;

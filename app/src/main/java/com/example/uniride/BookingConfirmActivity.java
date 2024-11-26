@@ -17,6 +17,9 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Activity to display the confirmation screen for a booking.
+ */
 public class BookingConfirmActivity extends BottomNavigationActivity {
     TextView passengerNameTv;
     TextView pickupTv;
