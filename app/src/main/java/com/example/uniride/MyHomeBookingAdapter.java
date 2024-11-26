@@ -156,25 +156,33 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to ACCEPT the booking request?")
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d("BookingListSize", "Booking ID: " + bookingID);
+
                         db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
                             .whereEqualTo("bookingID", bookingID)
                             .get()
                             .addOnSuccessListener(querySnapshot -> {
+
                                 if (!querySnapshot.isEmpty()) {
-                                    // Assuming bookingID is unique, we should have only one document
                                     DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
-                                    String documentID = documentSnapshot.getId(); // Get the document ID
+                                    String documentID = documentSnapshot.getId();
 
                                     db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
-                                            .document(documentID)
-                                            .update("isAccepted", true)
-                                            .addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(activity, "Booking accepted!", Toast.LENGTH_SHORT).show();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Toast.makeText(activity, "Failed to accept booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                            });
+                                        .document(documentID)
+                                        .update("isAccepted", true)
+                                        .addOnSuccessListener(aVoid -> {
+                                            for (int i = 0; i < bookingList.size(); i++) {
+                                                if (bookingList.get(i).getBookingID() == bookingID) {
+                                                    bookingList.remove(i);
+                                                    break;
+                                                }
+                                            }
+                                            notifyDataSetChanged();
+                                            activity.updateUI();
+                                            Toast.makeText(activity, "Booking accepted!", Toast.LENGTH_SHORT).show();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(activity, "Failed to accept booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        });
                                 } else {
                                     // No document found with the given bookingID
                                     Toast.makeText(activity, "Booking not found", Toast.LENGTH_SHORT).show();

@@ -184,7 +184,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
             });
     }
 
-    private void updateUI() {
+    public void updateUI() {
         if (bookingList.isEmpty()) {
             Log.d("HomeBookingActivity", "Size: " + bookingList.size());
             recyclerView.setVisibility(View.GONE);
