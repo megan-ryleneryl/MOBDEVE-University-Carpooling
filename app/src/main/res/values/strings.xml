@@ -3,6 +3,7 @@
     <string name="default_web_client_id">809499353555-p9aqj35050mvi00jgd4mp82cabb8479d.apps.googleusercontent.com</string>
     <string name="facebook_app_id">1333801794276611</string>
     <string name="facebook_client_token">79c744b8609c562a216b5ac703cbd0d8</string>
+    <string name="MAPS_API_KEY">AIzaSyB8jg3Q-ivjQw24CUZSqHoNcz3zQjvuPwU</string>
 
     <string-array name="ride_types">
         <item>toUniversity</item>

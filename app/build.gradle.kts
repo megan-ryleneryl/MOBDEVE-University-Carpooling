@@ -13,7 +13,8 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+//        buildConfigField("String", "DIRECTIONS_API_KEY", "\"${localProperties.getProperty("DIRECTIONS_API_KEY")}\"")
+//        resValue("string", "MAPS_API_KEY", "\"${localProperties.getProperty("MAPS_API_KEY")}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -59,4 +60,10 @@ dependencies {
     // Base Google Services
     implementation("com.google.android.gms:play-services-base:18.2.0")
     implementation("com.google.android.gms:play-services-tasks:18.0.2")
+
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
+
+    implementation("com.android.volley:volley:1.2.1")
+
 }

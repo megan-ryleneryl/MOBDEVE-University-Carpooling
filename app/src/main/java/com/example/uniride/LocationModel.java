@@ -18,6 +18,8 @@ public class LocationModel implements Serializable {
         this.isUniversity = isUniversity;
     }
 
+
+
     // Getters
     public int getLocationID() {
         return locationID;

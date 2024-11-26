@@ -90,7 +90,7 @@ public class RideCreate extends AppCompatActivity {
     }
 
     private void setupTotalSeatsSpinner() {
-        String[] totalSeats = {"1", "2", "3", "4", "5"};
+        String[] totalSeats = {"1", "2", "3", "4", "5", "6"};
         ArrayAdapter<String> seatsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, totalSeats);
         spinnerTotalSeats.setAdapter(seatsAdapter);
     }
