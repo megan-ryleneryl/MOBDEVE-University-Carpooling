@@ -39,6 +39,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Activity that handles user authentication including email/password login,
+ * Google Sign-In, Facebook Sign-In, and password recovery functionality.
+ * Manages the login process and redirects users based on their authentication status.
+ */
 public class AccountLoginActivity extends AppCompatActivity {
     // Fields for UI elements
     private EditText emailInput;
@@ -57,6 +62,9 @@ public class AccountLoginActivity extends AppCompatActivity {
     private CallbackManager mCallbackManager;
     private static final int RC_SIGN_IN = 9001;
 
+    /**
+     * Initializes the activity, sets up Firebase, Google Sign-In, and Facebook SDK
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +91,9 @@ public class AccountLoginActivity extends AppCompatActivity {
         setupFacebookCallback();
     }
 
+    /**
+     * Initializes UI elements and sets up progress dialog
+     */
     private void initializeViews() {
         emailInput = findViewById(R.id.inputEmail);
         passwordInput = findViewById(R.id.inputPassword);
@@ -97,6 +108,9 @@ public class AccountLoginActivity extends AppCompatActivity {
         progressDialog.setCancelable(false);
     }
 
+    /**
+     * Sets up click listeners for all interactive UI elements
+     */
     private void setupClickListeners() {
         loginButton.setOnClickListener(v -> attemptLogin());
         signupText.setOnClickListener(v -> redirectToSignup());
@@ -105,6 +119,9 @@ public class AccountLoginActivity extends AppCompatActivity {
         btnFacebook.setOnClickListener(v -> signInWithFacebook());
     }
 
+    /**
+     * Configures Facebook login callback to handle success, cancel, and error cases
+     */
     private void setupFacebookCallback() {
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
@@ -128,6 +145,10 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Attempts to log in user with email and password
+     * Validates inputs and shows appropriate error messages
+     */
     private void attemptLogin() {
         // Reset errors
         emailInput.setError(null);
@@ -156,6 +177,12 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Validates login input fields
+     * @param email User's email address
+     * @param password User's password
+     * @return boolean indicating if inputs are valid
+     */
     private boolean validateLoginInput(String email, String password) {
         boolean valid = true;
 
@@ -178,6 +205,10 @@ public class AccountLoginActivity extends AppCompatActivity {
         return valid;
     }
 
+    /**
+     * Handles password reset functionality
+     * Sends reset email to user's email address
+     */
     private void handleForgotPassword() {
         String email = emailInput.getText().toString().trim();
 
@@ -205,16 +236,26 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Initiates Google Sign-In process
+     */
     private void signInWithGoogle() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    /**
+     * Initiates Facebook Sign-In process
+     */
     private void signInWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions(this,
                 Arrays.asList("email", "public_profile"));
     }
 
+    /**
+     * Handles Facebook authentication with Firebase
+     * @param token Facebook access token
+     */
     private void handleFacebookAccessToken(AccessToken token) {
         progressDialog.setMessage("Logging in with Facebook...");
         progressDialog.show();
@@ -234,6 +275,10 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Authenticates Google Sign-In with Firebase
+     * @param idToken Google ID token
+     */
     private void firebaseAuthWithGoogle(String idToken) {
         progressDialog.setMessage("Logging in with Google...");
         progressDialog.show();
@@ -253,6 +298,11 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Verifies if user exists in Firestore database
+     * Redirects to appropriate screen based on user status
+     * @param uid User's Firebase UID
+     */
     private void checkUserInFirestore(String uid) {
         progressDialog.setMessage("Checking user data...");
         progressDialog.show();
@@ -282,6 +332,9 @@ public class AccountLoginActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Handles activity results for Google and Facebook Sign-In
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -304,6 +357,10 @@ public class AccountLoginActivity extends AppCompatActivity {
         }
     }
 
+
+    /**
+     * Checks authentication state when activity starts
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -314,6 +371,9 @@ public class AccountLoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Navigates to home screen and clears activity stack
+     */
     private void navigateToHome() {
         Intent intent = new Intent(AccountLoginActivity.this, BookingHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -321,6 +381,9 @@ public class AccountLoginActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Redirects to signup screen
+     */
     private void redirectToSignup() {
         startActivity(new Intent(AccountLoginActivity.this, AccountRegisterActivity.class));
         finish();

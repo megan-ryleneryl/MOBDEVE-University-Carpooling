@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
@@ -24,7 +25,12 @@ import java.util.List;
 import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * Activity handling new user registration.
+ * Manages user input validation, avatar selection, and account creation in Firebase Authentication and Firestore.
+ */
 public class AccountRegisterActivity extends AppCompatActivity {
+    // UI Elements
     private CircleImageView profileImageView;
     private Button selectAvatarButton;
     private EditText usernameInput;
@@ -36,11 +42,17 @@ public class AccountRegisterActivity extends AppCompatActivity {
     private Button registerButton;
     private TextView loginRedirectText;
     private ProgressBar progressBar;
+
+    // Default avatar selection
     private int selectedAvatarResource = R.drawable.a_icon;
 
+    // Firebase instances
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
+    /**
+     * Initializes the activity and sets up Firebase, views, and listeners
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +66,9 @@ public class AccountRegisterActivity extends AppCompatActivity {
         setClickListeners();
     }
 
+    /**
+     * Initializes all view elements from the layout
+     */
     private void initializeViews() {
         profileImageView = findViewById(R.id.profileImageView);
         selectAvatarButton = findViewById(R.id.selectAvatarButton);
@@ -68,31 +83,55 @@ public class AccountRegisterActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
+    /**
+     * Sets up the university spinner with data fetched from Firestore
+     * Queries the locations collection for universities and populates spinner
+     */
     private void setupUniversitySpinner() {
-        ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
         List<LocationModel> universities = new ArrayList<>();
 
-        for (LocationModel location : allLocations) {
-            if (location.getIsUniversity()) {
-                universities.add(location);
-            }
-        }
+        // Query Firestore for locations where isUniversity is true
+        db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
+                .whereEqualTo("isUniversity", true)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        LocationModel university = LocationModel.fromMap(document.getData());
+                        universities.add(university);
+                    }
 
-        ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                universities
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        universitySpinner.setAdapter(adapter);
+                    // Sort universities by name for better display
+                    universities.sort((u1, u2) -> u1.getName().compareTo(u2.getName()));
+
+                    // Create and set adapter for spinner
+                    ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
+                            this,
+                            android.R.layout.simple_spinner_item,
+                            universities
+                    );
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    universitySpinner.setAdapter(adapter);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AccountRegisterActivity.this,
+                            "Error loading universities: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
+    /**
+     * Sets up click listeners for interactive UI elements
+     */
     private void setClickListeners() {
         selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
         registerButton.setOnClickListener(v -> attemptRegistration());
         loginRedirectText.setOnClickListener(v -> redirectToLogin());
     }
 
+    /**
+     * Shows dialog for avatar selection with grid of available options
+     * Updates profile image view when avatar is selected
+     */
     private void showAvatarDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
@@ -131,6 +170,10 @@ public class AccountRegisterActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Validates user input and initiates registration process
+     * Shows progress bar during registration
+     */
     private void attemptRegistration() {
         String username = usernameInput.getText().toString().trim();
         String email = emailInput.getText().toString().trim();
@@ -147,6 +190,15 @@ public class AccountRegisterActivity extends AppCompatActivity {
         performRegistration(username, email, phone, selectedUniversity.getLocationID(), password);
     }
 
+    /**
+     * Validates all user input fields
+     * @param username User's full name
+     * @param email User's email address
+     * @param phone User's phone number
+     * @param password User's password
+     * @param confirmPassword Password confirmation
+     * @return boolean indicating if all inputs are valid
+     */
     private boolean validateInputs(String username, String email, String phone,
                                    String password, String confirmPassword) {
         if (TextUtils.isEmpty(username)) {
@@ -182,6 +234,14 @@ public class AccountRegisterActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Creates user account in Firebase Authentication
+     * @param username User's full name
+     * @param email User's email address
+     * @param phone User's phone number
+     * @param universityID Selected university ID
+     * @param password User's password
+     */
     private void performRegistration(String username, String email, String phone,
                                      int universityID, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -200,6 +260,14 @@ public class AccountRegisterActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Creates user profile in Firestore after successful authentication
+     * @param uid Firebase user ID
+     * @param username User's full name
+     * @param email User's email address
+     * @param phone User's phone number
+     * @param universityID Selected university ID
+     */
     private void createUserInFirestore(String uid, String username, String email,
                                        String phone, int universityID) {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
@@ -247,6 +315,10 @@ public class AccountRegisterActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Navigates to home screen after successful registration
+     * Clears activity stack
+     */
     private void navigateToHome() {
         Intent intent = new Intent(AccountRegisterActivity.this, BookingHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -254,6 +326,10 @@ public class AccountRegisterActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Redirects to login screen
+     * Used when user already has an account
+     */
     private void redirectToLogin() {
         Intent intent = new Intent(this, AccountLoginActivity.class);
         startActivity(intent);

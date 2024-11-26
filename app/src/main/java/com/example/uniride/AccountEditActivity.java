@@ -32,8 +32,12 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * Activity for editing user profile information.
+ * Handles both basic user info and driver-specific details if the user is a driver.
+ */
 public class AccountEditActivity extends AppCompatActivity {
-
+    // UI elements for profile editing
     private CircleImageView profileImage;
     private Button selectAvatarButton;
     private TextInputEditText nameInput, phoneInput;
@@ -41,21 +45,24 @@ public class AccountEditActivity extends AppCompatActivity {
     private TextInputEditText carMakeInput, carModelInput, plateNumberInput;
     private LinearLayout carDetailsContainer;
     private Button saveChangesButton, cancelButton;
-
+    // UI elements for driver-specific details
     private TextInputEditText licenseNumberInput;
     private TextInputEditText licenseExpiryInput;
     private TextInputEditText seatingCapacityInput;
-
+    // Firebase instances
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
+    // State variables
     private boolean isDriver = false;
     private String currentUniversity;
     private int selectedAvatarResource;
-
     private UserModel userModel;
     private int carId;
 
+    /**
+     * Initializes the activity, sets up UI components and loads user data
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +85,9 @@ public class AccountEditActivity extends AppCompatActivity {
         setListeners();
     }
 
+    /**
+     * Initializes all view elements from the layout
+     */
     private void initViews() {
         profileImage = findViewById(R.id.profile_image);
         selectAvatarButton = findViewById(R.id.select_avatar_button);
@@ -99,6 +109,9 @@ public class AccountEditActivity extends AppCompatActivity {
         cancelButton = findViewById(R.id.cancel_button);
     }
 
+    /**
+     * Sets up the university dropdown with data from available universities
+     */
     private void setupUniversityDropdown() {
         ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
         List<LocationModel> universities = new ArrayList<>();
@@ -118,6 +131,9 @@ public class AccountEditActivity extends AppCompatActivity {
         universityInput.setOnClickListener(v -> universityInput.showDropDown());
     }
 
+    /**
+     * Configures the car type spinner and preview image for driver profiles
+     */
     private void setupCarTypeSpinnerForEdit() {
         Spinner carTypeSpinner = findViewById(R.id.carTypeSpinner);
         ImageView carPreviewImage = findViewById(R.id.carPreviewImage);
@@ -144,7 +160,10 @@ public class AccountEditActivity extends AppCompatActivity {
         });
     }
 
-    // Update loadUserData() to include car type loading
+    /**
+     * Loads user data from Firestore and populates the form fields
+     * Also handles loading driver-specific data if user is a driver
+     */
     private void loadUserData() {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .document(currentUser.getUid())
@@ -224,7 +243,10 @@ public class AccountEditActivity extends AppCompatActivity {
                 });
     }
 
-
+    /**
+     * Saves all changes to Firestore after validating inputs
+     * Updates both user profile and car details if applicable
+     */
     private void saveChanges() {
         if (!validateInput()) {
             return;
@@ -281,7 +303,11 @@ public class AccountEditActivity extends AppCompatActivity {
                 });
     }
 
-
+    /**
+     * Helper method to find a university's ID by its name
+     * @param name The name of the university to look up
+     * @return The university ID, or -1 if not found
+     */
     private int getUniversityIdByName(String name) {
         for (LocationModel location : DataGenerator.loadLocationData()) {
             if (location.getName().equals(name)) {
@@ -291,6 +317,9 @@ public class AccountEditActivity extends AppCompatActivity {
         return -1;
     }
 
+    /**
+     * Sets up all event listeners for buttons and input fields
+     */
     private void setListeners() {
         selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
         saveChangesButton.setOnClickListener(v -> saveChanges());
@@ -325,6 +354,10 @@ public class AccountEditActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Shows a date picker dialog for selecting license expiry date
+     * Sets minimum date to current date
+     */
     private void showDatePicker() {
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -349,6 +382,10 @@ public class AccountEditActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    /**
+     * Displays a dialog for avatar selection
+     * Updates profile image when an avatar is selected
+     */
     private void showAvatarDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
@@ -387,7 +424,10 @@ public class AccountEditActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
+    /**
+     * Validates all input fields before saving
+     * @return true if all inputs are valid, false otherwise
+     */
     private boolean validateInput() {
         if (TextUtils.isEmpty(nameInput.getText())) {
             nameInput.setError("Name is required");

@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import java.util.ArrayList;
@@ -26,7 +27,12 @@ import java.util.List;
 import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * This activity handles the completion of user profiles for new users after registration
+ * It collects additional user information and saves it to Firestore
+ */
 public class AccountCompleteProfileActivity extends AppCompatActivity {
+    // UI Elements
     private CircleImageView profileImageView;
     private Button selectAvatarButton;
     private EditText usernameInput;
@@ -35,10 +41,15 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
     private Button completeButton;
     private int selectedAvatarResource = R.drawable.a_icon;
 
+    // Firebase instances
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
+    /**
+     * Initializes the activity, sets up UI components and Firebase instances
+     * Handles redirection to login if user is not authenticated
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +59,7 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        if (currentUser == null) {
+        if (currentUser == null) { // User is not authenticated
             startActivity(new Intent(this, AccountLoginActivity.class));
             finish();
             return;
@@ -58,17 +69,20 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         setupUniversitySpinner();
 
         if (currentUser.getDisplayName() != null) {
-            usernameInput.setText(currentUser.getDisplayName());
+            usernameInput.setText(currentUser.getDisplayName()); // Set username from Firebase
         }
 
         if (currentUser.getPhoneNumber() != null) {
-            phoneInput.setText(currentUser.getPhoneNumber());
+            phoneInput.setText(currentUser.getPhoneNumber()); // Set phone number from Firebase
         }
 
         selectAvatarButton.setOnClickListener(v -> showAvatarDialog());
         completeButton.setOnClickListener(v -> attemptProfileCompletion());
     }
 
+    /**
+     * Initializes and binds all UI view elements from the layout
+     */
     private void initializeViews() {
         profileImageView = findViewById(R.id.profileImageView);
         selectAvatarButton = findViewById(R.id.selectAvatarButton);
@@ -78,25 +92,46 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         completeButton = findViewById(R.id.btnComplete);
     }
 
+    /**
+     * Sets up the university spinner with data fetched from Firestore
+     * Queries the locations collection for universities and populates spinner
+     */
     private void setupUniversitySpinner() {
-        ArrayList<LocationModel> allLocations = DataGenerator.loadLocationData();
         List<LocationModel> universities = new ArrayList<>();
 
-        for (LocationModel location : allLocations) {
-            if (location.getIsUniversity()) {
-                universities.add(location);
-            }
-        }
+        // Query Firestore for locations where isUniversity is true
+        db.collection(MyFirestoreReferences.LOCATIONS_COLLECTION)
+                .whereEqualTo("isUniversity", true)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        LocationModel university = LocationModel.fromMap(document.getData());
+                        universities.add(university);
+                    }
 
-        ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                universities
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        universitySpinner.setAdapter(adapter);
+                    // Sort universities by name for better display
+                    universities.sort((u1, u2) -> u1.getName().compareTo(u2.getName()));
+
+                    // Create and set adapter for spinner
+                    ArrayAdapter<LocationModel> adapter = new ArrayAdapter<>(
+                            this,
+                            android.R.layout.simple_spinner_item,
+                            universities
+                    );
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    universitySpinner.setAdapter(adapter);
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AccountCompleteProfileActivity.this,
+                            "Error loading universities: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
     }
 
+    /**
+     * Shows dialog for avatar selection
+     * Allows user to choose from 6 predefined avatars
+     */
     private void showAvatarDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_avatar_selection, null);
@@ -135,6 +170,10 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         dialog.show();
     }
 
+    /**
+     * Validates user input and initiates profile creation process
+     * Collects username, phone and university selection
+     */
     private void attemptProfileCompletion() {
         String username = usernameInput.getText().toString().trim();
         String phone = phoneInput.getText().toString().trim();
@@ -147,6 +186,12 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         createUserInFirestore(username, phone, selectedUniversity.getLocationID());
     }
 
+    /**
+     * Validates the user input fields
+     * @param username The username to validate
+     * @param phone The phone number to validate
+     * @return boolean indicating if inputs are valid
+     */
     private boolean validateInputs(String username, String phone) {
         if (TextUtils.isEmpty(username)) {
             usernameInput.setError("Username is required");
@@ -163,6 +208,13 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * Creates a new user document in Firestore with profile information
+     * Generates next available userID and saves user data
+     * @param username User's display name
+     * @param phone User's phone number
+     * @param universityId Selected university ID
+     */
     private void createUserInFirestore(String username, String phone, int universityId) {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .orderBy("userID", Query.Direction.DESCENDING)
@@ -204,6 +256,10 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * Navigates to the home screen after successful profile completion
+     * Clears activity stack
+     */
     private void navigateToHome() {
         Intent intent = new Intent(AccountCompleteProfileActivity.this, BookingHomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -211,6 +267,10 @@ public class AccountCompleteProfileActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * Handles back button press with confirmation dialog
+     * Deletes user account if registration is cancelled
+     */
     @Override
     public void onBackPressed() {
         new AlertDialog.Builder(this)

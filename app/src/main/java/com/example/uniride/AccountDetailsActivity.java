@@ -33,7 +33,13 @@ import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+/**
+ * Activity that displays and manages user account details, including profile information,
+ * car details for drivers, and balance management functionality
+ * Extends BottomNavigationActivity for consistent navigation across the app
+ */
 public class AccountDetailsActivity extends BottomNavigationActivity {
+    // UI Elements for profile information
     private CircleImageView profileImage;
     private TextView nameText, emailText, phoneText, universityText, accountStatusText;
     private TextView carDetailsLabel, carDetailsText, balanceText;
@@ -41,13 +47,21 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
     private Button editProfileButton, logoutButton, deleteAccountButton;
     private Button withdrawButton, depositButton;
 
+    // Cards for conditional content display
     private CardView carDetailsCard, balanceCard;
 
+    // Firebase and data instances
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
     private UserModel userModel;
 
+    private AlertDialog loadingDialog;
+
+    /**
+     * Initializes activity, sets up Firebase instances and UI components
+     * Redirects to login if user is not authenticated
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +82,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         setListeners();
     }
 
+    /**
+     * Reloads user data when activity resumes
+     * Ensures displayed information is current
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -79,6 +97,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         return R.id.account;
     }
 
+    /**
+     * Initializes all view elements from layout resources
+     * Binds UI components to their respective variables
+     */
     private void initViews() {
         profileImage = findViewById(R.id.profile_image);
         nameText = findViewById(R.id.name_text);
@@ -100,6 +122,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         deleteAccountButton = findViewById(R.id.delete_account_button);
     }
 
+    /**
+     * Loads user data from Firestore and updates UI
+     * Handles both basic user info and related object population
+     */
     private void loadUserData() {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .document(currentUser.getUid())
@@ -121,6 +147,12 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                     Toast.makeText(this, "Error loading user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
+    /**
+     * Callback for when user object population is complete
+     * Updates UI elements with populated user data
+     * @param user The fully populated UserModel object
+     */
 
     private void onUserPopulateComplete(UserModel user) {
         // Update UI elements that depend on populated objects
@@ -148,6 +180,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         }
     }
 
+    /**
+     * Displays dialog for depositing funds
+     * Includes quick amount options and input validation
+     */
     private void showDepositDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -195,6 +231,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         dialog.show();
     }
 
+    /**
+     * Displays dialog for withdrawing funds
+     * Includes balance check and confirmation
+     */
     private void showWithdrawDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
@@ -289,6 +329,12 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
 
         dialog.show();
     }
+
+    /**
+     * Processes deposit transaction in Firestore
+     * Updates local balance and UI
+     * @param amount Amount to deposit
+     */
     private void processDeposit(double amount) {
         // Show loading state
         showLoadingDialog("Processing deposit...");
@@ -315,6 +361,11 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 });
     }
 
+    /**
+     * Processes withdrawal transaction in Firestore
+     * Updates local balance and UI
+     * @param amount Amount to withdraw
+     */
     private void processWithdraw(double amount) {
         // Show loading state
         showLoadingDialog("Processing withdrawal...");
@@ -341,8 +392,12 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 });
     }
 
-    private AlertDialog loadingDialog;
 
+
+    /**
+     * Shows loading dialog during async operations
+     * @param message Message to display in loading dialog
+     */
     private void showLoadingDialog(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_loading, null);
@@ -354,12 +409,19 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         loadingDialog.show();
     }
 
+    /**
+     * Hides loading dialog when operation completes
+     */
     private void hideLoadingDialog() {
         if (loadingDialog != null && loadingDialog.isShowing()) {
             loadingDialog.dismiss();
         }
     }
 
+    /**
+     * Shows success dialog with custom message
+     * @param message Success message to display
+     */
     private void showSuccessDialog(String message) {
         new AlertDialog.Builder(this)
                 .setTitle("Success")
@@ -369,6 +431,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .show();
     }
 
+    /**
+     * Shows error dialog with custom message
+     * @param message Error message to display
+     */
     private void showErrorDialog(String message) {
         new AlertDialog.Builder(this)
                 .setTitle("Error")
@@ -378,6 +444,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .show();
     }
 
+    /**
+     * Sets up click listeners for all interactive elements
+     * Handles navigation, logout, and account management actions
+     */
     private void setListeners() {
         editProfileButton.setOnClickListener(v -> {
             Intent intent = new Intent(AccountDetailsActivity.this, AccountEditActivity.class);
@@ -406,6 +476,9 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
         depositButton.setOnClickListener(v -> showDepositDialog());
     }
 
+    /**
+     * Shows confirmation dialog before account deletion
+     */
     private void showDeleteAccountConfirmationDialog() {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Account")
@@ -418,6 +491,10 @@ public class AccountDetailsActivity extends BottomNavigationActivity {
                 .show();
     }
 
+    /**
+     * Handles complete account deletion process
+     * Removes user data from Firestore and authentication
+     */
     private void deleteAccount() {
         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                 .document(currentUser.getUid())
