@@ -185,7 +185,7 @@
 
                         <TextView
                             style="@style/DriverHubMenuText"
-                            android:text="Bookings Scheduled Today" />
+                            android:text="See Bookings Scheduled Today" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -202,7 +202,7 @@
 
                         <TextView
                             style="@style/DriverHubMenuText"
-                            android:text="Chats" />
+                            android:text="See Chat Messages" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
