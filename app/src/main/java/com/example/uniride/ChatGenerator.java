@@ -1,6 +1,5 @@
 package com.example.uniride;
 
-import com.example.uniride.BottomNavigationActivity;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -9,20 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
 
-public class HomeChatGenerateActivity {
+public class ChatGenerator {
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    public HomeChatGenerateActivity() {
+    public ChatGenerator() {
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
     }
 
-    public void sendMessage(int chatID, String messageText, int recipientID) {
+    public void sendMessage(int chatID, String messageText, int senderID, int recipientID) {
         // Ensure the current user is logged in
         if (currentUser == null) {
             // Handle user not being logged in
@@ -32,7 +31,7 @@ public class HomeChatGenerateActivity {
         // Create a new message document
         Map<String, Object> message = new HashMap<>();
         message.put("chatID", chatID);
-        message.put("senderID", currentUser.getUid()); // Use current user's UID
+        message.put("senderID", senderID); // Use current user's UID
         message.put("recipientID", recipientID);
         message.put("message", messageText);
         message.put("date", new Date());

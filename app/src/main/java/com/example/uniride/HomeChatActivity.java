@@ -62,9 +62,6 @@ public class HomeChatActivity extends BottomNavigationActivity {
         adapter = new MyHomeChatAdapter(this, chatList, messageList, userID);
         recyclerView.setAdapter(adapter);
 
-        //HomeChatGenerateActivity generate = new HomeChatGenerateActivity();
-        //generate.sendMessage(60002, "Hi, can you see this?", 30003);
-
         // Load chats
         loadChats();
     }

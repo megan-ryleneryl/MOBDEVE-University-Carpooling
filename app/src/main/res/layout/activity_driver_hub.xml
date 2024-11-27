@@ -189,6 +189,23 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/chatsButton"
+                    style="@style/DriverHubMenuCard">
+
+                    <LinearLayout style="@style/DriverHubMenuItemLayout">
+
+                        <ImageView
+                            style="@style/DriverHubMenuIcon"
+                            android:src="@drawable/baseline_person_24"
+                            app:tint="@color/primary" />
+
+                        <TextView
+                            style="@style/DriverHubMenuText"
+                            android:text="Chats" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
