@@ -610,7 +610,6 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         // Navigate to a different screen or show a message
         Intent intent = new Intent(this, NoBookingsActivity.class); // Create a new Activity for "No Bookings"
         startActivity(intent);
-        setupChatButton();
         finish(); // Close the current activity
     }
 
