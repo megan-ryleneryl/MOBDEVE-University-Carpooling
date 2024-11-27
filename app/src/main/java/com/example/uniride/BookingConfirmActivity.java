@@ -80,8 +80,13 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
 
                     Log.d("CodeDebug", bookingToSave.toString());
 
-                    otherUserID = bookingToSave.getPassenger().getUserID();
+                    otherUserID = bookingToSave.getRide().getDriverID();
+
                     RideModel ride = bookingToSave.getRide();
+                    String departureDate = bookingToSave.getDate();
+                    String departureTime = ride.getDepartureTime();
+                    String pickup = ride.getFrom().getName();
+                    String dropoff = ride.getTo().getName();
 
                     passengerNameTv.setText(bookingToSave.getPassenger().getName());
                     pickupTv.setText(ride.getFrom().getName());
@@ -101,7 +106,7 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                     });
 
                     contactBtn.setOnClickListener(v -> {
-                        // Step 1: Check if the user has chat history with the driver
+                        // Check if the user has chat history with the driver
                         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                             .document(currentUser.getUid())
                             .get()
@@ -115,39 +120,46 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                                         .addOnSuccessListener(messagesSnapshot -> {
 
                                             // Check each message if it matches userID and otherUserID
+                                            int lastChatID = 0;
                                             for (QueryDocumentSnapshot messageDoc : messagesSnapshot) {
-                                                Object senderIDObject = messageDoc.get("senderID");
-                                                Object recipientIDObject = messageDoc.get("recipientID");
-                                                int senderID = 0;
-                                                int recipientID = 0;
+                                                MessageModel message = MessageModel.fromMap(messageDoc.getData());
 
-                                                if (senderIDObject instanceof String) {
-                                                    senderID = Integer.parseInt((String) senderIDObject);
-                                                } else if (senderIDObject instanceof Long) {
-                                                    senderID = ((Long) senderIDObject).intValue();
-                                                }
-
-                                                if (recipientIDObject instanceof String) {
-                                                    recipientID = Integer.parseInt((String) recipientIDObject);
-                                                } else if (recipientIDObject instanceof Long) {
-                                                    recipientID = ((Long) recipientIDObject).intValue();
-                                                }
+                                                int senderID = message.getSenderID();
+                                                int recipientID = message.getRecipientID();
+                                                lastChatID = Math.max(lastChatID, message.getChatID());
 
                                                 // Get the chatID if there is
                                                 if ((senderID == userID && recipientID == otherUserID) || (senderID == otherUserID && recipientID == userID)) {
-                                                    MessageModel message = MessageModel.fromMap(messageDoc.getData());
                                                     chatID = message.getChatID();
                                                     Log.d("BookingConfirmActivity", "chatID identified: " + chatID);
                                                     break;
                                                 }
                                             }
 
-                                            // Generate chat if not found
+                                            // Generate chat
                                             if (chatID == 0) {
-                                                ChatGenerator generate = new ChatGenerator();
-                                                //fix ID
-                                                //generate.sendMessage(<insert>, "[APP] Your booking has been confirmed.", userID, otherUserID);
+                                                chatID = lastChatID + 1;
                                             }
+                                            ChatGenerator generate = new ChatGenerator();
+                                            generate.sendMessage(chatID,
+                                                "[BOOKING REQUEST SUBMITTED]\n" +
+                                                    "\uD83D\uDE97 Date: " + departureDate + "\n" +
+                                                    "\uD83D\uDE97 Time: " + departureTime + "\n" +
+                                                    "\uD83D\uDE97 Pickup: " + pickup + "\n" +
+                                                    "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
+                                                    "Thank you for your booking request! I will review it and get back to you as soon as possible.\n\n" +
+                                                    "(This message was generated by the app. 🤖)",
+                                                    otherUserID,
+                                                    userID);
+                                            // Move to HomeChatMessage activity
+                                            Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
+                                            Log.d("BookingConfirmActivity", "chatID to be passed " + chatID);
+                                            Log.d("BookingConfirmActivity", "otherUserID to be passed " + otherUserID);
+                                            i.putExtra("chatID", chatID);
+                                            i.putExtra("otherUserID", otherUserID);
+                                            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            finish();
+                                            startActivity(i);
                                         })
                                         .addOnFailureListener(e -> {
                                             Toast.makeText(BookingConfirmActivity.this,
@@ -163,12 +175,6 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                                         Toast.LENGTH_SHORT).show();
                                 Log.d("BookingConfirmActivity", "Error loading users: " + e.getMessage());
                             });
-
-                        // Move to HomeChatMessage activity
-                        Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
-                        i.putExtra("chatID", chatID);
-                        i.putExtra("otherUserID", otherUserID);
-                        startActivity(i);
                     });
                 }
             });
