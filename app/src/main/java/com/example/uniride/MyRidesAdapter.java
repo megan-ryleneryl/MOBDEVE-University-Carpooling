@@ -39,7 +39,7 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
             totalSeats = itemView.findViewById(R.id.textTotalSeats);
             price = itemView.findViewById(R.id.textPrice);
             status = itemView.findViewById(R.id.textStatus);
-            editButton = itemView.findViewById(R.id.buttonEdit);
+//            editButton = itemView.findViewById(R.id.buttonEdit);
             deactivateButton = itemView.findViewById(R.id.buttonDeactivate);
         }
     }
@@ -82,37 +82,37 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
         }
 
         // Button click listeners
-        holder.editButton.setOnClickListener(v -> {
-            Intent intent = new Intent(context, RideEdit.class);
-            // Add ride details to intent
-            intent.putExtra("rideID", currentRide.getRideID());
-            intent.putExtra("driverID", currentRide.getDriver());
-            intent.putExtra("fromLocation", currentRide.getFromLocationID());
-            intent.putExtra("toLocation", currentRide.getToLocationID());
-            intent.putExtra("departureTime", currentRide.getDepartureTime());
-            intent.putExtra("arrivalTime", currentRide.getArrivalTime());
-            intent.putExtra("totalSeats", currentRide.getTotalSeats());
-            intent.putExtra("price", currentRide.getPrice());
-            context.startActivity(intent);
-        });
+//        holder.editButton.setOnClickListener(v -> {
+//            Intent intent = new Intent(context, RideEdit.class);
+//            // Add ride details to intent
+//            intent.putExtra("rideID", currentRide.getRideID());
+//            intent.putExtra("driverID", currentRide.getDriver());
+//            intent.putExtra("fromLocation", currentRide.getFromLocationID());
+//            intent.putExtra("toLocation", currentRide.getToLocationID());
+//            intent.putExtra("departureTime", currentRide.getDepartureTime());
+//            intent.putExtra("arrivalTime", currentRide.getArrivalTime());
+//            intent.putExtra("totalSeats", currentRide.getTotalSeats());
+//            intent.putExtra("price", currentRide.getPrice());
+//            context.startActivity(intent);
+//        });
 
-        holder.deactivateButton.setOnClickListener(v -> {
-            // Get reference to the ride document and update its status
-            FirebaseFirestore.getInstance()
-                    .collection(MyFirestoreReferences.RIDES_COLLECTION)
-                    .whereEqualTo("rideID", currentRide.getRideID())
-                    .get()
-                    .addOnSuccessListener(querySnapshot -> {
-                        if (!querySnapshot.isEmpty()) {
-                            querySnapshot.getDocuments().get(0).getReference()
-                                    .update("isActive", false)
-                                    .addOnSuccessListener(aVoid -> {
-                                        currentRide.setIsActive(false);
-                                        notifyItemChanged(position);
-                                    });
-                        }
-                    });
-        });
+//        holder.deactivateButton.setOnClickListener(v -> {
+//            // Get reference to the ride document and update its status
+//            FirebaseFirestore.getInstance()
+//                    .collection(MyFirestoreReferences.RIDES_COLLECTION)
+//                    .whereEqualTo("rideID", currentRide.getRideID())
+//                    .get()
+//                    .addOnSuccessListener(querySnapshot -> {
+//                        if (!querySnapshot.isEmpty()) {
+//                            querySnapshot.getDocuments().get(0).getReference()
+//                                    .update("isActive", false)
+//                                    .addOnSuccessListener(aVoid -> {
+//                                        currentRide.setIsActive(false);
+//                                        notifyItemChanged(position);
+//                                    });
+//                        }
+//                    });
+//        });
     }
 
     @Override

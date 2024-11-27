@@ -127,4 +127,5 @@ public class AccountMyRidesActivity extends BottomNavigationActivity {
         Intent intent = new Intent(this, RideCreate.class);
         startActivity(intent);
     }
+
 }
