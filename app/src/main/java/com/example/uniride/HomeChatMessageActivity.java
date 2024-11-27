@@ -87,6 +87,8 @@ public class HomeChatMessageActivity extends AppCompatActivity {
 
                 //Collections.sort(messageList, (m1, m2) -> m1.getDate().compareTo(m2.getDate()));
                 adapter.notifyDataSetChanged();
+
+                recyclerView.scrollToPosition(messageList.size() - 1);
             })
             .addOnFailureListener(e -> {
                 Toast.makeText(HomeChatMessageActivity.this,

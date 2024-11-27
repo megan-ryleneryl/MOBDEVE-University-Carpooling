@@ -81,6 +81,7 @@
             android:exported="false" />
         <activity
             android:name=".HomeChatMessageActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".HomeReviewsActivity"
