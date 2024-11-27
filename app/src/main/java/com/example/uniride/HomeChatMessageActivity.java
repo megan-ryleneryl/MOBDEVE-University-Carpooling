@@ -59,6 +59,7 @@ public class HomeChatMessageActivity extends AppCompatActivity {
         inputText = findViewById(R.id.inputText);
         recyclerView = findViewById(R.id.recyclerView);
 
+        Log.d("HomeChatMessageActivity", "WILL LOAD NOW!");
         // Loads username and pfpImage of otherUser
         loadOtherUserData();
 
@@ -90,7 +91,7 @@ public class HomeChatMessageActivity extends AppCompatActivity {
             .addOnFailureListener(e -> {
                 Toast.makeText(HomeChatMessageActivity.this,
                         "Error fetching messages: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d("HomeChatMessagectivity", "Error fetching messages: " + e.getMessage());
+                Log.d("HomeChatMessageActivity", "Error fetching messages: " + e.getMessage());
             });
     }
 
