@@ -125,7 +125,7 @@ public class DriverHubActivity extends BottomNavigationActivity {
                 .addOnSuccessListener(userDoc -> {
                     if (userDoc.exists()) {
                         int driverId = ((Long) userDoc.get("userID")).intValue();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("d/M/yyyy");
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                         String today = dateFormat.format(new Date());
 
                         db.collection(MyFirestoreReferences.RIDES_COLLECTION)

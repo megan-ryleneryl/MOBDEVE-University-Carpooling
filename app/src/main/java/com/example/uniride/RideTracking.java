@@ -149,7 +149,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                                 setContentView(R.layout.activity_ride_tracking); // Load the main screen
                                 // Initialize map
                                 initializeMap();
-                                setupBackButton();
+                                setupChatButton();
                             }
                         }
 
@@ -434,12 +434,12 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         void onLocationNameFetched(String locationName);
     }
 
-    private void setupBackButton() {
-        Button backButton = findViewById(R.id.btn_back);
+    private void setupChatButton() {
+        Button chatButton = findViewById(R.id.btn_chat);
 
-        backButton.setOnClickListener(v -> {
-            // Use finish() to close the current activity and return to the previous one
-            finish();
+        chatButton.setOnClickListener(v -> {
+            Intent i = new Intent(this, HomeChatActivity.class);
+            startActivity(i);
         });
     }
 
@@ -469,7 +469,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         // Navigate to a different screen or show a message
         Intent intent = new Intent(this, NoBookingsActivity.class); // Create a new Activity for "No Bookings"
         startActivity(intent);
-        setupBackButton();
+        setupChatButton();
         finish(); // Close the current activity
     }
 }
