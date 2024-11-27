@@ -146,7 +146,7 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                                             if (chatID == 0) {
                                                 ChatGenerator generate = new ChatGenerator();
                                                 //fix ID
-                                                //generate.sendMessage(60002, "[APP] Your booking has been confirmed.", 30003, otherUserID, userID);
+                                                //generate.sendMessage(<insert>, "[APP] Your booking has been confirmed.", userID, otherUserID);
                                             }
                                         })
                                         .addOnFailureListener(e -> {

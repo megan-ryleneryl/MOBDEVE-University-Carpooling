@@ -81,7 +81,7 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
 
                 holder.lastMessageText.setText(chat.getMessage());
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy · hh:mm a");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd · hh:mm a");
                 holder.timestampText.setText(dateFormat.format(chat.getDate()));
 
                 int otherUserID = otherUser.getUserID();
