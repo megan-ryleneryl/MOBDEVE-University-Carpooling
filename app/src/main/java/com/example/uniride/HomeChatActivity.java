@@ -136,6 +136,12 @@ public class HomeChatActivity extends BottomNavigationActivity {
                                 chatList.add(message);  // Add each latest message to chatList
                             }
 
+                            // Sort chatList in descending order based on the message date
+                            Collections.sort(chatList, (message1, message2) -> {
+                                // Assuming the MessageModel has a method to get the message date
+                                return message2.getDate().compareTo(message1.getDate()); // Descending order
+                            });
+
                             Log.d("HomeChatActivity", "Number of unique chats: " + chatList.size());
                             Log.d("HomeChatActivity", "ChatList: " + chatList);
 
