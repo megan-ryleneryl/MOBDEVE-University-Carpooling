@@ -137,15 +137,48 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
                                         // Generate a unique document ID
                                         String documentId = db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION).document().getId();
 
-                                        // Save the booking
+                                        /////////////////////////////////////////
                                         db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
                                                 .document(documentId)
                                                 .set(bookingToSave.toMap())
+                                                .addOnSuccessListener(documentReference -> {
+
+                                                    // Decrement availableSeats in the ride document
+                                                    RideModel selectedRide = selectedBooking.getRide();
+                                                    int newAvailableSeats = selectedRide.getAvailableSeats() - 1;
+
+                                                    db.collection(MyFirestoreReferences.RIDES_COLLECTION)
+                                                            .whereEqualTo("rideID", selectedRide.getRideID())
+                                                            .get()
+                                                            .addOnSuccessListener(rideSnapshot -> {
+                                                                if (!rideSnapshot.isEmpty()) {
+                                                                    DocumentSnapshot rideDoc = rideSnapshot.getDocuments().get(0);
+                                                                    rideDoc.getReference().update("availableSeats", newAvailableSeats)
+                                                                            .addOnSuccessListener(aVoid -> {
+                                                                                // Optionally, update the UI
+                                                                                capacityTv.setText(newAvailableSeats + " seats available");
+                                                                            })
+                                                                            .addOnFailureListener(e -> {
+                                                                                Log.e("Booking", "Failed to update availableSeats: " + e.getMessage());
+                                                                            });
+                                                                }
+                                                                // Save the booking
+                                                                db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                                                        .document(documentId)
+                                                                        .set(bookingToSave.toMap())
+                                                                        .addOnFailureListener(e -> {
+                                                                            Toast.makeText(BookingSearchDetailsActivity.this,
+                                                                                    "Booking failed: " + e.getMessage(),
+                                                                                    Toast.LENGTH_SHORT).show();
+                                                                        });
+                                                            });
+                                                })
                                                 .addOnFailureListener(e -> {
                                                     Toast.makeText(BookingSearchDetailsActivity.this,
                                                             "Booking failed: " + e.getMessage(),
                                                             Toast.LENGTH_SHORT).show();
                                                 });
+                                        //////////////////////////////////////////
 
                                         // Navigate to confirmation
                                         Intent i = new Intent(BookingSearchDetailsActivity.this, BookingConfirmActivity.class);

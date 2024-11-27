@@ -163,11 +163,11 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                                                     otherUserID,
                                                     userID);
                                             // Move to HomeChatMessage activity
-                                            Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
-                                            Log.d("BookingConfirmActivity", "chatID to be passed " + chatID);
-                                            Log.d("BookingConfirmActivity", "otherUserID to be passed " + otherUserID);
-                                            i.putExtra("chatID", chatID);
-                                            i.putExtra("otherUserID", otherUserID);
+                                            Intent i = new Intent(BookingConfirmActivity.this, HomeChatActivity.class);
+                                            //Log.d("BookingConfirmActivity", "chatID to be passed " + chatID);
+                                            //Log.d("BookingConfirmActivity", "otherUserID to be passed " + otherUserID);
+                                            //i.putExtra("chatID", chatID);
+                                            //i.putExtra("otherUserID", otherUserID);
                                             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                             finish();
                                             startActivity(i);
