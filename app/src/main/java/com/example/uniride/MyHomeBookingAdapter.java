@@ -22,6 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +42,19 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     String bookingType; // scheduled/requests/accepted
     HomeBookingActivity activity;
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();;
+    String departureDate;
+    String departureTime;
+    String pickup;
+    String dropoff;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser currentUser = mAuth.getCurrentUser();
+
+    int userID = 0;
+    int otherUserID = 0;
+    int chatID = 0;
+    int rideID = 0;
 
     public MyHomeBookingAdapter(List<BookingModel> bookingList, String bookingType, HomeBookingActivity activity) {
         this.bookingList = bookingList;
@@ -97,9 +110,13 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
     public void onBindViewHolder(@NonNull MyHomeBookingAdapter.ViewHolder holder, int position) {
         BookingModel booking = bookingList.get(position);
         Log.d("BookingListSize", "Adapter: The size of bookingList is: " + bookingList.size());
+        Log.d("BookingListSize", "Adapter: Booking Passenger " + booking.getPassengerID());
 
+        Log.d("BookingListSize", "Setting Up 1!");
         if (booking.getPassenger() != null) {
+            Log.d("BookingListSize", "Setting Up 2!");
             holder.pfpImage.setImageResource(booking.getPassenger().getPfp());
+            Log.d("BookingListSize", "Setting Up 3!");
             holder.passengerText.setText(booking.getPassenger().getName());
             holder.bookingIDText.setText(String.valueOf(booking.getBookingID()));
 
@@ -162,6 +179,14 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                             .get()
                             .addOnSuccessListener(querySnapshot -> {
 
+                                // Generate App Message
+                                for (QueryDocumentSnapshot bookingDoc : querySnapshot) {
+                                    BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
+                                    departureDate = booking.getDate();
+                                    rideID = ((Long) bookingDoc.get("rideID")).intValue();
+                                    generateAppMessage(code, bookingID);
+                                }
+
                                 if (!querySnapshot.isEmpty()) {
                                     DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
                                     String documentID = documentSnapshot.getId();
@@ -202,7 +227,8 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to REJECT the booking request?")
                 .setPositiveButton("Reject", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
+                        // TODO
+                        generateAppMessage(code, bookingID);
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -214,7 +240,8 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to START the ride?")
                 .setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO: Move to Ongoing Ride Activity
+                        // TODO
+                        generateAppMessage(code, bookingID);
                         Intent i = new Intent(activity, RideTracking.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         activity.startActivity(i);
@@ -229,7 +256,8 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to CANCEL the booking?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-
+                        // TODO
+                        generateAppMessage(code, bookingID);
                     }
                 })
                 .setNegativeButton("No", null)
@@ -240,6 +268,111 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
 
 // Change the text color of the PositiveButton (optional)
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(activity, R.color.unselected_color));
+    }
+
+    public void generateAppMessage(String code, int bookingID) {
+        // Check if the user has chat history with the driver
+
+        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                .document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(userSnapshot -> {
+                    if (userSnapshot.exists()) {
+                        userID = ((Long) userSnapshot.get("userID")).intValue();
+
+                        db.collection(MyFirestoreReferences.RIDES_COLLECTION)
+                                .whereEqualTo("rideID", rideID)
+                                .get()
+                                .addOnSuccessListener(ridesSnapshot -> {
+                                    for (QueryDocumentSnapshot rideDoc : ridesSnapshot) {
+                                        RideModel ride = RideModel.fromMap(rideDoc.getData());
+                                        departureTime = ride.getDepartureTime();
+                                        pickup = ride.getFrom().getName();
+                                        dropoff = ride.getTo().getName();
+                                    }
+
+                                    // Get all messages
+                                    db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
+                                            .get()
+                                            .addOnSuccessListener(messagesSnapshot -> {
+
+                                                // Check each message if it matches userID and otherUserID
+                                                int lastChatID = 0;
+                                                for (QueryDocumentSnapshot messageDoc : messagesSnapshot) {
+                                                    MessageModel message = MessageModel.fromMap(messageDoc.getData());
+
+                                                    int senderID = message.getSenderID();
+                                                    int recipientID = message.getRecipientID();
+                                                    lastChatID = Math.max(lastChatID, message.getChatID());
+
+                                                    // Get the chatID if there is
+                                                    if ((senderID == userID && recipientID == otherUserID) || (senderID == otherUserID && recipientID == userID)) {
+                                                        chatID = message.getChatID();
+                                                        Log.d("BookingConfirmActivity", "chatID identified: " + chatID);
+                                                        break;
+                                                    }
+                                                }
+
+                                                // Generate chat
+                                                if (chatID == 0) {
+                                                    chatID = lastChatID + 1;
+                                                }
+                                                ChatGenerator generate = new ChatGenerator();
+                                                String message = "";
+                                                if (code.equals("accept")) {
+                                                    message = "[BOOKING REQUEST ACCEPTED]\n" +
+                                                            "\uD83D\uDE97 Date: " + departureDate + "\n" +
+                                                            "\uD83D\uDE97 Time: " + departureTime + "\n" +
+                                                            "\uD83D\uDE97 Pickup: " + pickup + "\n" +
+                                                            "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
+                                                            "I accepted your booking request. See you soon!\n\n" +
+                                                            "(This message was generated by the app. 🤖)";
+                                                } else if (code.equals("reject")) {
+                                                    message = "[BOOKING REQUEST REJECTED]\n" +
+                                                            "\uD83D\uDE97 Date: " + departureDate + "\n" +
+                                                            "\uD83D\uDE97 Time: " + departureTime + "\n" +
+                                                            "\uD83D\uDE97 Pickup: " + pickup + "\n" +
+                                                            "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
+                                                            "Sorry, I won't be able to accept your booking request.\n\n" +
+                                                            "(This message was generated by the app. 🤖)";
+                                                } else if (code.equals("cancelBooking") || code.equals("cancel")) {
+                                                    message = "[SCHEDULED BOOKING WAS CANCELLED]\n" +
+                                                            "\uD83D\uDE97 Date: " + departureDate + "\n" +
+                                                            "\uD83D\uDE97 Time: " + departureTime + "\n" +
+                                                            "\uD83D\uDE97 Pickup: " + pickup + "\n" +
+                                                            "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
+                                                            "Sorry, I won't be able to continue with the schedule.\n\n" +
+                                                            "(This message was generated by the app. 🤖)";
+                                                } else if (code.equals("onTheWay")) {
+                                                    message = "[DRIVER IS ON THE WAY]\n" +
+                                                            "\uD83D\uDE97 Date: " + departureDate + "\n" +
+                                                            "\uD83D\uDE97 Time: " + departureTime + "\n" +
+                                                            "\uD83D\uDE97 Pickup: " + pickup + "\n" +
+                                                            "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
+                                                            "I am currently heading to the pickup location. See you soon!\n\n" +
+                                                            "(This message was generated by the app. 🤖)";
+                                                }
+
+                                                generate.sendMessage(chatID, message, otherUserID, userID);
+                                            }).addOnFailureListener(e -> {
+                                                Toast.makeText(activity,
+                                                        "Error loading messages: " + e.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.d("BookingConfirmActivity", "Error loading messages: " + e.getMessage());
+                                            });
+                                }).addOnFailureListener(e -> {
+                                    Toast.makeText(activity,
+                                            "Error loading users: " + e.getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.d("BookingConfirmActivity", "Error loading users: " + e.getMessage());
+                                });
+                    }
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(activity,
+                            "Error loading users: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                    Log.d("BookingConfirmActivity", "Error loading users: " + e.getMessage());
+                });
     }
 
     public static String formatDate(String inputDate) {

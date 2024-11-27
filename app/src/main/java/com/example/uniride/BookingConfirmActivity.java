@@ -106,7 +106,7 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                     });
 
                     contactBtn.setOnClickListener(v -> {
-                        // Step 1: Check if the user has chat history with the driver
+                        // Check if the user has chat history with the driver
                         db.collection(MyFirestoreReferences.USERS_COLLECTION)
                             .document(currentUser.getUid())
                             .get()
