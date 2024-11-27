@@ -229,8 +229,46 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to REJECT the booking request?")
                 .setPositiveButton("Reject", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO
-                        generateAppMessage(code, bookingID);
+                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                .whereEqualTo("bookingID", bookingID)
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+
+                                    // Generate App Message
+                                    for (QueryDocumentSnapshot bookingDoc : querySnapshot) {
+                                        BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
+                                        departureDate = booking.getDate();
+                                        rideID = booking.getRideID();
+                                        generateAppMessage(code, bookingID);
+                                    }
+
+                                    // Delete booking
+                                    if (!querySnapshot.isEmpty()) {
+                                        DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                                        String documentID = documentSnapshot.getId();
+
+                                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                                .document(documentID)
+                                                .delete()
+                                                .addOnSuccessListener(aVoid -> {
+                                                    for (int i = 0; i < bookingList.size(); i++) {
+                                                        if (bookingList.get(i).getBookingID() == bookingID) {
+                                                            bookingList.remove(i);
+                                                            break;
+                                                        }
+                                                    }
+                                                    notifyDataSetChanged();
+                                                    activity.updateUI();
+                                                    Toast.makeText(activity, "Booking rejected.", Toast.LENGTH_SHORT).show();
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(activity, "Failed to reject booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                });
+                                    } else {
+                                        // No document found with the given bookingID
+                                        Toast.makeText(activity, "Booking not found", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 })
                 .setNegativeButton("Cancel", null)
@@ -258,8 +296,46 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                 .setMessage("Are you sure you want to CANCEL the booking?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        // TODO
-                        generateAppMessage(code, bookingID);
+                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                .whereEqualTo("bookingID", bookingID)
+                                .get()
+                                .addOnSuccessListener(querySnapshot -> {
+
+                                    // Generate App Message
+                                    for (QueryDocumentSnapshot bookingDoc : querySnapshot) {
+                                        BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
+                                        departureDate = booking.getDate();
+                                        rideID = booking.getRideID();
+                                        generateAppMessage(code, bookingID);
+                                    }
+
+                                    // Delete booking
+                                    if (!querySnapshot.isEmpty()) {
+                                        DocumentSnapshot documentSnapshot = querySnapshot.getDocuments().get(0);
+                                        String documentID = documentSnapshot.getId();
+
+                                        db.collection(MyFirestoreReferences.BOOKINGS_COLLECTION)
+                                                .document(documentID)
+                                                .delete()
+                                                .addOnSuccessListener(aVoid -> {
+                                                    for (int i = 0; i < bookingList.size(); i++) {
+                                                        if (bookingList.get(i).getBookingID() == bookingID) {
+                                                            bookingList.remove(i);
+                                                            break;
+                                                        }
+                                                    }
+                                                    notifyDataSetChanged();
+                                                    activity.updateUI();
+                                                    Toast.makeText(activity, "Booking cancelled.", Toast.LENGTH_SHORT).show();
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(activity, "Failed to cancel booking: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                                });
+                                    } else {
+                                        // No document found with the given bookingID
+                                        Toast.makeText(activity, "Booking not found", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 })
                 .setNegativeButton("No", null)
@@ -292,6 +368,9 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                                             departureTime = populatedRide.getDepartureTime();
                                             pickup = populatedRide.getFrom().getName();
                                             dropoff = populatedRide.getTo().getName();
+                                            Log.d("MyHomeBookingAdapter", "departureTime: " + departureTime);
+                                            Log.d("MyHomeBookingAdapter", "pickup: " + pickup);
+                                            Log.d("MyHomeBookingAdapter", "dropoff: " + dropoff);
 
                                             // Now get messages after ride data is populated
                                             db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
@@ -333,7 +412,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                                                                     "\uD83D\uDE97 Time: " + departureTime + "\n" +
                                                                     "\uD83D\uDE97 Pickup: " + pickup + "\n" +
                                                                     "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
-                                                                    "Sorry, I won't be able to accept your booking request.\n\n" +
+                                                                    "Sorry, I won't be able to accept your booking.\n\n" +
                                                                     "(This message was generated by the app. 🤖)";
                                                         } else if (code.equals("cancelBooking") || code.equals("cancel")) {
                                                             message = "> SCHEDULED BOOKING WAS CANCELLED <\n" +
@@ -341,7 +420,7 @@ public class MyHomeBookingAdapter extends RecyclerView.Adapter<MyHomeBookingAdap
                                                                     "\uD83D\uDE97 Time: " + departureTime + "\n" +
                                                                     "\uD83D\uDE97 Pickup: " + pickup + "\n" +
                                                                     "\uD83D\uDE97 Dropoff: " + dropoff + "\n\n" +
-                                                                    "Sorry, I won't be able to continue with the schedule.\n\n" +
+                                                                    "Sorry, I had to cancel the booking.\n\n" +
                                                                     "(This message was generated by the app. 🤖)";
                                                         } else if (code.equals("onTheWay")) {
                                                             message = "> DRIVER IS ON THE WAY <\n" +
