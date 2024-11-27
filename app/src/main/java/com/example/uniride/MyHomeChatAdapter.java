@@ -78,10 +78,28 @@ public class MyHomeChatAdapter extends RecyclerView.Adapter<MyHomeChatAdapter.Vi
             if (otherUser != null) {
                 holder.pfpImage.setImageResource(otherUser.getPfp());
                 holder.nameText.setText(otherUser.getName());
-
                 holder.lastMessageText.setText(chat.getMessage());
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd · hh:mm a");
+                // Get the current date
+                Calendar currentDate = Calendar.getInstance();
+
+                // Get the date from the chat
+                Calendar chatDate = Calendar.getInstance();
+                chatDate.setTime(chat.getDate());
+
+                // Check if the chat date is today
+                SimpleDateFormat dateFormat;
+                if (currentDate.get(Calendar.YEAR) == chatDate.get(Calendar.YEAR) &&
+                        currentDate.get(Calendar.MONTH) == chatDate.get(Calendar.MONTH) &&
+                        currentDate.get(Calendar.DAY_OF_MONTH) == chatDate.get(Calendar.DAY_OF_MONTH)) {
+                    // If it's today, format the time
+                    dateFormat = new SimpleDateFormat("hh:mm a");
+                } else {
+                    // If it's not today, format the date
+                    dateFormat = new SimpleDateFormat("MMM dd");
+                }
+
+                // Set the formatted timestamp
                 holder.timestampText.setText(dateFormat.format(chat.getDate()));
 
                 int otherUserID = otherUser.getUserID();

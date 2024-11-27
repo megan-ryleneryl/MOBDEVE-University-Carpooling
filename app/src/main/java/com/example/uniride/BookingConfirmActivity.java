@@ -80,8 +80,13 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
 
                     Log.d("CodeDebug", bookingToSave.toString());
 
-                    otherUserID = bookingToSave.getPassenger().getUserID();
+                    otherUserID = bookingToSave.getRide().getDriverID();
+
                     RideModel ride = bookingToSave.getRide();
+                    String departureDate = bookingToSave.getDate();
+                    String departureTime = ride.getDepartureTime();
+                    String pickup = ride.getFrom().getName();
+                    String dropoff = ride.getTo().getName();
 
                     passengerNameTv.setText(bookingToSave.getPassenger().getName());
                     pickupTv.setText(ride.getFrom().getName());
@@ -115,39 +120,36 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                                         .addOnSuccessListener(messagesSnapshot -> {
 
                                             // Check each message if it matches userID and otherUserID
+                                            int lastChatID = 0;
                                             for (QueryDocumentSnapshot messageDoc : messagesSnapshot) {
-                                                Object senderIDObject = messageDoc.get("senderID");
-                                                Object recipientIDObject = messageDoc.get("recipientID");
-                                                int senderID = 0;
-                                                int recipientID = 0;
+                                                MessageModel message = MessageModel.fromMap(messageDoc.getData());
 
-                                                if (senderIDObject instanceof String) {
-                                                    senderID = Integer.parseInt((String) senderIDObject);
-                                                } else if (senderIDObject instanceof Long) {
-                                                    senderID = ((Long) senderIDObject).intValue();
-                                                }
-
-                                                if (recipientIDObject instanceof String) {
-                                                    recipientID = Integer.parseInt((String) recipientIDObject);
-                                                } else if (recipientIDObject instanceof Long) {
-                                                    recipientID = ((Long) recipientIDObject).intValue();
-                                                }
+                                                int senderID = message.getSenderID();
+                                                int recipientID = message.getRecipientID();
+                                                lastChatID = Math.max(lastChatID, message.getChatID());
 
                                                 // Get the chatID if there is
                                                 if ((senderID == userID && recipientID == otherUserID) || (senderID == otherUserID && recipientID == userID)) {
-                                                    MessageModel message = MessageModel.fromMap(messageDoc.getData());
                                                     chatID = message.getChatID();
                                                     Log.d("BookingConfirmActivity", "chatID identified: " + chatID);
                                                     break;
                                                 }
                                             }
 
-                                            // Generate chat if not found
+                                            // Generate chat
                                             if (chatID == 0) {
-                                                ChatGenerator generate = new ChatGenerator();
-                                                //fix ID
-                                                //generate.sendMessage(<insert>, "[APP] Your booking has been confirmed.", userID, otherUserID);
+                                                chatID = lastChatID + 1;
                                             }
+                                            ChatGenerator generate = new ChatGenerator();
+                                            generate.sendMessage(chatID,
+                                                "[APP] Booking Request Submitted!\n" +
+                                                    "Date: " + departureDate + "\n" +
+                                                    "Time: " + departureTime + "\n" +
+                                                    "Pickup: " + pickup + "\n" +
+                                                    "Dropoff: " + dropoff + "\n\n" +
+                                                    "Thank you for your booking request! I will review it and get back to you as soon as possible.",
+                                                    otherUserID,
+                                                    userID);
                                         })
                                         .addOnFailureListener(e -> {
                                             Toast.makeText(BookingConfirmActivity.this,
