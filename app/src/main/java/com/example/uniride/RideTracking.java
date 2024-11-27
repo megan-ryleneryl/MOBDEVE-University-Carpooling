@@ -168,6 +168,8 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         db.collection("bookings")
                 .whereEqualTo("isAccepted", true)
                 .whereEqualTo("date", todayDate)
+                .whereEqualTo("isPaymentComplete", false)
+                .whereEqualTo("isBookingDone", false)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -225,6 +227,8 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                                 .whereIn("rideID", rideIDs)
                                 .whereEqualTo("date", todayDate)
                                 .whereEqualTo("isAccepted", true)
+                                .whereEqualTo("isPaymentComplete", false)
+                                .whereEqualTo("isBookingDone", false)
                                 .get()
                                 .addOnSuccessListener(bookingsSnapshot -> {
                                     boolean isRideFound = false;
