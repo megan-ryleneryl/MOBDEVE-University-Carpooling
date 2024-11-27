@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -103,6 +104,16 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                         Intent intent = new Intent(getApplicationContext(), BookingHomeActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
+                    });
+
+                    getOnBackPressedDispatcher().addCallback(BookingConfirmActivity.this, new OnBackPressedCallback(true) {
+                        @Override
+                        public void handleOnBackPressed() {
+                            Toast.makeText(BookingConfirmActivity.this, "Return to home", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), BookingHomeActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                        }
                     });
 
                     contactBtn.setOnClickListener(v -> {
