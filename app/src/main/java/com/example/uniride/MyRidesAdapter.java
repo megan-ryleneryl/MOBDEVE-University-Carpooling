@@ -96,23 +96,23 @@ public class MyRidesAdapter extends RecyclerView.Adapter<MyRidesAdapter.RideView
 //            context.startActivity(intent);
 //        });
 
-//        holder.deactivateButton.setOnClickListener(v -> {
-//            // Get reference to the ride document and update its status
-//            FirebaseFirestore.getInstance()
-//                    .collection(MyFirestoreReferences.RIDES_COLLECTION)
-//                    .whereEqualTo("rideID", currentRide.getRideID())
-//                    .get()
-//                    .addOnSuccessListener(querySnapshot -> {
-//                        if (!querySnapshot.isEmpty()) {
-//                            querySnapshot.getDocuments().get(0).getReference()
-//                                    .update("isActive", false)
-//                                    .addOnSuccessListener(aVoid -> {
-//                                        currentRide.setIsActive(false);
-//                                        notifyItemChanged(position);
-//                                    });
-//                        }
-//                    });
-//        });
+        holder.deactivateButton.setOnClickListener(v -> {
+            // Get reference to the ride document and update its status
+            FirebaseFirestore.getInstance()
+                    .collection(MyFirestoreReferences.RIDES_COLLECTION)
+                    .whereEqualTo("rideID", currentRide.getRideID())
+                    .get()
+                    .addOnSuccessListener(querySnapshot -> {
+                        if (!querySnapshot.isEmpty()) {
+                            querySnapshot.getDocuments().get(0).getReference()
+                                    .update("isActive", false)
+                                    .addOnSuccessListener(aVoid -> {
+                                        currentRide.setIsActive(false);
+                                        notifyItemChanged(position);
+                                    });
+                        }
+                    });
+        });
     }
 
     @Override
