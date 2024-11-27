@@ -27,6 +27,7 @@ public class DriverHubActivity extends BottomNavigationActivity {
     private MaterialCardView bookingRequestsButton;
     private MaterialCardView acceptedBookingsButton;
     private MaterialCardView todayScheduleButton;
+    private MaterialCardView chatsButton;
     private FirebaseFirestore db;
     private FirebaseUser currentUser;
 
@@ -77,6 +78,7 @@ public class DriverHubActivity extends BottomNavigationActivity {
         bookingRequestsButton = findViewById(R.id.bookingRequestsButton);
         acceptedBookingsButton = findViewById(R.id.acceptedBookingsButton);
         todayScheduleButton = findViewById(R.id.todayScheduleButton);
+        chatsButton = findViewById(R.id.chatsButton);
     }
 
     @Override
@@ -105,6 +107,11 @@ public class DriverHubActivity extends BottomNavigationActivity {
         todayScheduleButton.setOnClickListener(v -> {
             Intent i = new Intent(this, HomeBookingActivity.class);
             i.putExtra("bookingTypePassed", "scheduled");
+            startActivity(i);
+        });
+
+        chatsButton.setOnClickListener(v -> {
+            Intent i = new Intent(this, HomeChatActivity.class);
             startActivity(i);
         });
     }

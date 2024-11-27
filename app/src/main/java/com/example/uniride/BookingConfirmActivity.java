@@ -15,7 +15,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 /**
  * Activity to display the confirmation screen for a booking.
@@ -34,6 +38,12 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
     Button contactBtn;
     Context context;
     FirebaseFirestore db;
+    FirebaseAuth mAuth;
+    FirebaseUser currentUser;
+
+    int userID = 0;
+    int otherUserID = 0;
+    int chatID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +60,9 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
         BookingModel bookingToSave = (BookingModel) getIntent().getSerializableExtra("bookingToSave");
 
         if (bookingToSave != null) {
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db = FirebaseFirestore.getInstance();
+            mAuth = FirebaseAuth.getInstance();
+            currentUser = mAuth.getCurrentUser();
             bookingToSave.populateObjects(db, new BookingModel.OnPopulateCompleteListener() {
                 @Override
                 public void onPopulateComplete(BookingModel booking) {
@@ -68,6 +80,7 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
 
                     Log.d("CodeDebug", bookingToSave.toString());
 
+                    otherUserID = bookingToSave.getPassenger().getUserID();
                     RideModel ride = bookingToSave.getRide();
 
                     passengerNameTv.setText(bookingToSave.getPassenger().getName());
@@ -88,18 +101,73 @@ public class BookingConfirmActivity extends BottomNavigationActivity {
                     });
 
                     contactBtn.setOnClickListener(v -> {
-                        //Toast.makeText(BookingConfirmActivity.this, "Move to chat", Toast.LENGTH_SHORT).show();
+                        // Step 1: Check if the user has chat history with the driver
+                        db.collection(MyFirestoreReferences.USERS_COLLECTION)
+                            .document(currentUser.getUid())
+                            .get()
+                            .addOnSuccessListener(userSnapshot -> {
+                                if (userSnapshot.exists()) {
+                                    userID = ((Long) userSnapshot.get("userID")).intValue();
 
-                        // TODO: Coordinate on how to implement this
-                        // To be implemented on MCO3:
-                        //   IF there is no existing chat with the driver
-                        //   THEN automatically create a chat and add it to the chat list
-                        //   Move to message activity
+                                    // Get all messages
+                                    db.collection(MyFirestoreReferences.MESSAGES_COLLECTION)
+                                        .get()
+                                        .addOnSuccessListener(messagesSnapshot -> {
 
-                        // Hardcoded to Barbie Smith's chat for now:
+                                            // Check each message if it matches userID and otherUserID
+                                            for (QueryDocumentSnapshot messageDoc : messagesSnapshot) {
+                                                Object senderIDObject = messageDoc.get("senderID");
+                                                Object recipientIDObject = messageDoc.get("recipientID");
+                                                int senderID = 0;
+                                                int recipientID = 0;
+
+                                                if (senderIDObject instanceof String) {
+                                                    senderID = Integer.parseInt((String) senderIDObject);
+                                                } else if (senderIDObject instanceof Long) {
+                                                    senderID = ((Long) senderIDObject).intValue();
+                                                }
+
+                                                if (recipientIDObject instanceof String) {
+                                                    recipientID = Integer.parseInt((String) recipientIDObject);
+                                                } else if (recipientIDObject instanceof Long) {
+                                                    recipientID = ((Long) recipientIDObject).intValue();
+                                                }
+
+                                                // Get the chatID if there is
+                                                if ((senderID == userID && recipientID == otherUserID) || (senderID == otherUserID && recipientID == userID)) {
+                                                    MessageModel message = MessageModel.fromMap(messageDoc.getData());
+                                                    chatID = message.getChatID();
+                                                    Log.d("BookingConfirmActivity", "chatID identified: " + chatID);
+                                                    break;
+                                                }
+                                            }
+
+                                            // Generate chat if not found
+                                            if (chatID == 0) {
+                                                ChatGenerator generate = new ChatGenerator();
+                                                //fix ID
+                                                //generate.sendMessage(60002, "[APP] Your booking has been confirmed.", 30003, otherUserID, userID);
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(BookingConfirmActivity.this,
+                                                "Error loading messages: " + e.getMessage(),
+                                                Toast.LENGTH_SHORT).show();
+                                            Log.d("BookingConfirmActivity", "Error loading messages: " + e.getMessage());
+                                        });
+                                }
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(BookingConfirmActivity.this,
+                                        "Error loading users: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show();
+                                Log.d("BookingConfirmActivity", "Error loading users: " + e.getMessage());
+                            });
+
+                        // Move to HomeChatMessage activity
                         Intent i = new Intent(BookingConfirmActivity.this, HomeChatMessageActivity.class);
-                        i.putExtra("chatID", 70001);
-                        i.putExtra("chatmate", DataGenerator.user2.getName());
+                        i.putExtra("chatID", chatID);
+                        i.putExtra("otherUserID", otherUserID);
                         startActivity(i);
                     });
                 }
