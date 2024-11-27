@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
     private String toLocationName = "";
     private SupportMapFragment mapFragment;
     private RequestQueue requestQueue;
+    private boolean isDriver = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,37 +98,33 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void fetchBookings() {
-        // Get today's date in the format matching your Firestore date format
         String todayDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
-        // Get the current authenticated user's UID
         String currentUserUID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Fetch the user's userID from the users collection
+        // Fetch the user's userID and check if they're a driver
         db.collection("users")
                 .document(currentUserUID)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Long userID = task.getResult().getLong("userID");
+                        isDriver = task.getResult().getBoolean("isDriver") != null &&
+                                task.getResult().getBoolean("isDriver");
 
                         if (userID != null) {
-                            // Query bookings where passengerID matches the user's userID
-                            queryBookings(userID, todayDate);
-                        } else {
-                            Toast.makeText(this, "User ID not found in users collection.", Toast.LENGTH_SHORT).show();
-                            // No matching bookings found, show a different screen
-                            navigateToNoBookingsScreen();
+                            if (isDriver) {
+                                // Query rides where driverID matches
+                                queryDriverBookings(userID, todayDate);
+                            } else {
+                                // Existing passenger query
+                                queryPassengerBookings(userID, todayDate);
+                            }
                         }
-                    } else {
-                        Toast.makeText(this, "Failed to fetch user details.", Toast.LENGTH_SHORT).show();
-                        // No matching bookings found, show a different screen
-                        navigateToNoBookingsScreen();
                     }
                 });
     }
 
-    private void queryBookings(Long userID, String todayDate) {
+    private void queryPassengerBookings(Long userID, String todayDate) {
         // Query the bookings collection for today's bookings
         db.collection("bookings")
                 .whereEqualTo("isAccepted", true)
@@ -165,6 +163,101 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                         navigateToNoBookingsScreen();
                     }
                 });
+    }
+
+    private void queryDriverBookings(Long userID, String todayDate) {
+        // First get the rides where this user is the driver
+        db.collection("rides")
+                .whereEqualTo("driverID", userID)
+                .get()
+                .addOnSuccessListener(ridesSnapshot -> {
+                    if (!ridesSnapshot.isEmpty()) {
+                        List<Long> rideIDs = new ArrayList<>();
+                        for (DocumentSnapshot ride : ridesSnapshot) {
+                            rideIDs.add(ride.getLong("rideID"));
+                        }
+
+                        // Then get bookings for these rides
+                        db.collection("bookings")
+                                .whereIn("rideID", rideIDs)
+                                .whereEqualTo("date", todayDate)
+                                .whereEqualTo("isAccepted", true)
+                                .get()
+                                .addOnSuccessListener(bookingsSnapshot -> {
+                                    boolean isRideFound = false;
+                                    for (DocumentSnapshot document : bookingsSnapshot) {
+                                        isRideFound = true;
+                                        Long rideID = document.getLong("rideID");
+                                        String date = document.getString("date");
+                                        Long passengerID = document.getLong("passengerID");
+
+                                        setContentView(isDriver ?
+                                                R.layout.activity_ride_tracking_driver :
+                                                R.layout.activity_ride_tracking);
+
+                                        initializeMap();
+                                        setupButtons(document.getId(),
+                                                document.getBoolean("isPaymentComplete"));
+                                        fetchRideDetails(rideID, date, passengerID);
+                                        break; // Handle first active booking
+                                    }
+                                    if (!isRideFound) {
+                                        navigateToNoBookingsScreen();
+                                    }
+                                });
+                    } else {
+                        navigateToNoBookingsScreen();
+                    }
+                });
+    }
+
+    private void setupButtons(String bookingId, boolean isPaymentComplete) {
+        if (!isDriver) {
+            setupChatButton();
+            return;
+        }
+
+        Button chatBtn = findViewById(R.id.btn_chat);
+        Button statusBtn = findViewById(R.id.btn_status);
+        TextView statusLabel = findViewById(R.id.status_label);
+
+        chatBtn.setOnClickListener(v -> {
+            Intent i = new Intent(this, HomeChatActivity.class);
+            startActivity(i);
+        });
+
+        if (isPaymentComplete) {
+            statusBtn.setText("Ride Complete");
+            statusBtn.setEnabled(false);
+            statusLabel.setVisibility(View.GONE);
+            return;
+        }
+
+        statusBtn.setOnClickListener(v -> {
+            String currentStatus = statusBtn.getText().toString();
+            Map<String, Object> updates = new HashMap<>();
+
+            switch (currentStatus) {
+                case "Pick Up Passenger":
+                    statusBtn.setText("Drop Off Passenger");
+                    statusLabel.setText("Click when you've reached the destination");
+                    break;
+                case "Drop Off Passenger":
+                    statusBtn.setText("Passenger Paid");
+                    statusLabel.setText("Click when you've received the payment");
+                    break;
+                case "Passenger Paid":
+                    updates.put("isPaymentComplete", true);
+                    updates.put("isBookingDone", true);
+                    db.collection("bookings").document(bookingId).update(updates)
+                            .addOnSuccessListener(aVoid -> {
+                                statusBtn.setText("Ride Complete");
+                                statusBtn.setEnabled(false);
+                                statusLabel.setVisibility(View.GONE);
+                            });
+                    break;
+            }
+        });
     }
 
     // A map of hardcoded location names to coordinates (in LatLng format)
@@ -471,5 +564,17 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(intent);
         setupChatButton();
         finish(); // Close the current activity
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // Start BookingHomeActivity
+        Intent intent = new Intent(this, BookingHomeActivity.class);
+        startActivity(intent);
+
+        // Finish the current activity
+        finish();
     }
 }

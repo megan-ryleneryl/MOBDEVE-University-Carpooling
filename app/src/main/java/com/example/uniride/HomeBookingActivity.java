@@ -147,7 +147,7 @@ public class HomeBookingActivity extends BottomNavigationActivity {
                     BookingModel booking = BookingModel.fromMap(bookingDoc.getData());
 
                     if (bookingType.equals("scheduled")) {
-                        if (booking.isAccepted() && isSameDateAsToday(booking.getDate())) {
+                        if (booking.isAccepted() && isSameDateAsToday(booking.getDate()) && !booking.isBookingDone()) {
                             bookingList.add(booking);
                             Log.d("BookingListSize", "Activity: The size of bookingList is: " + bookingList.size());
                             completedRides[0]++;
