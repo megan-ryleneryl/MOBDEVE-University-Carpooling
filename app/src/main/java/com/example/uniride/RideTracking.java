@@ -237,6 +237,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                                         Long rideID = document.getLong("rideID");
                                         String date = document.getString("date");
                                         Long passengerID = document.getLong("passengerID");
+                                        currentBookingId = document.getId();
 
                                         setContentView(isDriver ?
                                                 R.layout.activity_ride_tracking_driver :
@@ -623,5 +624,14 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
 
         // Finish the current activity
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Remove Firestore listener to prevent memory leaks
+        if (bookingListener != null) {
+            bookingListener.remove();
+        }
     }
 }
