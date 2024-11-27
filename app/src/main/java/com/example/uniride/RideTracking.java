@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.json.JSONArray;
@@ -53,6 +54,9 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
     private RequestQueue requestQueue;
     private boolean isDriver = false;
 
+    private ListenerRegistration bookingListener;
+    private String currentBookingId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +69,11 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
 
         // Check the bookings collection for today's bookings
         fetchBookings();
+
+        // After fetching booking details, set up listener if passenger
+        if (!isDriver) {
+            setupBookingStatusListener();
+        }
     }
 
     private void initializeMap() {
@@ -95,6 +104,36 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         if (!fromLocationName.isEmpty() && !toLocationName.isEmpty()) {
             updateMapWithLocations();
         }
+    }
+
+    private void setupBookingStatusListener() {
+        if (currentBookingId == null) {
+            Log.e("RideTracking", "Cannot set up listener: No booking ID");
+            return;
+        }
+
+        db = FirebaseFirestore.getInstance();
+        bookingListener = db.collection("bookings")
+                .document(currentBookingId)
+                .addSnapshotListener((snapshot, e) -> {
+                    if (e != null) {
+                        Log.w("RideTracking", "Listen failed", e);
+                        return;
+                    }
+
+                    if (snapshot != null && snapshot.exists()) {
+                        Boolean isPaymentComplete = snapshot.getBoolean("isPaymentComplete");
+                        Boolean isBookingDone = snapshot.getBoolean("isBookingDone");
+
+                        if (Boolean.TRUE.equals(isPaymentComplete) && Boolean.TRUE.equals(isBookingDone)) {
+                            // Navigate to review activity
+                            Intent reviewIntent = new Intent(RideTracking.this, HomeReviewsActivity.class);
+                            reviewIntent.putExtra("bookingId", currentBookingId);
+                            startActivity(reviewIntent);
+                            finish();
+                        }
+                    }
+                });
     }
 
     private void fetchBookings() {
@@ -138,6 +177,8 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                             Long passengerID = document.getLong("passengerID");
                             if (userID.equals(passengerID)) {
                                 isRideFound = true;
+                                // Set the current booking ID for listener
+                                currentBookingId = document.getId();
 
                                 // Get the rideID from the booking document
                                 Long rideID = document.getLong("rideID");
@@ -148,6 +189,8 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                                 // Initialize map
                                 initializeMap();
                                 setupChatButton();
+                                setupBookingStatusListener();
+                                break;
                             }
                         }
 
