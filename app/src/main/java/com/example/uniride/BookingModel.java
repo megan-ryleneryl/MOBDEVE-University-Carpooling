@@ -4,6 +4,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.PropertyName;
 
+import android.util.Log;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +70,9 @@ public class BookingModel implements Serializable {
                     if (!querySnapshot.isEmpty()) {
                         DocumentSnapshot doc = querySnapshot.getDocuments().get(0);
                         this.passengerObj = UserModel.fromMap(doc.getData());
+                        Log.d("BookingModel", "Passenger data populated: " + this.passengerObj.getName());
+                    } else {
+                        Log.d("BookingModel", "Passenger data not found for ID: " + passengerID);
                     }
                     completedQueries[0]++;
                     checkCompletion(completedQueries[0], totalQueries, listener);
