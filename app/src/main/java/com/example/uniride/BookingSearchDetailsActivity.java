@@ -38,11 +38,13 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
     TextView carModelTv;
     ImageView userImage;
     TextView userNameTv;
+    TextView ratingTv;
     Button cancelBtn;
     Button confirmBtn;
     private FirebaseFirestore db;
     private BookingModel selectedBooking;
     private String currentUserID;
+    float rating;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         // Retrieve Intent data
         selectedBooking = (BookingModel) getIntent().getSerializableExtra("selectedBooking");
         currentUserID = getIntent().getStringExtra("currentUserID");
+        rating = getIntent().getFloatExtra("rating", 4.1F);
 
         if (selectedBooking != null) {
             selectedBooking.populateObjects(db, populatedBooking -> {
@@ -75,6 +78,7 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         carModelTv = findViewById(R.id.carModelTv);
         userImage = findViewById(R.id.userImage);
         userNameTv = findViewById(R.id.userNameTv);
+        ratingTv = findViewById(R.id.ratingTv);
         cancelBtn = findViewById(R.id.cancelBtn);
         confirmBtn = findViewById(R.id.confirmBtn);
 
@@ -91,7 +95,7 @@ public class BookingSearchDetailsActivity extends AppCompatActivity {
         carModelTv.setText(ride.getDriver().getCar().getModel() + " " + ride.getDriver().getCar().getMake());
         userImage.setImageResource(ride.getDriver().getPfp());
         userNameTv.setText(ride.getDriver().getName());
-        //ratingTv.setText("★ " + selectedBooking.getRide().getDriver().getRating());
+        ratingTv.setText("★ " + rating);
 
         cancelBtn.setOnClickListener(v -> {
             finish();

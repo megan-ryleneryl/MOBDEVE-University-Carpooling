@@ -5,6 +5,7 @@ import static android.content.Intent.getIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import java.util.Random;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,18 +72,27 @@ public class MyBookingSearchAdapter extends RecyclerView.Adapter<MyBookingSearch
                     holder.locationTv2.setText(ride.getFrom().getName() + " to " + ride.getTo().getName());
                 }
 
+                float rating = getRating();
+
                 holder.timeTv2.setText(ride.getDepartureTime() + " to " + ride.getArrivalTime());
-                holder.capacityTv2.setText(ride.getAvailableSeats() + " seats available");
+                holder.capacityTv2.setText(String.valueOf("★ " + rating));
                 holder.priceTv2.setText("P" + ride.getPrice());
 
                 holder.bookBtn2.setOnClickListener(v -> {
                     Intent i = new Intent(context, BookingSearchDetailsActivity.class);
                     i.putExtra("selectedBooking", searchResult);
                     i.putExtra("currentUserID", currentUserID);
+                    i.putExtra("rating", rating);
                     context.startActivity(i);
                 });
             }
         }
+    }
+
+    private float getRating() {
+        Random random = new Random();
+        float value = 3.5f + (random.nextFloat() * (5.0f - 3.5f));
+        return Math.round(value * 100f) / 100f;
     }
 
     @Override

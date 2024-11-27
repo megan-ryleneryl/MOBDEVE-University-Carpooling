@@ -176,6 +176,15 @@
                         android:gravity="center_vertical"
                         android:text="" />
 
+                    <TextView
+                        android:id="@+id/ratingTv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="5dp"
+                        android:fontFamily="@font/raleway"
+                        android:gravity="center_vertical"
+                        android:text="" />
+
                 </LinearLayout>
             </LinearLayout>
 
