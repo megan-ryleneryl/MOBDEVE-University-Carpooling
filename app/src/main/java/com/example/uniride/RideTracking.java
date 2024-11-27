@@ -59,9 +59,6 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         // Initialize Volley RequestQueue for API calls
         requestQueue = Volley.newRequestQueue(this);
 
-        // Initialize map
-        initializeMap();
-
         db = FirebaseFirestore.getInstance(); // Initialize Firestore
 
         // Check the bookings collection for today's bookings
@@ -150,6 +147,8 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                                 fetchRideDetails(rideID, date, userID);
 
                                 setContentView(R.layout.activity_ride_tracking); // Load the main screen
+                                // Initialize map
+                                initializeMap();
                                 setupBackButton();
                             }
                         }
@@ -178,7 +177,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         put("Cainta", new LatLng(14.5765, 121.1280));
         put("Caloocan", new LatLng(14.6190, 120.9670));
         put("Cavite City", new LatLng(14.4792, 120.9147));
-        put("DLSU", new LatLng(14.5566, 120.9935));
+        put("DLSU", new LatLng(14.564847136369453, 120.9931683841155));
         put("Dasmariñas", new LatLng(14.3143, 120.9382));
         put("Imus", new LatLng(14.4196, 120.9309));
         put("Las Piñas", new LatLng(14.4386, 120.9895));
@@ -261,7 +260,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
 
         if (fromCoordinates != null && toCoordinates != null) {
             Log.d("MapDebug", "Getting directions from " + fromLocationName + " to " + toLocationName);
-            getDirections(fromCoordinates, toCoordinates);
+            plotRouteOnMap(fromCoordinates, toCoordinates);
         } else {
             Log.e("MapDebug", "Missing coordinates for locations: " + fromLocationName + " or " + toLocationName);
         }
@@ -384,6 +383,7 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
 
         if (fromCoordinates != null && toCoordinates != null) {
             plotRouteOnMap(fromCoordinates, toCoordinates);
+            Log.d("MapDebug", "Map updated with route");
         } else {
             Log.e("MapError", "Missing coordinates for " + fromLocationName + " or " + toLocationName);
             Toast.makeText(this, "Unable to plot route: Invalid location coordinates",
@@ -434,8 +434,6 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
         void onLocationNameFetched(String locationName);
     }
 
-
-
     private void setupBackButton() {
         Button backButton = findViewById(R.id.btn_back);
 
@@ -462,23 +460,10 @@ public class RideTracking extends AppCompatActivity implements OnMapReadyCallbac
                 .title("Dropoff: " + toLocationName)
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-        // Draw route line
-        mMap.addPolyline(new PolylineOptions()
-                .add(fromCoordinates, toCoordinates)
-                .width(8)
-                .color(Color.BLUE)
-                .geodesic(true));
-
-        // Calculate bounds to show both markers
-        LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        builder.include(fromCoordinates);
-        builder.include(toCoordinates);
-        LatLngBounds bounds = builder.build();
-
-        // Move camera to show both markers with padding
-        int padding = 100;
-        mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
+        // Fetch and draw route using Directions API
+        getDirections(fromCoordinates, toCoordinates);
     }
+
 
     private void navigateToNoBookingsScreen() {
         // Navigate to a different screen or show a message
